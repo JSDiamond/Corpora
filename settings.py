@@ -1,7 +1,7 @@
 # Django settings for Corpora project.
 import os 
 
-DEV_MODE = 'jsdiamond' not in os.path.split(os.path.abspath(__file__))
+DEV_MODE = 'jsdiamond' not in os.path.abspath(__file__)
 
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
