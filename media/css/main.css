@@ -1,0 +1,18 @@
+* {
+    padding: 0px;
+    margin: 0px;
+}
+a {
+    text-decoration: none;
+    font-weight: 600;
+    color: #444;
+}
+a:hover {
+    color: #555554;
+}
+ul {
+    list-style: none;
+}
+ul li {
+    list-style: none;
+}

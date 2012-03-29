@@ -1,4 +1,5 @@
 from BeautifulSoup import BeautifulSoup
+from urlparse import urlparse
 import re
 import urllib2
 import codecs
@@ -21,21 +22,18 @@ def get_google():
     descripts = soup.findAll('description')
     descripts = descripts[:-1]
     
-    
+        
     for idx, script in enumerate(descripts):
         paird = list();
         urlSrch = re.findall(r"url=+\S*&quot", str(script))
         urlSrch = [link[4:-5] for link in urlSrch]
         for link in urlSrch:
-            pubSrch = re.search(r"\/\/+\S*.", link)
-            if  pubSrch:
-                if "www" in pubSrch.group():
-                    pubName = pubSrch.group()[6:-2]
-                else:
-                    pubName = pubSrch.group()[2:-2]
-                #print pubName
-                paird.append((pubName, link))
-        #print len(urlSrch)
+            netloca = urlparse(link)
+            if "www" in netloca.netloc:
+                pubName = netloca.netloc[4:]
+            else:
+                pubName = netloca.netloc
+            paird.append((pubName, link))
         trimTitle = str(titles[idx])
         trimTitle = trimTitle[7:-8]
         groupedData.append((trimTitle, paird))

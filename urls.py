@@ -6,7 +6,7 @@ admin.autodiscover()
 
 urlpatterns = patterns('',
     # Examples:
-    url(r'^news/$', 'Corpora.polls.views.index', name='index'),
+    url(r'^news/$', 'Corpora.news.views.liststories', name='liststories'),
     url(r"^fun/$", "Corpora.news.views.special", name="special"),
     # url(r'^{{ project_name }}/', include('{{ project_name }}.foo.urls')),
 

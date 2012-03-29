@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% block title %}{{ "l a t e s t" }}{% endblock %}
+
+{% block content %}
+
+
+{% if latest_news %}
+{% comment %}
+    {% for idx, story in enumerate(latest_news) %}
+        {% if idx == 0 %}
+            <h1>{{ story.date }}</h1>
+        {% endif %}
+    {% endfor %}
+{% endcomment %}
+    <ul>
+    {% for story in latest_news %}
+        <li><a href="">{{ story.headline|safe }}</a></li>
+    {% endfor %}
+    </ul>
+{% else %}
+    <p>No articles available.</p>
+{% endif %}
+
+{% endblock %}
+
+
+
