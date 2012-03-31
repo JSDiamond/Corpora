@@ -7,20 +7,21 @@
 
 {% if latest_news %}
 {% comment %}
-    {% for idx, story in enumerate(latest_news) %}
-        {% if idx == 0 %}
-            <h1>{{ story.date }}</h1>
-        {% endif %}
-    {% endfor %}
+    {% with latest_news.0 as story %}
+        <h1>{{ story.date }}</h1>
+    {% endwith %}
 {% endcomment %}
     <ul>
     {% for story in latest_news %}
-        <li><a href="">{{ story.headline|safe }}</a></li>
+        {{ forloop.counter }}<li><a href="">{{ story.headline|safe }}</a></li>
     {% endfor %}
     </ul>
+    
+    
 {% else %}
     <p>No articles available.</p>
 {% endif %}
+{{ jeremy }}
 
 {% endblock %}
 

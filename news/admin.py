@@ -1,8 +1,8 @@
-from Corpora.news.models import Story
+from Corpora.news.models import Article
 from django.contrib import admin
 
 
-class StoryAdmin(admin.ModelAdmin):
-    model = Story
+class ArticleAdmin(admin.ModelAdmin):
+    model = Article
 
-admin.site.register(Story, StoryAdmin)
+admin.site.register(Article, ArticleAdmin)

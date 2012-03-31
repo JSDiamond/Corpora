@@ -10,6 +10,8 @@ ADMINS = (
     ('j-man', 'jeremyscottdiamond@gmail.com'),
 )
 
+CORPORA_DIRECTORY = os.path.abspath(os.path.dirname(__file__))
+
 MANAGERS = ADMINS
 
 DATABASES = {
@@ -73,7 +75,7 @@ MEDIA_URL = '/media/'
 # URL prefix for admin media -- CSS, JavaScript and images. Make sure to use a
 # trailing slash.
 # Examples: "http://foo.com/media/", "/media/".
-ADMIN_MEDIA_PREFIX = '/media/'
+ADMIN_MEDIA_PREFIX = '/admin_media/'
 
 # Make this unique, and don't share it with anybody.
 SECRET_KEY = '&j^t_33h)8c861yh&95f8vy03)4^69var!srh+o-w_#9#8g!x='

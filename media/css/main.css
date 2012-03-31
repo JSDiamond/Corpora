@@ -2,6 +2,10 @@
     padding: 0px;
     margin: 0px;
 }
+body {
+    padding: 20px;
+    font-family: Helvetica;
+}
 a {
     text-decoration: none;
     font-weight: 600;
