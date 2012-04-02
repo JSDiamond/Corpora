@@ -6,7 +6,7 @@ class StoryGroup(models.Model):
     date = models.DateTimeField()
     
     def __unicode__(self):
-        return self.date
+        return str(self.id)
 
 
 class Publisher(models.Model):
@@ -18,11 +18,11 @@ class Publisher(models.Model):
 
 class Article(models.Model):
     group = models.ForeignKey(StoryGroup)
-    headline = models.TextField(blank=True)
-    date = models.DateTimeField(null=True, blank=True)
+    headline = models.TextField()
+    date = models.DateTimeField()#null=True
     url = models.CharField(max_length=255)
-    raw_text = models.TextField()
-    analyzed_text = models.TextField()
+    raw_text = models.TextField(blank=True)
+    analyzed_text = models.TextField(blank=True)
     master = models.BooleanField(default=False)
     publisher = models.ForeignKey(Publisher)
     

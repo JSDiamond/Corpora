@@ -45,12 +45,16 @@ def get_google():
             paird.append((pubName, link))
         trimTitle = str(titles[idx])
         trimTitle = trimTitle[7:-8]
+        #get rid of Publisher name after the dash
+        cutPub = re.findall(r"\s-\s+.{5}", trimTitle)
+        cropmark = trimTitle.find(cutPub[len(cutPub)-1]);
+        trimTitle = trimTitle[:cropmark]
         groupedData.append((trimTitle, paird))
         
         
     GScrapeData = {"Masters": masterLinks, "Stories": groupedData}        
-    JSON_output = json.dumps( GScrapeData )
-    #return GScrapeData
-    return JSON_output
+    JSON_output = json.dumps( GScrapeData )#this does not work for parsing in Views 
+    return GScrapeData
+    #return JSON_output
 
 

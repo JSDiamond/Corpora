@@ -6,14 +6,12 @@
 
 
 {% if latest_news %}
-{% comment %}
-    {% with latest_news.0 as story %}
-        <h1>{{ story.date }}</h1>
+    {% with latest_news.0 as article %}
+        <h1>{{ article.date }}</h1>
     {% endwith %}
-{% endcomment %}
     <ul>
-    {% for story in latest_news %}
-        {{ forloop.counter }}<li><a href="">{{ story.headline|safe }}</a></li>
+    {% for article in latest_news %}
+        {{ forloop.counter }}<li><a href="{{ article.url }}">{{ article.headline|safe }}</a></li>
     {% endfor %}
     </ul>
     
