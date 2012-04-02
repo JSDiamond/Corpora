@@ -1,9 +1,15 @@
 from django.http import HttpResponse
 from django.template import Context, loader
 from django.shortcuts import render_to_response
+
+import nltk
+import re
+import json
+from nltk.corpus import stopwords
+from nltk import FreqDist
 import datetime
 
-from Corpora.news.util import get_google
+from Corpora.news.util import get_google, get_article, get_sentiment, findTriGrams, tokenize_text_and_tag_named_entities, SetWordDictionary, Find_Important_Words
 from Corpora.news.models import Article, Publisher, StoryGroup
 
 
@@ -11,13 +17,32 @@ def special(request):
     masterBool = False
     pubObj = {}
     filler = list()
+    
+    #///////////////////////GLOBAL VARS FOR ANALYSIS///////////////////
+    #//////////////////////////////////////////////////////////////////
+    dict_to_json = {}
+    dict_to_json['Corpus'] = list() 
+    stops = set(stopwords.words('english'))
+    stops.add('.')
+    stops.add("'s")
+    stops.add("'t")
+    stops.add(",")
+    stops.add(":")
+    stops.add("?")
+    stops.add("\"")
+    stops.add("\'")
+    entitiesString = 'PERSON ORGANIZATION LOCATION DATE TIME MONEY PERCENT FACILITY GSP'
+    #//////////////////////////////////////////////////////////////////
+    #//////////////////////////////////////////////////////////////////
+    
     output = get_google() #call function from util.py   
     for idx, story in enumerate(output["Stories"]):
         filler.append(idx)
         try:
             ###################check the db for the masterlink associated with the main article 
             article_exists = Article.objects.filter(headline=story[0])
-            if len(article_exists)>0:
+            if len(article_exists)<1:
+                filler.append(" New Article ")
                 ###################if not in db, make an Article, a StoryGroup w/ date, and check for each Publisher to see if it needs to be entered 
                 new_storygroup = StoryGroup.objects.create(date=datetime.datetime.now())
                 for link in story[1]:
@@ -31,8 +56,38 @@ def special(request):
                     except Publisher.DoesNotExist:
                         new_publisher = Publisher.objects.create(name=link[0])
                         pubObj = new_publisher
-                    #RUN THE CORPORA_ARTICLESENT SCRIPT ON TO GET THE RAW_TEXT AND PARSE!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-                    new_article = Article.objects.create(headline=story[0], url=link[1], date=datetime.datetime.now(), group=new_storygroup, raw_text="blank", analyzed_text = "blank", master = masterBool, publisher = pubObj)
+                        
+                    ####################################### DiffBot API call for content
+                    rawtext = get_article(link[1])
+                    ####################################### Tokenize
+                    TrueTextWords = nltk.word_tokenize(rawtext)
+                    whitespace = nltk.WhitespaceTokenizer()
+                    spaceTokens = whitespace.tokenize(rawtext)
+                    ####################################### Frequence Distribution
+                    fdist = FreqDist(TrueTextWords)
+                    ####################################### Sentiment Anaylsis
+                    sentiment = get_sentiment(rawtext)
+                    ####################################### Decent Quotation Finder
+                    quoteSrch = re.findall(r'"([^"]*)"', (rawtext)) 
+                    ####################################### Find TriGrams
+                    dict_to_json['TriGrams'] = findTriGrams(spaceTokens)
+                    ####################################### Token break and Find Named Entities
+                    TTATNE = tokenize_text_and_tag_named_entities(rawtext)
+                    Sentities = TTATNE["SB"]
+                    ####################################### FILL DICT WITH DATA 
+                    dict_to_json['Corpus'] = SetWordDictionary(Sentities, fdist, entitiesString, stops)
+                    ####################################### IMPORTANT WORD INDEX FIND & PLACE
+                    Find_Important_Words(dict_to_json['Corpus'], TrueTextWords, fdist, entitiesString)
+                    dict_to_json['NamedEnts'] = list(TTATNE["UNE"])
+                    dict_to_json['Sentiment'] = sentiment['probability']
+                    dict_to_json['Sentiment'] = sentiment['probability']
+                    dict_to_json['SentLengths'] = TTATNE["SL"]
+                    dict_to_json['Numbers'] = list(TTATNE["AN"])
+                    dict_to_json['Quotes'] = quoteSrch
+                    dict_to_json['Raw_Text'] = rawtext
+                    JSON_output = json.dumps( dict_to_json )
+                    #PARSE!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                    new_article = Article.objects.create(headline=story[0], url=link[1], date=datetime.datetime.now(), group=new_storygroup, raw_text=rawtext, analyzed_text=JSON_output, master=masterBool, publisher=pubObj)
         except Article.DoesNotExist:
             filler.append(" Database error ")
     
