@@ -9,14 +9,32 @@ body {
 a {
     text-decoration: none;
     font-weight: 600;
-    color: #444;
 }
 a:hover {
+    color: #666;
+}
+a.publinks {
+    color: #444;
+}
+a.publinks:hover {
     color: #dd5555;
 }
+h3 a {
+    color: #222;
+}
+
 ul {
     list-style: none;
+    clear: both;
 }
 ul li {
     list-style: none;
+}
+ul li.latest_items {
+    float: left;
+    margin: 10px 10px 20px 0px; 
+}
+ul h3.latest_headlines {
+    clear: both;
+    margin: 10px 10px 0px 0px; 
 }

@@ -13,6 +13,39 @@ from Corpora.news.util import get_google, get_article, get_sentiment, findTriGra
 from Corpora.news.models import Article, Publisher, StoryGroup
 
 
+def liststories(request):
+    grouped_news = list()
+    latest_news = list()
+    latest_storygroups = StoryGroup.objects.all().order_by('-date')[:10]
+    for idx, story in enumerate(latest_storygroups):
+        grouped_news.append(Article.objects.filter(group = story)[:6])
+        latest_news.append(grouped_news)
+    #latest_news = Article.objects.all().order_by('-date')[:20]
+    return render_to_response('news/news.html', {'latest_news': latest_news, 'latest_storygroups': latest_storygroups})
+
+
+
+def collate(request, storygroup):
+    try:
+        all_articles = Article.objects.filter(group = storygroup)[:6]
+    except Article.DoesNotExist:
+        raise Http404
+    return render_to_response('news/collate.html', {'all_articles': all_articles})
+    
+
+def getdata(request, storygroup):
+    try:
+        all_articles = Article.objects.filter(group = storygroup)[:6]
+        data_array = list()
+        for idx, art in enumerate(all_articles):
+            data_array.append(art.analyzed_text)
+    except Article.DoesNotExist:
+        raise Http404
+    return HttpResponse(json.dumps(data_array), mimetype="application/json")
+    #return render_to_response({'data_array': data_array})
+
+
+
 def special(request):
     masterBool = False
     pubObj = {}
@@ -87,30 +120,12 @@ def special(request):
                     dict_to_json['Raw_Text'] = rawtext
                     JSON_output = json.dumps( dict_to_json )
                     #PARSE!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-                    new_article = Article.objects.create(headline=story[0], url=link[1], date=datetime.datetime.now(), group=new_storygroup, raw_text=rawtext, analyzed_text=JSON_output, master=masterBool, publisher=pubObj)
+                    new_article = Article.objects.create(headline=story[0], url=link[1], date=datetime.datetime.now(), group=new_storygroup, raw_text=rawtext, analyzed_text=dict_to_json, master=masterBool, publisher=pubObj)
         except Article.DoesNotExist:
             filler.append(" Database error ")
     
     return HttpResponse(filler)
 
 
-def liststories(request):
-
-    latest_news = Article.objects.all().order_by('-date')[:20]
-    return render_to_response('news/news.html', {'latest_news': latest_news, 'jeremy': 'hi'})
     
     
-
-
-
-
-
-
-# group = models.ForeignKey(StoryGroup)
-# headline = models.TextField(blank=True)
-# date = models.DateTimeField(null=True, blank=True)
-# url = models.CharField(max_length=255)
-# raw_text = models.TextField()
-# analyzed_text = models.TextField()
-# master = models.BooleanField(default=False)
-# publisher = models.ForeignKey(Publisher)

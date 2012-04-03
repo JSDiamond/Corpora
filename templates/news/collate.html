@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+
+{% block title %}
+    {% with all_articles.0 as article %}
+        {{ article.group }}    
+        {% endwith %}
+{% endblock %}
+
+{% block content %}
+<script type="text/javascript" src="/media/js/getdata.js"></script>
+
+{% if all_articles %}
+    {%  with all_articles.0 as article %}
+        <h5 style="float: right">{{ article.date }}</h5>
+        <h1>{{ article.headline|safe }}</h1>
+    {% endwith %}
+    <ul>
+    {% for article in all_articles %}
+        <li> {{ forloop.counter }} <a href="{{ article.url }}" style="margin-left: 8px">{{ article.publisher|safe }}</a></li>
+    {% endfor %}
+    </ul>
+    
+    
+{% else %}
+    <p>No articles available.</p>
+{% endif %}
+
+
+{{ comment }}
+{% if data_array %}
+    <h2>data stuffs</h2>
+    <ul>
+    {% for data in data_array %}
+        <li>{{ forloop.counter }} {{ data }}</li>
+    {% endfor %}
+    </ul>
+{% endif %}
+{{ endcomment }}
+
+{% endblock %}
+
+
+

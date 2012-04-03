@@ -53,7 +53,7 @@ def get_google():
         trimTitle = str(titles[idx])
         trimTitle = trimTitle[7:-8]
         #get rid of Publisher name after the dash
-        cutPub = re.findall(r"\s-\s+.{5}", trimTitle)
+        cutPub = re.findall(r"\s-\s+.{3}", trimTitle)
         if len(cutPub) > 0:
             cropmark = trimTitle.find(cutPub[len(cutPub)-1]);
             trimTitle = trimTitle[:cropmark]
@@ -74,9 +74,10 @@ def get_article(link):
     request = baseurl+link
     response = urllib.urlopen(request)
     rawtext = json.loads( response.read() )
-    if rawtext["text"]:
+    try: 
+        rawtext["text"]
         rawtext = rawtext["text"].encode('ascii', 'ignore')
-    else: 
+    except: 
         rawtext = "Content Unavailable"
     return rawtext
 ############################################################################################

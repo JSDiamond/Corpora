@@ -9,10 +9,10 @@ admin.autodiscover()
 
 urlpatterns = patterns('',
     # Examples:
-    url(r'^news/$', 'Corpora.news.views.liststories', name='liststories'),
+    url(r'^news/$', "Corpora.news.views.liststories", name="liststories"),
     url(r"^fun/$", "Corpora.news.views.special", name="special"),
-    # url(r'^{{ project_name }}/', include('{{ project_name }}.foo.urls')),
-
+    url(r"^story/(?P<storygroup>\d+)/$", "Corpora.news.views.collate", name="collate"),
+    url(r"^getdata/(?P<storygroup>\d+)/$", "Corpora.news.views.getdata", name="getdata"),
     # Uncomment the admin/doc line below to enable admin documentation:
     # url(r'^admin/doc/', include('django.contrib.admindocs.urls')),
 

@@ -7,19 +7,21 @@
 
 {% if latest_news %}
     {% with latest_news.0 as article %}
-        <h1>{{ article.date }}</h1>
+        <h1>{{ article.1.1.date }}</h1>
     {% endwith %}
-    <ul>
-    {% for article in latest_news %}
-        {{ forloop.counter }}<li><a href="{{ article.url }}">{{ article.headline|safe }}</a></li>
-    {% endfor %}
-    </ul>
+        <ul>
+            {% for story in latest_news.1 %}
+                <h3 class="latest_headlines">{{ forloop.counter }}<a href="{{ latest_storygroups.0 }}"> {{ story.1|safe }}</a></h3>
+                {% for article in story %}
+                <li class="latest_items"><a href="{{ article.url }}" class="publinks">{{ article.publisher|safe }}</a></li>
+                {% endfor %}
+            {% endfor %}
+        </ul>
     
     
 {% else %}
     <p>No articles available.</p>
 {% endif %}
-{{ jeremy }}
 
 {% endblock %}
 
