@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+
+{% block title %}
+{{comment}}
+    {% with all_articles.0 as article %}
+        p o e m : {{ article.group }}    
+    {% endwith %}
+{{endcomment}}
+{% endblock %}
+
+{% block content %}
+<script type="text/javascript" src="/media/js/getdata.js"></script>
+
+{% if all_articles %}
+    {% with all_articles.0 as article %}
+        <h3 style="margin-bottom: 10px">{{article|safe}}</h3>
+    {% endwith %}
+    <ul>
+    
+    {% for text in poem %}
+        <li style="margin-bottom: 6px; font-size: 14px"> {{ text }} </li>
+    {% endfor %}
+    </ul>
+    
+    
+{% else %}
+    <p>No articles available.</p>
+{% endif %}
+
+
+{% endblock %}
+
+
+

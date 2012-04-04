@@ -19,10 +19,10 @@ a.publinks {
 a.publinks:hover {
     color: #dd5555;
 }
+h3 {clear: both;}
 h3 a {
     color: #222;
 }
-
 ul {
     list-style: none;
     clear: both;
@@ -32,9 +32,16 @@ ul li {
 }
 ul li.latest_items {
     float: left;
-    margin: 10px 10px 20px 0px; 
+    margin: 10px 10px 0px 0px; 
 }
 ul h3.latest_headlines {
     clear: both;
     margin: 10px 10px 0px 0px; 
+}
+
+.story_preview {
+    padding: 20px 20px;
+    margin: 10px 0px;
+    border: 1px #eee solid;
+    overflow: hidden;
 }
