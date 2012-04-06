@@ -38,7 +38,7 @@ def getdata(request, storygroup):
         all_articles = Article.objects.filter(group = storygroup)[:6]
         data_array = list()
         for idx, art in enumerate(all_articles):
-            data_array.append(art.analyzed_text)
+            data_array.append(json.loads(art.analyzed_text))
     except Article.DoesNotExist:
         raise Http404
     return HttpResponse(json.dumps(data_array), mimetype="application/json")
@@ -147,19 +147,5 @@ def poetry(request, storygroup):
         raise Http404
     return render_to_response('news/poetry.html', {'all_articles': all_articles, 'poem': poem})
     
-    
-# Trayvon Martin coverage: Republicans, many whites say 'enough'    
-# The two sides also continued.
-# "I do think we need to the foreseeable future as first
-# " Karas questioned 1,000 adults.
-# The Los Angeles Times reports this instance.
-# The results were committed by black male.
-
-# Obama: Republicans Want 'Radical Vision' for America
-# He also includes tax code fairer by requiring
-# "Who are allowed to policies but has
-# That's part or mortgage lenders.
-# It's patriotism.
-# My mother and the right thing to consider
     
     

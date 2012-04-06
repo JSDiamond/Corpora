@@ -97,12 +97,20 @@ MIDDLEWARE_CLASSES = (
 
 ROOT_URLCONF = 'Corpora.urls'
 
-TEMPLATE_DIRS = (
-    # Put strings here, like "/home/html/django_templates" or "C:/www/django/templates".
-    # Always use forward slashes, even on Windows.
-    # Don't forget to use absolute paths, not relative paths.
-    'templates',
-)
+if not DEV_MODE:
+    TEMPLATE_DIRS = (
+        # Put strings here, like "/home/html/django_templates" or "C:/www/django/templates".
+        # Always use forward slashes, even on Windows.
+        # Don't forget to use absolute paths, not relative paths.
+        '/home/jsdiamond/corporaproject.com/Corpora/templates',
+    )
+else:
+    TEMPLATE_DIRS = (
+        # Put strings here, like "/home/html/django_templates" or "C:/www/django/templates".
+        # Always use forward slashes, even on Windows.
+        # Don't forget to use absolute paths, not relative paths.
+        'templates',
+    )
 
 FIXTURE_DIRS = (
     '/fixtures/'
