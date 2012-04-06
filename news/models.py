@@ -4,6 +4,7 @@ import datetime
 
 class StoryGroup(models.Model):
     date = models.DateTimeField()
+    slugline = models.SlugField(blank=True, unique=True)
     
     def __unicode__(self):
         return str(self.id)
@@ -22,6 +23,7 @@ class Article(models.Model):
     date = models.DateTimeField()#null=True
     url = models.CharField(max_length=255)
     raw_text = models.TextField(blank=True)
+    image_link = models.TextField(blank=True)
     analyzed_text = models.TextField(blank=True)
     master = models.BooleanField(default=False)
     publisher = models.ForeignKey(Publisher)

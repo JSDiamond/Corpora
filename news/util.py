@@ -73,13 +73,21 @@ def get_article(link):
     baseurl = "http://www.diffbot.com/api/article?token=721bf45a809f0f2d913973a977bdf550&url="
     request = baseurl+link
     response = urllib.urlopen(request)
-    rawtext = json.loads( response.read() )
+    results = json.loads( response.read() )
     try: 
-        rawtext["text"]
-        rawtext = rawtext["text"].encode('ascii', 'ignore')
+        results["text"]
+        rawtext = results["text"].encode('ascii', 'ignore')
     except: 
         rawtext = "Content Unavailable"
-    return rawtext
+    try: 
+        media = results["media"]
+        for item in media:
+            if item['primary'] == "true" and item['type'] == "image":                
+                image = item['link']
+        print image
+    except: 
+        image = "None"
+    return { 'rawtext': rawtext, 'image': image }
 ############################################################################################
 
 

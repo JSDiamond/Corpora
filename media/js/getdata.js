@@ -4,6 +4,6 @@ $(document).ready(function(){
     story = window.location.pathname.substr(7);    
     geturl = "http://"+window.location.host+"/getdata/"+story;
     $.get(geturl, function(data) {
-      console.log(data[0]['Sentiment']);
+      console.log(data);
     });
 });
