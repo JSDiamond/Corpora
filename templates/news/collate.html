@@ -6,38 +6,46 @@
         {% endwith %}
 {% endblock %}
 
+{% block header %}
+    <script type="text/javascript" src="/media/js/getdata.js"></script>
+    <div id="toolbar">
+        <div id="lengthbutton" class="button">map:chars</div>
+        <div id="heatbutton" class="button">map:freq</div>
+        <div id="namedbutton" class="button">named:level</div>
+        <!--
+<div id="my-slider" class="dragdealer">
+        	<div id="speed" class="handle">x</div>
+        </div>
+-->
+    </div>
+    <div id="SVGoverlay"></div>
+{% endblock %}
+    
 {% block content %}
-<script type="text/javascript" src="/media/js/getdata.js"></script>
+        
+        {% if all_articles %}
+            {%  with all_articles.0 as article %}
+                
+                <h1 style="border-bottom:2px solid #333; padding-bottom: 4px; margin-bottom: 20px;">
+                    {{ article.headline|safe }}
+                    <span style="float: right; margin-top: 20px; font-size: 11px">{{ article.date }}</span>
+                </h1>
+            {% endwith %}
+            <ul>
+            {% for article in all_articles %}
+                <li> {{ forloop.counter }} <a href="{{ article.url }}" class="publinks" style="margin-left: 8px">{{ article.publisher|safe }}</a></li>
+            {% endfor %}
+            </ul>
+            
+            
+        {% else %}
+            <p>Sorry, no articles available.</p>
+        {% endif %}
 
-{% if all_articles %}
-    {%  with all_articles.0 as article %}
-        <h5 style="float: right">{{ article.date }}</h5>
-        <h1>{{ article.headline|safe }}</h1>
-    {% endwith %}
-    <ul>
-    {% for article in all_articles %}
-        <li> {{ forloop.counter }} <a href="{{ article.url }}" class="publinks" style="margin-left: 8px">{{ article.publisher|safe }}</a></li>
-    {% endfor %}
-    </ul>
-    
-    
-{% else %}
-    <p>No articles available.</p>
-{% endif %}
-
-
-{{ comment }}
-{% if data_array %}
-    <h2>data stuffs</h2>
-    <ul>
-    {% for data in data_array %}
-        <li>{{ forloop.counter }} {{ data }}</li>
-    {% endfor %}
-    </ul>
-{% endif %}
-{{ endcomment }}
 
 {% endblock %}
+
+
 
 
 

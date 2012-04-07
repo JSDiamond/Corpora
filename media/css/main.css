@@ -3,8 +3,10 @@
     margin: 0px;
 }
 body {
-    padding: 20px;
     font-family: Helvetica;
+}
+#content {
+    padding: 20px;
 }
 a {
     text-decoration: none;
@@ -44,4 +46,117 @@ ul h3.latest_headlines {
     margin: 10px 0px;
     border: 1px #eee solid;
     overflow: hidden;
+}
+
+
+/*////////////////////////////////////////////////////////////////// STORY PAGE */
+#toolbar {
+    position: relative;
+    margin-bottom: 20px;
+    height: 24px;
+    padding: 20px;
+    background-color: #222;
+    
+}
+.articleClass {
+    color: #222;
+    font-size: 16px;
+    -webkit-transition: all 2500ms linear;
+}
+#mainSVG{
+    padding: 54px 0px 20px 54px;
+}
+.title {
+    font-weight: 600;
+}
+.button {
+    padding: 4px 12px;
+    margin-right: 10px;
+    background-color: #333;
+    color: #fff;
+    float: left;
+    font-size: 11px;
+    letter-spacing: 1px;
+    font-weight: 100;
+    cursor: pointer;
+}
+.button:hover {
+    background-color: #555;
+    color: #eee;
+}
+#heatbutton {
+    float: left;
+}
+#SVGoverlay {
+    position: relative;
+    
+}
+.wordrect {
+    cursor: pointer;
+}
+.namedlevel {
+    color: #333;
+    position: absolute;
+    width: 90%;
+    left: 60px;
+}
+.ents{
+    cursor: pointer;
+}
+.infoblock {
+    text-align: center;
+}
+.articleClass {
+}
+.node {
+    font: 10px sans-serif;
+}
+
+.link {
+    fill: none;
+    stroke: #AAAAD0;
+    stroke-width: 1.5px;
+}
+#my-slider {
+    float: right;
+    z-index: 10;
+    width: 100px;
+    height: 17px;
+    background-color: #666;
+    border: #888 inset 1px;
+}
+.handle {
+    margin: 2px 0px;
+    font-size: 10px;
+    line-height: 10px;
+    text-align: right;
+    padding: 1px 3px 3px;
+    color: #fff;
+    background-color: red;
+    cursor: pointer;
+    box-shadow: 0px 0px 3px #666;
+}
+.readWindow {
+    overflow: hidden;
+    background-color: rgba(0,0,0,0.8);
+    position: absolute;
+    z-index: 10;
+    text-wrap: none;
+    word-wrap: none;
+    box-shadow: 0px 0px 10px #666;
+}
+.readWindow ul.sentlist {
+    overflow: hidden;
+    position: relative;
+    line-height: 20px;
+    min-width: 4000px;
+    opacity: 1;
+    font-size: 12px;
+    text-wrap: none;
+}
+.readWindow ul.sentlist li.innerText {
+    float: left;
+    list-style: none;
+    margin: 0px 3px;
+    color: #bbb;
 }
