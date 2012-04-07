@@ -7,17 +7,35 @@ $(document).ready(function(){
       articleStorageArray = data;
       setTimeout(startEverything, 100, articleStorageArray);
     });
+    
+    
+    $('#lengthbutton').click(function(){
+        changeWordRects(counter, "length");           
+    }); 
+    $('#heatbutton').click(function(){
+        changeWordRects(counter, "heat");           
+    });  
+    
+    $('#namedbutton').click(function(){
+        namedOnScreen = true;
+        if (level > 0){
+            namedLevels(level,(r/5)+(30-totalstories*2.4));  //70+(40-totalstories*6)-(totalstories)
+            level--;
+        }
+    });
+    
 });
 
 
 //////////////////////////////////////////////////////////////////////////////////////////////VARIABLES: starter globals
 var filesArray; //use this to store the svg objects for each article (set by selectAll class)
-var dataArray = []; //use this to store the data objects for each article
+var articlePubs = [], dataArray = []; //use this to store the data objects for each article
 var w = window.innerWidth-120, h = window.innerHeight-0, w2 = w*0.5, h2 = h*0.5;
 var articleStorageArray, totalstories, mainSVG, langmap, articlefile, simInfo;
 var entitiesString = ['PERSON', 'ORGANIZATION', 'LOCATION', 'DATE', 'TIME', 'MONEY', 'PERCENT', 'FACILITY', 'GSP'];
 var wordmap = { w: 0, h: 0, boxH: 6},  spacing  = 40, wordCount = 0;
 var namedOnScreen = false;
+var dat = [1];
 
 //////////////////////////////////////////////////////////////////////////////////////////////FUNCTION: start her engines
 var startEverything = function(data){
@@ -49,7 +67,7 @@ var setupSVG = function(){
         .enter().append("g")
             .attr("id", function(d,i){ return "articlefile"+i})
             .attr("class", "articleClass")
-            .attr("transform", function(d,i){ return "translate("+((i*wordmap.w)+(i*spacing))+",100)"; });
+            .attr("transform", function(d,i){ return "translate("+((i*wordmap.w)+(i*spacing))+",60)"; });
     
     filesArray = mainSVG.selectAll(".articleClass"); 
     setArtFileLocs();//get the translate for each articlefile and store it for updates  
@@ -72,7 +90,7 @@ var setArtFileLocs = function(){
 }
 
 
-//////////////////////////////////////////////////////////////////////////////FUNCTION: take apart the JSON and organize for visualization
+//////////////////////////////////////////////////////////////////////////////////////////////FUNCTION: take apart the JSON and organize for visualization
 var parseArticleData = function (articleJSON, callback, column){
 
         var data_wordLength = [], //d[1][2][1]
@@ -122,7 +140,6 @@ var parseArticleData = function (articleJSON, callback, column){
                         concat += " ";
                         totallen += d[2][1];
                         freq = d[1][1];
-                        if(column == 3){console.log(concat)};
                     });
                     concat = concat.substr(0, concat.lastIndexOf(" "));
                     data_wordLength.push(totallen);//push all wordlengths to data
@@ -154,13 +171,13 @@ var parseArticleData = function (articleJSON, callback, column){
         "Numbers": numbers,
         "Quotes": quotes,
     }
-    console.log(articleData);
+    //console.log(articleData);
     dataArray.push(articleData);
     setTimeout(callback, 1000, articleData, column);///////////CALLBACK (initChart): wait 1s for load
 }
 
 
-//////////////////////////////////////////////////////////////////////////////FUNCTION: make article column map of rects
+//////////////////////////////////////////////////////////////////////////////////////////////FUNCTION: make article column map of rects
 var initChart = function(article_data, column){
     
     var file = mainSVG.select("#articlefile"+column);
@@ -253,7 +270,7 @@ var initChart = function(article_data, column){
 					.style("stroke", "none")
 					.duration(300)
 					.ease("linear",1,1)
-					.call(function(){$(".innerText").css({"color": "#bbb"});})
+					.call(function(){$(".innerText").css({"color": "#666"});})
 				})
             .on("mouseover",function(){
 					d3.select(this).transition()
@@ -272,6 +289,427 @@ var initChart = function(article_data, column){
         mainSVG.select("#XendsentX").remove();
     });
     
-    //compareCorpora(article_data, column); ///////////////////CALL: send the data for this article to concordance function
+    compareCorpora(article_data, column); ///////////////////CALL: send the data for this article to concordance function
+}
+
+
+
+//////////////////////////////////////////////////////////////////////////////////////////////FUNCTION: go through each article and make concordances 
+var allEntities = {}, entitiesList = []; //this is used for Named Entities Concordance
+var compareCorpora = function(article_data, column){
+    
+    article_data["NamedEnts"].forEach(function(d) {
+        
+        var word = d[1];
+        word = String(word).replace(/[.]/g, "");
+        word = String(word).replace(/ /g, "");
+        
+        //if (word == "XL") { console.log("'XL' : article"+column)};
+        
+        if (allEntities[word]) { //if entry already exists, add 1 to the frequency and add article it's parent article
+            var already = false;
+            allEntities[word][1].forEach(function(d){ //some entities are defined more than once, this tests to make sure they only get in once
+                if(d == "article"+column){
+                    already = true;
+                } 
+            });
+            if (!already) {
+                allEntities[word][0] += 1; 
+                allEntities[word][1].push("article"+column);
+            }
+        } else {                //if entry is new, set frequency 1 and add article it is from
+            allEntities[word] = [1, []];
+            allEntities[word][1].push("article"+column);
+            entitiesList.push(word);
+            try{
+                instances = mainSVG.selectAll("."+word);
+                allEntities[word]['freq'] = instances[0].length;
+            } catch(err){
+                allEntities[word]['freq'] = 1;
+            }
+        }
+    });
+    
+    if(column == totalstories-1){
+        setTimeout(writeFactsToScreen, 400);
+        console.log(allEntities)
+    }
+}
+
+
+//////////////////////////////////////////////////////////////////////////////////////////////FUNCTION: Put ink on paper
+var writeFactsToScreen = function(){
+    filesArray[0].forEach(function(d, i) {
+        filetrans = mainSVG.select("#articlefile"+i);
+        artid = mainSVG.select("#articlefile"+i);
+        bottom = filetrans[0][0].childNodes[filetrans[0][0].childElementCount-2].y.baseVal.value;
+                
+        artid.append("text")
+            .attr("x", 0)
+            .attr("y", -2)
+            .attr("dy", "-12px")
+            .style("fill", "#222")
+            .style("font-size", "16px")
+            .text("FILLER"); 
+        artid.append("line")
+            .attr("x1", 0)
+            .attr("y1", -8)
+            .attr("x2", wordmap.w)
+            .attr("y2", -8)
+            .style("stroke", "#222");   
+        artid.append("line")
+            .attr("x1", 0)
+            .attr("y1", bottom+16)
+            .attr("x2", wordmap.w)
+            .attr("y2", bottom+16)
+            .style("stroke", "#222");        
+    });
+      
+    /*
+$('.wordrect').bind('mousedown', function() {
+        mousedraging = true;
+    });
+    $('.wordrect').bind('mouseup', function() {
+        mousedraging = true;
+    });
+*/  
+    //////////////////////////////////////////////BIND FUNCTIONS: readingWindow make/remove and text scrolling with timers
+    $('.wordrect').bind('mouseover', function() {
+        event.stopPropagation();
+        clearTimeout(timer2);
+        timer1 = setTimeout(makeWordBox, 300, this);
+        //timer2 = setTimeout(moveTextflow, 50, this);
+        //makeWordBox(this);
+        moveTextflow(this);
+        //if(mousedraging){moveTextflow(this);}
+    });
+    $('.wordrect').bind('mouseout', function() {
+        event.stopPropagation();
+        timer2 = setTimeout(killReader, 1000);
+        clearTimeout(timer1);
+        //clearTimeout(timer2);
+        //wordrectMouseTrack();
+    });
+}
+var timer1 = "", timer2 = "";
+var killReader = function(){
+    $(".readWindow").stop()
+                .animate({ opacity: 0}, 160, 'linear', function() { $('.readWindow').remove(); });
+    readingObj = "null";
+}
+var mousedraging = false;
+
+
+//////////////////////////////////////////////////////////////////////////////////////////////FUNCTION: make individual reading windows for text
+var textflow = function(){};
+var wordspan_length = 3, readingObj = "null", objectX = 0, objectY = 0, prevObjX = 0, prevObjY = 0, 
+    parent = "null", prevparent = {"id": 100};
+var makeWordBox = function(obj){
+    var sentenceArray = [], idArray = [];
+    objectX = obj.x.baseVal.value;//get obj x location
+    objectY = obj.y.baseVal.value;//get obj y location
+    parent = obj.parentNode;
+   if(objectY != prevObjY || parent.id != prevparent.id){ //if no longer on the same line or the same article, remove window
+        $('.readWindow').remove();
+        readingObj = "null";
+    }
+   if(readingObj == "null"){//if no other window on screen, make a new one
+        textsvg_width = 0;
+        prevparent = parent;
+        prevObjX = objectX;
+        prevObjY = objectY;
+
+        var articleid = prevparentFlow = obj.parentNode.id.substr(11);//get parent element id & substr to just the end number
+        var transx = artfileLocs[articleid].x;//get parent element translate.x
+        var transy = artfileLocs[articleid].y;//get parent element translate.y
+        thisId = obj.id;
+        objLine = prevlineFlow = $(obj).attr("line");//get the line number for the obj
+        allWordObjs = $('.art_'+articleid+'_line_'+objLine);//find all of the wordrects that have the same line number in this article
+        for(var i=0; i<allWordObjs.length; i++){
+            specId = allWordObjs[i].id
+            idArray.push(specId);
+            specWord = $("#"+specId).attr("word");
+            sentenceArray.push(specWord);
+        }
+        
+        //make text purely for computing textline width
+        var textsvg = mainSVG.append("text")
+                .attr("id", "textfiller")
+                .text(sentenceArray.join(" "))
+                .attr("x", 0)
+                .attr("y", "75px")
+                .attr("dy", "14px")
+                .style("fill", "#0000FF")
+                .attr("opacity", 0.0)
+                .style("font-size", "12px")
+        //textsvg_width = textsvg[0][0]['clientWidth'];
+        //sentenceArray.forEach(function(d,i){ if(d=="."||d=="!"||d=="?" ){console.log(textsvg_width);textsvg_width+=12;console.log(textsvg_width)} });
+        
+ 
+        $('#SVGoverlay')
+            .append("<div id='removeme"+thisId+"' class='readWindow'> <ul class='sentlist'></ul></div>");
+        sentenceArray.forEach(function(d,i){
+            thisword = d.split(" ");
+            thisword = thisword.join("");
+            $('.sentlist').append("<li id='"+idArray[i]+"_"+thisword+"' class='innerText'>"+d+"</li>");
+        });
+        $('#removeme'+thisId).css({ "top": (transy-(-objectY-70))+"px", "left": (transx-(-65))+"px", "text-align":"left", "width": (wordmap.w-(-20))+"px", "max-height": "20px" });
+        $('#innerText'+thisId).css({ "top": "0px", "left": woffset+"px" });
+        //sentwidth = $('.innerText').forEach(function(d,i){d.});
+        $('.innerText').each(function(index) {
+             sw = $(this).outerWidth();
+             textsvg_width += sw;
+        });
+        sentenceArray.forEach(function(d,i){ if(d=="."||d=="!"||d=="?" ){ textsvg_width+=42;} });
+         
+        //actual length of the line of wordrects
+        totalLinewidth = (allWordObjs[allWordObjs.length-1].x.baseVal.value) + (allWordObjs[allWordObjs.length-1].width.baseVal.value);
+        //scale the textline width to the width of the column for scrollability
+        textflow = d3.scale.linear()
+            .domain([0, (totalLinewidth+20)])
+            .range([0, textsvg_width+100]);
+        //after calculating the textflow, remove textsvg
+        textsvg.remove();
+        var lineX = function(oX) { return textflow(oX); };
+        var woffset = -(lineX(objectX));
+        moveTextflow(obj);
+        readingObj = $('#innerText'+thisId);
+        //setTimeout(removeAllWordBox, 1000,"removeme"+thisId);
+   }
+}
+
+
+//////////////////////////////////////////////////////////////////////////////////////////////FUNCTION: scorrl the text in the readingWindow
+var prevlineFlow = "", prevparentFlow = "";
+var moveTextflow = function(obj){
+        thisline = $('#'+obj.id).attr('line');
+        thisparent = obj.parentNode.id.substr(11);
+
+        if(thisline == prevlineFlow && thisparent == prevparentFlow){//if we are on the same line & article, scroll text
+            thisword = $('#'+obj.id).attr('word');
+            thisword = thisword.split(" ");
+            thisword = thisword.join("");
+            objectX = obj.x.baseVal.value;
+            objectX = obj.x.baseVal.value;
+            $("#"+obj.id+"_"+thisword).css({"color": "#000"});
+            var lineX = function(oX) { return textflow(oX); };
+            var woffset = -(lineX(objectX));
+            $(".sentlist").stop()
+                .animate({ left: woffset}, 400, 'easeOutSine', function() {});
+        }
+}
+
+
+
+
+
+
+
+
+
+//////////////////////////////////////////////////////////////////////////////////////////////VARIABLES: Named Entity display
+var shift = 0, level = 0, firsttime = true;
+var r = Math.min(w, h) *0.5,
+    inner = 0, outer = 0,
+    color = d3.scale.category10(),
+    donut = d3.layout.pie().startAngle( 6 ).endAngle( 3 ).sort(null);
+//////////////////////////////////////////////////////////////////////////////////////////////FUNCTION: Named Entity display
+var namedLevels = function(level, change){
+    if (firsttime) {
+        change += 30;
+        firsttime = false;
+    }
+    moveArticles(change);
+    r = Math.min(w, h)*((10-totalstories)*0.12);
+    inner += 0.2;
+    outer = inner+0.1;
+    var arc = d3.svg.arc().innerRadius(r*inner+20).outerRadius(r*outer+8);
+    var arcs;
+    if (level > 0){
+        var nodeArray = [];
+        var nodeWords = [];
+        entitiesList.forEach(function(d,i){
+            if(allEntities[d][0] == level){
+                nodeWords.push(d);
+                nodeArray.push(allEntities[d]['freq'])
+            } 
+        });
+        
+        nameBlock = mainSVG.selectAll("g.nameBlock"+level)
+                .data(dat)
+            .enter().append("g")
+                .data([nodeArray])
+                .attr("id", "nameBlock"+level)
+                .attr("class", "infoblock")
+                .attr("width", w-20)
+                .attr("height", 100) //will need to be appended based on the data
+                .attr("transform", "translate("+0+","+(0)+")");
+        nblk = mainSVG.select("#nameBlock"+level);
+                
+        var currentWord = "";
+        var currentColor = ""; 
+
+        
+        if(nodeWords.length == 0) { //if there are no entities at this level, make a "NULL" arc
+        
+                nodeWords.push("NULL");
+                nodeArray.push(1);
+                arcs = nblk.selectAll("g.arc")
+                    .data(donut)
+                  .enter().append("g")
+                    .attr('id', function(d, i) { return nodeWords[i]; })
+                    .attr("class", "arc")
+                    .style("stroke", "#fff")
+                    .style('cursor', 'pointer')
+                    .style("stroke-width", "2px")
+                    .attr("transform", "translate(" + w2 + "," + (-inner*30) + ") rotate(282)")
+                    .attr('opacity', 0.7)
+                arcs.append("path")
+                    .attr("fill","#ddd")
+                    .attr("d",arc)
+                    .attr('opacity', 0.6);
+                
+        } else { //else make a partitioned arc for each entity
+        
+                arcs = nblk.selectAll("g.arc")
+                    .data(donut)
+                  .enter().append("g")
+                    .attr('id', function(d, i) { return nodeWords[i]; })
+                    .attr("class", "arc")
+                    .style("stroke", "#fff")
+                    .style('cursor', 'pointer')
+                    .style("stroke-width", "2px")
+                    .attr("transform", "translate(" + w2 + "," + (-inner*30) + ") rotate(282)")
+                    .attr('opacity', 0.7)
+                    .on("mouseout",function(){ arcMouseOut(this);})
+                    .on("mouseover",function(){
+        					d3.select(this).transition()
+            					.attr('opacity', 1)
+            					.duration(100)
+            					.ease("linear",1,1)
+            					.call(function(){ currentWord = this[0][0]['node']['id']; d3.select(this[0][0]['node']['childNodes'][0]).transition().style('display', 'block').duration(50) })
+        					d3.selectAll('.'+currentWord).transition()
+            					.style("stroke", "#000")
+            				    //.style('fill', function(){ currentColor = $('.'+currentWord).css('fill'); return '#330000' })
+            					.duration(150)
+            					.ease("linear",1,1);
+        				})
+                    .on("click",function(){
+                            if($('.'+currentWord).css('fill') == '#338888'){ 
+                                d3.select(this).on('mouseout', function(){ arcMouseOut(this);})
+                                d3.select(this).transition()
+                					.attr('opacity', 0.7)
+                					.duration(100)
+                					.ease("linear",1,1)
+                					.call(function(){ d3.select(this[0][0]['node']['childNodes'][0]).transition().style('stroke', '#fff').duration(50) });
+            					d3.selectAll('.'+currentWord).transition()
+                				    .style('fill', function(){ return currentColor })
+                				    .style("stroke", "none")
+                					.duration(150)
+                					.ease("linear",1,1);
+                            } else {
+                                d3.select(this).on('mouseout', null);
+                                d3.select(this).transition()
+                					.attr('opacity', 1)
+                					.duration(100)
+                					.ease("linear",1,1)
+                					.call(function(){ d3.select(this[0][0]['node']['childNodes'][0]).transition().style('stroke', '#333').duration(50) });
+            					d3.selectAll('.'+currentWord).transition()
+                				    .style('fill', function(){ currentColor = $('.'+currentWord).css('fill'); return '#338888' })
+                					.duration(150)
+                					.ease("linear",1,1);
+                            }
+        				});
+        				
+        		
+        		  arcs.append("path")
+                    .attr("fill", function(d, i) { return color(nodeArray[i]*10); })
+                    .attr("d",arc)
+                    .attr('opacity', 0.6);
+                    /*
+        .on("mouseout",function(){
+        					d3.select(this).transition()
+            					.attr('opacity', 0.185)
+            					.duration(200)
+            					.ease("linear",1,1)
+            					.call(function(){ d3.select(this[0][0]['node']['childNodes'][1]).transition().style('display', 'none').duration(50) })
+        				})
+                    .on("mouseover",function(){
+        					d3.select(this).transition()
+            					.attr('opacity', 0.3)
+            					.duration(100)
+            					.ease("linear",1,1)
+            					.call(function(){ d3.select(this[0][0]['node']['childNodes'][1]).transition().style('display', 'block').duration(50) })
+        				});
+        */		
+    }
+
+    var arcMouseOut = function(obj){
+        d3.select(obj).transition()
+			.attr('opacity', 0.7)
+			.duration(200)
+			.ease("linear",1,1)
+			.call(function(){ d3.select(this[0][0]['node']['childNodes'][0]).transition().style('display', 'block').duration(50) })
+		d3.selectAll('.'+currentWord).transition()
+			.style("stroke", "none")
+			//.style('fill', currentColor)
+			.duration(150)
+			.ease("linear",1,1);
+    } 
+				
+        
+        arcs.append("text")
+            .attr("transform", function(d) { 
+                                            var a = (d.startAngle/2-d.endAngle/2)+d.endAngle;
+                                            var angle = (((a*180) / 10 * Math.PI)+90);
+                                            if(angle<350){ angle+=180; }
+                                            return "translate(" + arc.centroid(d) + ") rotate("+ angle +")"; 
+                                        })
+            .attr("dy", ".35em")
+            .attr("class", "namedent")
+            .attr("fill", "#333")
+            .style('display', 'block')
+            .style('cursor', 'pointer')
+            .style('stroke', 'none')
+            .style("font-size", "11px")
+            .attr("text-anchor", function(d) { 
+                                            var a = (d.startAngle/2-d.endAngle/2)+d.endAngle;
+                                            var angle = (((a*180) / 10 * Math.PI)+90);
+                                            var anchor = "end";
+                                            if(angle<350){ anchor = "start"; }
+                                            return anchor; 
+                                        })
+            .attr("display", function(d) { return d.value > .15 ? null : "none"; }) //if null than "none"
+            .text(function(d, i) { return nodeWords[i]; });//d.value.toFixed(2)
+        
+                
+    } else if (level == 0){
+        //killLinks();
+    }
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////FUNCTION: shift articles down/up
+var moveArticles = function(change){
+    filesArray[0].forEach(function(d, i) {
+        filetrans = mainSVG.select("#articlefile"+i);
+        trans = filetrans[0][0].attributes[2]['nodeValue'];
+        transVal = trans.match(/\(([^}]+)\)/);
+        transVal = transVal[1].split(','); 
+        artfileLocs[i].x = transVal[0];
+        artfileLocs[i].y = transVal[1]-(-change);
+        
+        filetrans.transition()
+                .attr("transform", "translate("+(artfileLocs[i].x)+","+(artfileLocs[i].y)+")")
+                .duration(500)
+                .ease("exp-out",1,1);
+        if(namedOnScreen){
+            links = mainSVG.selectAll('.namelink')
+                .transition()
+                    .attr("y2", (artfileLocs[i].y-32))
+                    .attr("opacity", 0.35)
+                    .duration(500)
+                    .ease("exp-out",1,1);
+        }
+    });
 }
 

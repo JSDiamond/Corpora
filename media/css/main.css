@@ -64,7 +64,7 @@ ul h3.latest_headlines {
     -webkit-transition: all 2500ms linear;
 }
 #mainSVG{
-    padding: 54px 0px 20px 54px;
+    padding: 10px 0px 20px 28px;
 }
 .title {
     font-weight: 600;
@@ -138,7 +138,7 @@ ul h3.latest_headlines {
 }
 .readWindow {
     overflow: hidden;
-    background-color: rgba(0,0,0,0.8);
+    background-color: rgba(255,255,255,0.85);
     position: absolute;
     z-index: 10;
     text-wrap: none;
@@ -158,5 +158,5 @@ ul h3.latest_headlines {
     float: left;
     list-style: none;
     margin: 0px 3px;
-    color: #bbb;
+    color: #666;
 }
