@@ -24,23 +24,22 @@
     
 {% block content %}
         
+        
         {% if all_articles %}
         
             {%  with all_articles.0 as article %}
                 
-                <h1 style="border-bottom:2px solid #333; padding-bottom: 4px; margin-bottom: 20px;">
+                <h1 id="story_headline" style="border-bottom:2px solid #333; padding-bottom: 4px; margin-bottom: 20px;">
                     {{ article.headline|safe }}
                     <span style="float: right; margin-top: 20px; font-size: 11px">{{ article.date }}</span>
                 </h1>
             {% endwith %}
             
-            {% comment %}
-            <ul>
+            <ul style="display: none;">
             {% for article in all_articles %}
-                <li> {{ forloop.counter }} <a href="{{ article.url }}" class="publinks" style="margin-left: 8px">{{ article.publisher|safe }}</a></li>
+                <li class="pubs"> {{ forloop.counter }} <a href="{{ article.url }}" class="publinks" style="margin-left: 8px">{{ article.publisher|safe }}</a></li>
             {% endfor %}
             </ul>
-            {%endcomment%}
             
         {% else %}
             <p>Sorry, no articles available.</p>

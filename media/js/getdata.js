@@ -18,7 +18,7 @@ $(document).ready(function(){
     
     $('#namedbutton').click(function(){
         namedOnScreen = true;
-        if (level > 0){
+        if (level == totalstories){
             namedLevels(level,(r/5)+(30-totalstories*2.4));  //70+(40-totalstories*6)-(totalstories)
             level--;
         }
@@ -339,6 +339,9 @@ var compareCorpora = function(article_data, column){
 
 //////////////////////////////////////////////////////////////////////////////////////////////FUNCTION: Put ink on paper
 var writeFactsToScreen = function(){
+    var publishers = [];
+    $('.publinks').each(function(index){ publishers.push($(this).html())});
+    console.log(publishers);
     filesArray[0].forEach(function(d, i) {
         filetrans = mainSVG.select("#articlefile"+i);
         artid = mainSVG.select("#articlefile"+i);
@@ -350,7 +353,7 @@ var writeFactsToScreen = function(){
             .attr("dy", "-12px")
             .style("fill", "#222")
             .style("font-size", "16px")
-            .text("FILLER"); 
+            .text(publishers[i]); 
         artid.append("line")
             .attr("x1", 0)
             .attr("y1", -8)
@@ -408,6 +411,7 @@ var makeWordBox = function(obj){
     var sentenceArray = [], idArray = [];
     objectX = obj.x.baseVal.value;//get obj x location
     objectY = obj.y.baseVal.value;//get obj y location
+    headTop = $('#story_headline').outerHeight();
     parent = obj.parentNode;
    if(objectY != prevObjY || parent.id != prevparent.id){ //if no longer on the same line or the same article, remove window
         $('.readWindow').remove();
@@ -479,7 +483,7 @@ var makeWordBox = function(obj){
 }
 
 
-//////////////////////////////////////////////////////////////////////////////////////////////FUNCTION: scorrl the text in the readingWindow
+//////////////////////////////////////////////////////////////////////////////////////////////FUNCTION: scorll the text in the readingWindow
 var prevlineFlow = "", prevparentFlow = "";
 var moveTextflow = function(obj){
         thisline = $('#'+obj.id).attr('line');
@@ -524,7 +528,7 @@ var namedLevels = function(level, change){
     inner += 0.2;
     outer = inner+0.1;
     var arc = d3.svg.arc().innerRadius(r*inner+20).outerRadius(r*outer+8);
-    var arcs;
+    var arcs, paths;
     if (level > 0){
         var nodeArray = [];
         var nodeWords = [];
@@ -562,12 +566,12 @@ var namedLevels = function(level, change){
                     .style("stroke", "#fff")
                     .style('cursor', 'pointer')
                     .style("stroke-width", "2px")
-                    .attr("transform", "translate(" + w2 + "," + (-inner*30) + ") rotate(282)")
-                    .attr('opacity', 0.7)
-                arcs.append("path")
+                    .attr("transform", "translate(" + (w2-10) + "," + (-inner*30) + ") rotate(282)")
+                    .attr('opacity', 0.6)
+                paths = arcs.append("path")
                     .attr("fill","#ddd")
                     .attr("d",arc)
-                    .attr('opacity', 0.6);
+                    .attr('opacity', 0.3);
                 
         } else { //else make a partitioned arc for each entity
         
@@ -579,15 +583,16 @@ var namedLevels = function(level, change){
                     .style("stroke", "#fff")
                     .style('cursor', 'pointer')
                     .style("stroke-width", "2px")
-                    .attr("transform", "translate(" + w2 + "," + (-inner*30) + ") rotate(282)")
-                    .attr('opacity', 0.7)
+                    .attr("transform", "translate(" + (w2-10) + "," + ((-inner*30)-((r*inner)*0.2)) + ") rotate(282)")
+                    .attr('opacity', 0.75)
                     .on("mouseout",function(){ arcMouseOut(this);})
                     .on("mouseover",function(){
         					d3.select(this).transition()
             					.attr('opacity', 1)
             					.duration(100)
             					.ease("linear",1,1)
-            					.call(function(){ currentWord = this[0][0]['node']['id']; d3.select(this[0][0]['node']['childNodes'][0]).transition().style('display', 'block').duration(50) })
+            					.call(function(){ currentWord = this[0][0]['node']['id']; d3.select(this[0][0]['node']['childNodes'][0]).transition().attr('opacity', '0.65').duration(80) })
+            					.call(function(){ d3.select(this[0][0]['node']['childNodes'][1]).transition().style('fill', '#000').style('font-size', '12px').duration(150) })
         					d3.selectAll('.'+currentWord).transition()
             					.style("stroke", "#000")
             				    //.style('fill', function(){ currentColor = $('.'+currentWord).css('fill'); return '#330000' })
@@ -598,10 +603,10 @@ var namedLevels = function(level, change){
                             if($('.'+currentWord).css('fill') == '#338888'){ 
                                 d3.select(this).on('mouseout', function(){ arcMouseOut(this);})
                                 d3.select(this).transition()
-                					.attr('opacity', 0.7)
+                					.attr('opacity', 0.75)
                 					.duration(100)
                 					.ease("linear",1,1)
-                					.call(function(){ d3.select(this[0][0]['node']['childNodes'][0]).transition().style('stroke', '#fff').duration(50) });
+                					.call(function(){ d3.select(this[0][0]['node']['childNodes'][0]).transition().attr('opacity', '0.3').style('stroke', '#fff').duration(80) });
             					d3.selectAll('.'+currentWord).transition()
                 				    .style('fill', function(){ return currentColor })
                 				    .style("stroke", "none")
@@ -613,7 +618,7 @@ var namedLevels = function(level, change){
                 					.attr('opacity', 1)
                 					.duration(100)
                 					.ease("linear",1,1)
-                					.call(function(){ d3.select(this[0][0]['node']['childNodes'][0]).transition().style('stroke', '#333').duration(50) });
+                					.call(function(){ d3.select(this[0][0]['node']['childNodes'][0]).transition().style('stroke', '#222').duration(70) });
             					d3.selectAll('.'+currentWord).transition()
                 				    .style('fill', function(){ currentColor = $('.'+currentWord).css('fill'); return '#338888' })
                 					.duration(150)
@@ -622,67 +627,63 @@ var namedLevels = function(level, change){
         				});
         				
         		
-        		  arcs.append("path")
-                    .attr("fill", function(d, i) { return color(nodeArray[i]*10); })
-                    .attr("d",arc)
-                    .attr('opacity', 0.6);
-                    /*
-        .on("mouseout",function(){
-        					d3.select(this).transition()
-            					.attr('opacity', 0.185)
-            					.duration(200)
-            					.ease("linear",1,1)
-            					.call(function(){ d3.select(this[0][0]['node']['childNodes'][1]).transition().style('display', 'none').duration(50) })
-        				})
-                    .on("mouseover",function(){
-        					d3.select(this).transition()
-            					.attr('opacity', 0.3)
-            					.duration(100)
-            					.ease("linear",1,1)
-            					.call(function(){ d3.select(this[0][0]['node']['childNodes'][1]).transition().style('display', 'block').duration(50) })
-        				});
-        */		
-    }
+            paths = arcs.append("path")
+                .attr("fill", function(d,i) { return d3.rgb("hsl("+nodeArray[i]*nodeArray[i]*10+",45,40)"); })
+                .attr("d",arc)
+                .attr('opacity', 0.3);
 
+            arcs.transition()
+                .ease("cubic-out")
+                .duration(400)
+                .attr("transform", "translate(" + (w2-10) + "," + (-inner*30) + ") rotate(282)");
+  		
+    }
+    
+    
+    textbits = arcs.append("text")
+        .attr("transform", function(d,i) { 
+                                        var a = (d.startAngle/2-d.endAngle/2)+d.endAngle;
+                                        var angle = (((a*180) / 10 * Math.PI)+90);
+                                        if(angle<350){ angle+=180; }
+                                        if(nodeWords[i]=="NULL") { angle -= 90 };
+                                        return "translate(" + arc.centroid(d) + ") rotate("+ angle +")"; 
+                                    })
+        .attr("dy", ".35em")
+        .attr("class", "namedent")
+        .attr("fill", "#3c3c3c")
+        .style('cursor', 'pointer')
+        .style('stroke', 'none')
+        .style("font-size", "9px")
+        .style("font-weight", "600")
+        .attr("text-anchor", function(d,i) { 
+                                        var a = (d.startAngle/2-d.endAngle/2)+d.endAngle;
+                                        var angle = (((a*180) / 10 * Math.PI)+90);
+                                        var anchor = "end";
+                                        if(angle<350){ anchor = "start"; }
+                                        if(nodeWords[i]=="NULL") { anchor = "middle"; };
+                                        return anchor; 
+                                    })
+        .attr("display", function(d) { return d.value > .15 ? null : "none"; }) //if null than "none"
+        .text(function(d, i) { if(nodeWords[i]=="NULL") { return "NULL" }else{ return $('.'+nodeWords[i]).attr('word'); } });
+    
+        
     var arcMouseOut = function(obj){
         d3.select(obj).transition()
-			.attr('opacity', 0.7)
+			.attr('opacity', 0.75)
 			.duration(200)
 			.ease("linear",1,1)
-			.call(function(){ d3.select(this[0][0]['node']['childNodes'][0]).transition().style('display', 'block').duration(50) })
+			.call(function(){ d3.select(this[0][0]['node']['childNodes'][0]).transition().attr('opacity', '0.3').duration(90) })
+			.call(function(){ d3.select(this[0][0]['node']['childNodes'][1]).transition().attr('fill', '#3c3c3c').style('font-size', '9px').duration(150) })
 		d3.selectAll('.'+currentWord).transition()
 			.style("stroke", "none")
 			//.style('fill', currentColor)
 			.duration(150)
 			.ease("linear",1,1);
     } 
-				
-        
-        arcs.append("text")
-            .attr("transform", function(d) { 
-                                            var a = (d.startAngle/2-d.endAngle/2)+d.endAngle;
-                                            var angle = (((a*180) / 10 * Math.PI)+90);
-                                            if(angle<350){ angle+=180; }
-                                            return "translate(" + arc.centroid(d) + ") rotate("+ angle +")"; 
-                                        })
-            .attr("dy", ".35em")
-            .attr("class", "namedent")
-            .attr("fill", "#333")
-            .style('display', 'block')
-            .style('cursor', 'pointer')
-            .style('stroke', 'none')
-            .style("font-size", "11px")
-            .attr("text-anchor", function(d) { 
-                                            var a = (d.startAngle/2-d.endAngle/2)+d.endAngle;
-                                            var angle = (((a*180) / 10 * Math.PI)+90);
-                                            var anchor = "end";
-                                            if(angle<350){ anchor = "start"; }
-                                            return anchor; 
-                                        })
-            .attr("display", function(d) { return d.value > .15 ? null : "none"; }) //if null than "none"
-            .text(function(d, i) { return nodeWords[i]; });//d.value.toFixed(2)
-        
-                
+    
+	level--;
+	setTimeout(namedLevels, 600, level, (r/5)+(30-totalstories*2.4));
+      
     } else if (level == 0){
         //killLinks();
     }
