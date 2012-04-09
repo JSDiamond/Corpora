@@ -9,9 +9,16 @@ $(document).ready(function(){
     });
     
     
-    $('#lengthbutton').click(function(){
+   /*
+ $('#lengthbutton').click(function(){
         changeWordRects(counter, "length");           
-    }); 
+    });
+*/ 
+    $('#familybutton').click(function(){
+        showFam =! showFam;
+        $(this).toggleClass('clicked');
+    });
+    
     $('#heatbutton').click(function(){
         changeWordRects(counter, "heat");           
     });  
@@ -199,6 +206,7 @@ var initChart = function(article_data, column){
                                             }
                                             var word = article_data["Words"][i];
                                             word = String(word).replace(/[.]/g, "");
+                                            word = String(word).replace(/[']/g, "");
                                             word = String(word).replace(/ /g, "");
                                             return word+" "+ article_data["POS"][i] +" "+"wordrect"+" "+"art_"+column+"_line_"+lplace; 
                                         })
@@ -302,6 +310,7 @@ var compareCorpora = function(article_data, column){
         
         var word = d[1];
         word = String(word).replace(/[.]/g, "");
+        word = String(word).replace(/[']/g, "");
         word = String(word).replace(/ /g, "");
         
         //if (word == "XL") { console.log("'XL' : article"+column)};
@@ -332,7 +341,7 @@ var compareCorpora = function(article_data, column){
     
     if(column == totalstories-1){
         setTimeout(writeFactsToScreen, 400);
-        console.log(allEntities)
+        //console.log(allEntities)
     }
 }
 
@@ -341,7 +350,7 @@ var compareCorpora = function(article_data, column){
 var writeFactsToScreen = function(){
     var publishers = [];
     $('.publinks').each(function(index){ publishers.push($(this).html())});
-    console.log(publishers);
+    //console.log(publishers);
     filesArray[0].forEach(function(d, i) {
         filetrans = mainSVG.select("#articlefile"+i);
         artid = mainSVG.select("#articlefile"+i);
@@ -523,19 +532,20 @@ var namedLevels = function(level, change){
         change += 30;
         firsttime = false;
     }
-    moveArticles(change);
     r = Math.min(w, h)*((10-totalstories)*0.12);
     inner += 0.2;
     outer = inner+0.1;
     var arc = d3.svg.arc().innerRadius(r*inner+20).outerRadius(r*outer+8);
     var arcs, paths;
     if (level > 0){
+        moveArticles(change);
         var nodeArray = [];
         var nodeWords = [];
         entitiesList.forEach(function(d,i){
             if(allEntities[d][0] == level){
                 nodeWords.push(d);
                 nodeArray.push(allEntities[d]['freq'])
+                //console.log(allEntities[d][1]);
             } 
         });
         
@@ -567,38 +577,27 @@ var namedLevels = function(level, change){
                     .style('cursor', 'pointer')
                     .style("stroke-width", "2px")
                     .attr("transform", "translate(" + (w2-10) + "," + (-inner*30) + ") rotate(282)")
-                    .attr('opacity', 0.6)
+                    .attr('opacity', 0.8)
                 paths = arcs.append("path")
                     .attr("fill","#ddd")
                     .attr("d",arc)
-                    .attr('opacity', 0.3);
+                    .attr('opacity', 0.6);
                 
         } else { //else make a partitioned arc for each entity
         
                 arcs = nblk.selectAll("g.arc")
                     .data(donut)
                   .enter().append("g")
+                    .attr("parents", function(d, i) { return allEntities[nodeWords[i]][1].toString(); })
                     .attr('id', function(d, i) { return nodeWords[i]; })
-                    .attr("class", "arc")
+                    .attr("class", function(d, i) { fam = allEntities[nodeWords[i]][1].toString().replace(/[,]/g, " "); return "arc "+fam; })
                     .style("stroke", "#fff")
                     .style('cursor', 'pointer')
                     .style("stroke-width", "2px")
                     .attr("transform", "translate(" + (w2-10) + "," + ((-inner*30)-((r*inner)*0.2)) + ") rotate(282)")
                     .attr('opacity', 0.75)
                     .on("mouseout",function(){ arcMouseOut(this);})
-                    .on("mouseover",function(){
-        					d3.select(this).transition()
-            					.attr('opacity', 1)
-            					.duration(100)
-            					.ease("linear",1,1)
-            					.call(function(){ currentWord = this[0][0]['node']['id']; d3.select(this[0][0]['node']['childNodes'][0]).transition().attr('opacity', '0.65').duration(80) })
-            					.call(function(){ d3.select(this[0][0]['node']['childNodes'][1]).transition().style('fill', '#000').style('font-size', '12px').duration(150) })
-        					d3.selectAll('.'+currentWord).transition()
-            					.style("stroke", "#000")
-            				    //.style('fill', function(){ currentColor = $('.'+currentWord).css('fill'); return '#330000' })
-            					.duration(150)
-            					.ease("linear",1,1);
-        				})
+                    .on("mouseover",function(){ arcMouseOver(this);})
                     .on("click",function(){
                             if($('.'+currentWord).css('fill') == '#338888'){ 
                                 d3.select(this).on('mouseout', function(){ arcMouseOut(this);})
@@ -628,6 +627,7 @@ var namedLevels = function(level, change){
         				
         		
             paths = arcs.append("path")
+                .attr('class', 'ringpath')
                 .attr("fill", function(d,i) { return d3.rgb("hsl("+nodeArray[i]*nodeArray[i]*10+",45,40)"); })
                 .attr("d",arc)
                 .attr('opacity', 0.3);
@@ -665,27 +665,58 @@ var namedLevels = function(level, change){
                                     })
         .attr("display", function(d) { return d.value > .15 ? null : "none"; }) //if null than "none"
         .text(function(d, i) { if(nodeWords[i]=="NULL") { return "NULL" }else{ return $('.'+nodeWords[i]).attr('word'); } });
-    
-        
-    var arcMouseOut = function(obj){
-        d3.select(obj).transition()
-			.attr('opacity', 0.75)
-			.duration(200)
-			.ease("linear",1,1)
-			.call(function(){ d3.select(this[0][0]['node']['childNodes'][0]).transition().attr('opacity', '0.3').duration(90) })
-			.call(function(){ d3.select(this[0][0]['node']['childNodes'][1]).transition().attr('fill', '#3c3c3c').style('font-size', '9px').duration(150) })
-		d3.selectAll('.'+currentWord).transition()
-			.style("stroke", "none")
-			//.style('fill', currentColor)
-			.duration(150)
-			.ease("linear",1,1);
-    } 
+
     
 	level--;
 	setTimeout(namedLevels, 600, level, (r/5)+(30-totalstories*2.4));
       
     } else if (level == 0){
         //killLinks();
+    }
+}
+
+var arcMouseOut = function(obj){
+    d3.select(obj).transition()
+		.attr('opacity', 0.75)
+		.duration(200)
+		.ease("linear",1,1)
+		.call(function(){ d3.select(this[0][0]['node']['childNodes'][0]).transition().attr('opacity', '0.3').duration(90) })
+		.call(function(){ d3.select(this[0][0]['node']['childNodes'][1]).transition().attr('fill', '#3c3c3c').style('font-size', '9px').duration(150) })
+		.call(function(){ showArticleFamily(this, 0.75) })
+	d3.selectAll('.'+currentWord).transition()
+		.style("stroke", "none")
+		//.style('fill', currentColor)
+		.duration(150)
+		.ease("linear",1,1);
+}
+
+var arcMouseOver = function(obj){
+    d3.select(obj).transition()
+		.attr('opacity', 1)
+		.duration(100)
+		.ease("linear",1,1)
+		.call(function(){ currentWord = this[0][0]['node']['id']; d3.select(this[0][0]['node']['childNodes'][0]).transition().attr('opacity', '0.65').duration(80) })
+		.call(function(){ d3.select(this[0][0]['node']['childNodes'][1]).transition().style('fill', '#000').style('font-size', '12px').duration(150) })
+		.call(function(){ showArticleFamily(this, 1) })
+	d3.selectAll('.'+currentWord).transition()
+		.style("stroke", "#000")
+	    //.style('fill', function(){ currentColor = $('.'+currentWord).css('fill'); return '#330000' })
+		.duration(150)
+		.ease("linear",1,1);
+} 
+
+var showFam = false;
+var showArticleFamily = function(obj, opac) {
+    //console.log(obj[0][0]['node'].id);
+    if(showFam){
+        element = obj[0][0]['node'];
+        parents = $('#'+element.id).attr('parents');
+        parentArray = parents.split(',');
+        parentArray.forEach(function(d, i){ 
+                                            $('.'+d).stop().animate({ opacity: opac}, 160, 'linear', function() { }); 
+                                            $('.'+d).find('.ringpath').css({'opacity': (opac-0.2)});
+        //parentArray.forEach(function(d, i){ $('.'+d).css({'opacity': opac}); $('.'+d).find('.ringpath').css({'opacity': (opac-0.2)}); 
+        });
     }
 }
 

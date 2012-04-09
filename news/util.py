@@ -61,9 +61,8 @@ def get_google():
         
         
     GScrapeData = {"Masters": masterLinks, "Stories": groupedData}        
-    JSON_output = json.dumps( GScrapeData )#this does not work for parsing in Views 
+    #JSON_output = json.dumps( GScrapeData )#this does not work for parsing in Views 
     return GScrapeData
-    #return JSON_output
 ############################################################################################
 
 

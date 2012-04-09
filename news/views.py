@@ -64,6 +64,7 @@ def special(request):
     stops.add("?")
     stops.add("\"")
     stops.add("\'")
+    uniqueURLS = list()
     entitiesString = 'PERSON ORGANIZATION LOCATION DATE TIME MONEY PERCENT FACILITY GSP'
     #//////////////////////////////////////////////////////////////////
     #//////////////////////////////////////////////////////////////////
@@ -79,49 +80,53 @@ def special(request):
                 ###################if not in db, make an Article, a StoryGroup w/ date, and check for each Publisher to see if it needs to be entered 
                 new_storygroup = StoryGroup.objects.create(date=datetime.datetime.now(), slugline=story[0])
                 for link in story[1]:
-                    if link == output['Masters'][idx]: ####################test for main article
-                        masterBool = True
+                    if link in uniqueURLS:
+                        break
                     else:
-                        masterBool = False
-                    try: ##################################################test for prexisting publisher
-                        pub_exists = Publisher.objects.get(name=link[0])
-                        pubObj = pub_exists
-                    except Publisher.DoesNotExist:
-                        new_publisher = Publisher.objects.create(name=link[0])
-                        pubObj = new_publisher
-                        
-                    ####################################### DiffBot API call for content
-                    diffobj = get_article(link[1])
-                    rawtext = diffobj['rawtext']
-                    imagelink = diffobj['image']
-                    ####################################### Tokenize
-                    TrueTextWords = nltk.word_tokenize(rawtext)
-                    whitespace = nltk.WhitespaceTokenizer()
-                    spaceTokens = whitespace.tokenize(rawtext)
-                    ####################################### Frequence Distribution
-                    fdist = FreqDist(TrueTextWords)
-                    ####################################### Sentiment Anaylsis
-                    sentiment = get_sentiment(rawtext)
-                    ####################################### Decent Quotation Finder
-                    quoteSrch = re.findall(r'"([^"]*)"', (rawtext)) 
-                    ####################################### Find TriGrams
-                    dict_to_json['TriGrams'] = findTriGrams(spaceTokens)
-                    ####################################### Token break and Find Named Entities
-                    TTATNE = tokenize_text_and_tag_named_entities(rawtext)
-                    Sentities = TTATNE["SB"]
-                    ####################################### FILL DICT WITH DATA 
-                    dict_to_json['Corpus'] = SetWordDictionary(Sentities, fdist, entitiesString, stops)
-                    ####################################### IMPORTANT WORD INDEX FIND & PLACE
-                    Find_Important_Words(dict_to_json['Corpus'], TrueTextWords, fdist, entitiesString)
-                    dict_to_json['NamedEnts'] = list(TTATNE["UNE"])
-                    dict_to_json['Sentiment'] = sentiment['probability']
-                    dict_to_json['Sentiment'] = sentiment['probability']
-                    dict_to_json['SentLengths'] = TTATNE["SL"]
-                    dict_to_json['Numbers'] = list(TTATNE["AN"])
-                    dict_to_json['Quotes'] = quoteSrch
-                    dict_to_json['Raw_Text'] = rawtext
-                    JSON_output = json.dumps( dict_to_json )
-                    new_article = Article.objects.create(headline=story[0], url=link[1], date=datetime.datetime.now(), group=new_storygroup, raw_text=rawtext, image_link=imagelink, analyzed_text=JSON_output, master=masterBool, publisher=pubObj)
+                        uniqueURLS.append(link) 
+                        if link == output['Masters'][idx]: ####################test for main article
+                            masterBool = True
+                        else:
+                            masterBool = False
+                        try: ##################################################test for prexisting publisher
+                            pub_exists = Publisher.objects.get(name=link[0])
+                            pubObj = pub_exists
+                        except Publisher.DoesNotExist:
+                            new_publisher = Publisher.objects.create(name=link[0])
+                            pubObj = new_publisher
+                            
+                        ####################################### DiffBot API call for content
+                        diffobj = get_article(link[1])
+                        rawtext = diffobj['rawtext']
+                        imagelink = diffobj['image']
+                        ####################################### Tokenize
+                        TrueTextWords = nltk.word_tokenize(rawtext)
+                        whitespace = nltk.WhitespaceTokenizer()
+                        spaceTokens = whitespace.tokenize(rawtext)
+                        ####################################### Frequence Distribution
+                        fdist = FreqDist(TrueTextWords)
+                        ####################################### Sentiment Anaylsis
+                        sentiment = get_sentiment(rawtext)
+                        ####################################### Decent Quotation Finder
+                        quoteSrch = re.findall(r'"([^"]*)"', (rawtext)) 
+                        ####################################### Find TriGrams
+                        dict_to_json['TriGrams'] = findTriGrams(spaceTokens)
+                        ####################################### Token break and Find Named Entities
+                        TTATNE = tokenize_text_and_tag_named_entities(rawtext)
+                        Sentities = TTATNE["SB"]
+                        ####################################### FILL DICT WITH DATA 
+                        dict_to_json['Corpus'] = SetWordDictionary(Sentities, fdist, entitiesString, stops)
+                        ####################################### IMPORTANT WORD INDEX FIND & PLACE
+                        Find_Important_Words(dict_to_json['Corpus'], TrueTextWords, fdist, entitiesString)
+                        dict_to_json['NamedEnts'] = list(TTATNE["UNE"])
+                        dict_to_json['Sentiment'] = sentiment['probability']
+                        dict_to_json['Sentiment'] = sentiment['probability']
+                        dict_to_json['SentLengths'] = TTATNE["SL"]
+                        dict_to_json['Numbers'] = list(TTATNE["AN"])
+                        dict_to_json['Quotes'] = quoteSrch
+                        dict_to_json['Raw_Text'] = rawtext
+                        JSON_output = json.dumps( dict_to_json )
+                        new_article = Article.objects.create(headline=story[0], url=link[1], date=datetime.datetime.now(), group=new_storygroup, raw_text=rawtext, image_link=imagelink, analyzed_text=JSON_output, master=masterBool, publisher=pubObj)
         except Article.DoesNotExist:
             filler.append(" Database error ")
     
