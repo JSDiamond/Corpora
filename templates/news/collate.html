@@ -35,6 +35,8 @@
                 </h1>
             {% endwith %}
             
+            <div id="SVGcontainer"></div>
+            
             <ul style="display: none;">
             {% for article in all_articles %}
                 <li class="pubs"> {{ forloop.counter }} <a href="{{ article.url }}" class="publinks" style="margin-left: 8px">{{ article.publisher|safe }}</a></li>
@@ -45,6 +47,12 @@
             <p>Sorry, no articles available.</p>
         {% endif %}
 
+        <div id="quotes" style="margin: 20px;">
+            <ul></ul>
+        </div>
+        <div id="trigrams" style="margin: 20px;">
+            <ul></ul>
+        </div>
 
 {% endblock %}
 

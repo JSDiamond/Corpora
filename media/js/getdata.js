@@ -39,10 +39,10 @@ var filesArray; //use this to store the svg objects for each article (set by sel
 var articlePubs = [], dataArray = []; //use this to store the data objects for each article
 var w = window.innerWidth-120, h = window.innerHeight-0, w2 = w*0.5, h2 = h*0.5;
 var articleStorageArray, totalstories, mainSVG, langmap, articlefile, simInfo;
-var entitiesString = ['PERSON', 'ORGANIZATION', 'LOCATION', 'DATE', 'TIME', 'MONEY', 'PERCENT', 'FACILITY', 'GSP'];
 var wordmap = { w: 0, h: 0, boxH: 6},  spacing  = 40, wordCount = 0;
-var namedOnScreen = false;
-var dat = [1];
+var namedOnScreen = false, dat = [1];
+var entitiesString = ['PERSON', 'ORGANIZATION', 'LOCATION', 'DATE', 'TIME', 'MONEY', 'PERCENT', 'FACILITY', 'GSP'];
+var namedColors = {'PERSON': 'C46E5C', 'ORGANIZATION': '5195B0', 'LOCATION': '298C7C', 'DATE': '94467B', 'TIME': '773D99', 'MONEY': '669663', 'PERCENT': 'A6984B', 'FACILITY': '8A709C', 'GSP': 'AABA56'};
 
 //////////////////////////////////////////////////////////////////////////////////////////////FUNCTION: start her engines
 var startEverything = function(data){
@@ -59,7 +59,7 @@ var setupSVG = function(){
     totalstories = level = articleStorageArray.length;
     wordmap.w = ~~(w / totalstories) - spacing; 
 
-    mainSVG = d3.select("#content").append("svg:svg") //SVG that holds all individual charts
+    mainSVG = d3.select("#SVGcontainer").append("svg:svg") //SVG that holds all individual charts
         .attr("id", "mainSVG")
         .attr("width", w)
         .attr("height", 1000) //will need to be appended based on the data
@@ -181,6 +181,21 @@ var parseArticleData = function (articleJSON, callback, column){
     //console.log(articleData);
     dataArray.push(articleData);
     setTimeout(callback, 1000, articleData, column);///////////CALLBACK (initChart): wait 1s for load
+     
+    
+    $('#trigrams ul').append('<li>'+column+'</li>');
+    articleData['TriGrams'].forEach(function(d,i){
+        var quote = d;
+        $('#trigrams ul').append('<li><p>'+d+'</p></li>');
+    });
+     
+     
+     $('#quotes ul').append('<li>'+column+'</li>');
+    articleData['Quotes'].forEach(function(d,i){
+        var quote = d;
+        $('#quotes ul').append('<li><p>"'+d+'"</p></li>');
+    });
+    
 }
 
 
@@ -330,6 +345,9 @@ var compareCorpora = function(article_data, column){
             allEntities[word] = [1, []];
             allEntities[word][1].push("article"+column);
             entitiesList.push(word);
+            if(d[0]=="GSP"){ allEntities[word]['POS'] = "LOCATION"; }
+            else { allEntities[word]['POS'] = d[0]; }                                
+            
             try{
                 instances = mainSVG.selectAll("."+word);
                 allEntities[word]['freq'] = instances[0].length;
@@ -521,7 +539,7 @@ var moveTextflow = function(obj){
 
 
 //////////////////////////////////////////////////////////////////////////////////////////////VARIABLES: Named Entity display
-var shift = 0, level = 0, firsttime = true;
+var shift = 0, level = 0, firsttime = true, currentWord = "", currentColor = "";
 var r = Math.min(w, h) *0.5,
     inner = 0, outer = 0,
     color = d3.scale.category10(),
@@ -532,7 +550,7 @@ var namedLevels = function(level, change){
         change += 30;
         firsttime = false;
     }
-    r = Math.min(w, h)*((10-totalstories)*0.12);
+    r = (w*0.6)*((10-totalstories)*0.12);//Math.min(w, h)*((10-totalstories)*0.12);
     inner += 0.2;
     outer = inner+0.1;
     var arc = d3.svg.arc().innerRadius(r*inner+20).outerRadius(r*outer+8);
@@ -541,13 +559,16 @@ var namedLevels = function(level, change){
         moveArticles(change);
         var nodeArray = [];
         var nodeWords = [];
+        var nodePOS = [];
         entitiesList.forEach(function(d,i){
             if(allEntities[d][0] == level){
                 nodeWords.push(d);
-                nodeArray.push(allEntities[d]['freq'])
-                //console.log(allEntities[d][1]);
+                nodeArray.push(allEntities[d]['freq']);
+                nodePOS.push(allEntities[d]['POS']);
             } 
         });
+        
+        
         
         nameBlock = mainSVG.selectAll("g.nameBlock"+level)
                 .data(dat)
@@ -559,9 +580,6 @@ var namedLevels = function(level, change){
                 .attr("height", 100) //will need to be appended based on the data
                 .attr("transform", "translate("+0+","+(0)+")");
         nblk = mainSVG.select("#nameBlock"+level);
-                
-        var currentWord = "";
-        var currentColor = ""; 
 
         
         if(nodeWords.length == 0) { //if there are no entities at this level, make a "NULL" arc
@@ -580,7 +598,7 @@ var namedLevels = function(level, change){
                     .attr('opacity', 0.8)
                 paths = arcs.append("path")
                     .attr("fill","#ddd")
-                    .attr("d",arc)
+                    .attr("d", arc)
                     .attr('opacity', 0.6);
                 
         } else { //else make a partitioned arc for each entity
@@ -590,7 +608,7 @@ var namedLevels = function(level, change){
                   .enter().append("g")
                     .attr("parents", function(d, i) { return allEntities[nodeWords[i]][1].toString(); })
                     .attr('id', function(d, i) { return nodeWords[i]; })
-                    .attr("class", function(d, i) { fam = allEntities[nodeWords[i]][1].toString().replace(/[,]/g, " "); return "arc "+fam; })
+                    .attr("class", function(d, i) { fam = allEntities[nodeWords[i]][1].toString().replace(/[,]/g, " "); return "arc "+fam+" "+nodePOS[i]; })
                     .style("stroke", "#fff")
                     .style('cursor', 'pointer')
                     .style("stroke-width", "2px")
@@ -625,11 +643,11 @@ var namedLevels = function(level, change){
                             }
         				});
         				
-        		
             paths = arcs.append("path")
                 .attr('class', 'ringpath')
-                .attr("fill", function(d,i) { return d3.rgb("hsl("+nodeArray[i]*nodeArray[i]*10+",45,40)"); })
-                .attr("d",arc)
+                //.attr("fill", function(d,i) { return d3.rgb("hsl("+nodeArray[i]*nodeArray[i]*10+",45,40)"); })
+                .attr('fill', function(d,i) { return namedColors[nodePOS[i]] })
+                .attr("d", d3.svg.arc().innerRadius(r*inner+20).outerRadius(r*outer+8))
                 .attr('opacity', 0.3);
 
             arcs.transition()
@@ -638,6 +656,8 @@ var namedLevels = function(level, change){
                 .attr("transform", "translate(" + (w2-10) + "," + (-inner*30) + ") rotate(282)");
   		
     }
+    
+    arc.outerRadius(((r*outer+8)-(r*inner+20))+(r*outer+8));
     
     
     textbits = arcs.append("text")
@@ -680,9 +700,9 @@ var arcMouseOut = function(obj){
 		.attr('opacity', 0.75)
 		.duration(200)
 		.ease("linear",1,1)
-		.call(function(){ d3.select(this[0][0]['node']['childNodes'][0]).transition().attr('opacity', '0.3').duration(90) })
+		.call(function(){ showArticleFamily(this, 0.3, 0.75) })
+		//.call(function(){ d3.select(this[0][0]['node']['childNodes'][0]).transition().attr('opacity', '0.3').duration(90) })
 		.call(function(){ d3.select(this[0][0]['node']['childNodes'][1]).transition().attr('fill', '#3c3c3c').style('font-size', '9px').duration(150) })
-		.call(function(){ showArticleFamily(this, 0.75) })
 	d3.selectAll('.'+currentWord).transition()
 		.style("stroke", "none")
 		//.style('fill', currentColor)
@@ -695,9 +715,12 @@ var arcMouseOver = function(obj){
 		.attr('opacity', 1)
 		.duration(100)
 		.ease("linear",1,1)
-		.call(function(){ currentWord = this[0][0]['node']['id']; d3.select(this[0][0]['node']['childNodes'][0]).transition().attr('opacity', '0.65').duration(80) })
+		.call(function(){ showArticleFamily(this, 0.75, 1) })
+		.call(function(){ 
+		                  currentWord = this[0][0]['node']['id']; 
+		                 // d3.select(this[0][0]['node']['childNodes'][0]).transition().attr('opacity', '0.9').duration(80) 
+		              })
 		.call(function(){ d3.select(this[0][0]['node']['childNodes'][1]).transition().style('fill', '#000').style('font-size', '12px').duration(150) })
-		.call(function(){ showArticleFamily(this, 1) })
 	d3.selectAll('.'+currentWord).transition()
 		.style("stroke", "#000")
 	    //.style('fill', function(){ currentColor = $('.'+currentWord).css('fill'); return '#330000' })
@@ -706,17 +729,19 @@ var arcMouseOver = function(obj){
 } 
 
 var showFam = false;
-var showArticleFamily = function(obj, opac) {
+var showArticleFamily = function(obj, opac1, opac2) {
     //console.log(obj[0][0]['node'].id);
+    element = obj[0][0]['node'];
     if(showFam){
-        element = obj[0][0]['node'];
         parents = $('#'+element.id).attr('parents');
         parentArray = parents.split(',');
         parentArray.forEach(function(d, i){ 
-                                            $('.'+d).stop().animate({ opacity: opac}, 160, 'linear', function() { }); 
-                                            $('.'+d).find('.ringpath').css({'opacity': (opac-0.2)});
-        //parentArray.forEach(function(d, i){ $('.'+d).css({'opacity': opac}); $('.'+d).find('.ringpath').css({'opacity': (opac-0.2)}); 
+                                            $('.'+d).stop().animate({ opacity: opac2}, 160, 'linear', function() { }); 
+                                            $('.'+d+' .ringpath').css({'opacity': (opac1)});
+                                            //d3.selectAll('.'+d).transition().attr('opacity', function(){ return (opac-0.25) }).duration(150);
         });
+    } else {
+        $('#'+element.id+' .ringpath').css({'opacity': (opac1)});
     }
 }
 
@@ -745,3 +770,35 @@ var moveArticles = function(change){
     });
 }
 
+
+//////////////////////////////////////////////////////////////////////////////////////////////FUNCTION: transition for all wordrects
+var dat = [1];
+var counter = 0, color;
+var changeWordRects = function(count, conditional){
+        dat.forEach(function(d, i) {
+            artfile = mainSVG.select("#articlefile"+count);
+            allwords = artfile.selectAll(".wordrect");
+            allwords[0].forEach(function(d, ii){
+                    d3.select(d).transition()
+    					//.style("fill", function(d) { return d3.rgb("hsl("+d.y+",50,94)"); })
+                        .style("fill", function(d, iii) { 
+                            fq = dataArray[count]["FreqDist"][ii]
+                            if (conditional == "heat"){
+                                color = d3.rgb("hsl("+0+","+(20+fq*6)+","+(90-(fq*0.9))+")");
+                            } else if (conditional == "length"){
+                                color = d3.rgb("hsl("+d*d*20+","+30+","+70+")");
+                            }
+                            return color; 
+                        })
+                        .duration(1100)
+    					.ease("linear",1,1); 
+            });
+        });
+        if(counter < totalstories-1){
+            counter++;
+            setTimeout(changeWordRects, 600, counter, conditional);
+        } else {
+            counter = 0;
+        }
+
+}

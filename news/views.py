@@ -76,12 +76,12 @@ def special(request):
             ###################check the db for the masterlink associated with the main article 
             article_exists = Article.objects.filter(headline=story[0])
             if len(article_exists)<1:
-                filler.append(" New Article ")
+                filler.append("_NewArticle , ")
                 ###################if not in db, make an Article, a StoryGroup w/ date, and check for each Publisher to see if it needs to be entered 
                 new_storygroup = StoryGroup.objects.create(date=datetime.datetime.now(), slugline=story[0])
                 for link in story[1]:
                     if link in uniqueURLS:
-                        break
+                        None
                     else:
                         uniqueURLS.append(link) 
                         if link == output['Masters'][idx]: ####################test for main article
