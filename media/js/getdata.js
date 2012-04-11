@@ -42,7 +42,10 @@ var articleStorageArray, totalstories, mainArtSVG, levelsSVG, langmap, articlefi
 var wordmap = { w: 0, h: 0, boxH: 6},  spacing  = 40, wordCount = 0;
 var namedOnScreen = false, dat = [1];
 var entitiesString = ['PERSON', 'ORGANIZATION', 'LOCATION', 'DATE', 'TIME', 'MONEY', 'PERCENT', 'FACILITY', 'GSP'];
-var namedColors = {'PERSON': 'C46E5C', 'ORGANIZATION': '5195B0', 'LOCATION': '298C7C', 'DATE': '94467B', 'TIME': '773D99', 'MONEY': '669663', 'PERCENT': 'A6984B', 'FACILITY': '8A709C', 'GSP': 'AABA56'};
+/* var namedColors = {'PERSON': 'AC6A51', 'ORGANIZATION': '537EA3', 'LOCATION': '569677', 'DATE': 'D5D964', 'TIME': '773D99', 'MONEY': 'C8CB6D', 'PERCENT': 'A6984B', 'FACILITY': 'BF9D54', 'GSP': 'AABA56'}; */
+/* var namedColors = {'PERSON': '987162', 'ORGANIZATION': '666884', 'LOCATION': '59826E', 'DATE': 'D5D964', 'TIME': '773D99', 'MONEY': 'B0B177', 'PERCENT': 'A6984B', 'FACILITY': 'A08A64', 'GSP': 'AABA56'}; */
+var namedColors = {'PERSON': 'C7D284', 'ORGANIZATION': 'B9886F', 'LOCATION': '86B2AC', 'DATE': 'D5D964', 'TIME': '773D99', 'MONEY': '516482', 'PERCENT': 'A6984B', 'FACILITY': '516482', 'GSP': 'AABA56'};
+
 
 //////////////////////////////////////////////////////////////////////////////////////////////FUNCTION: start her engines
 var startEverything = function(data){
@@ -391,6 +394,15 @@ var writeFactsToScreen = function(){
             .style("fill", "#222")
             .style("font-size", "16px")
             .text(publishers[i]); 
+/*
+            .on('mouseover',function(){
+                                    d3.select(this).transition()
+                    					.attr('opacity', 0.75)
+                    					.duration(100)
+                    					.ease("linear",1,1)
+                    					.call();
+                					})
+*/
         artid.append("line")
             .attr("x1", 0)
             .attr("y1", -8)
