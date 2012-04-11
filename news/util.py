@@ -10,7 +10,7 @@ import nltk
 from nltk import FreqDist
 #from nltk.corpus import stopwords
 from nltk.collocations import *
-from nltk.tokenize.punkt import PunktSentenceTokenizer
+#from nltk.tokenize.punkt import PunktSentenceTokenizer
 
 
 def write_hello():

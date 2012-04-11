@@ -102,8 +102,8 @@ def special(request):
                         imagelink = diffobj['image']
                         ####################################### Tokenize
                         TrueTextWords = nltk.word_tokenize(rawtext)
-                        whitespace = nltk.WhitespaceTokenizer()
-                        spaceTokens = whitespace.tokenize(rawtext)
+                        #whitespace = nltk.WhitespaceTokenizer()
+                        #spaceTokens = whitespace.tokenize(rawtext)
                         ####################################### Frequence Distribution
                         fdist = FreqDist(TrueTextWords)
                         ####################################### Sentiment Anaylsis
@@ -111,7 +111,7 @@ def special(request):
                         ####################################### Decent Quotation Finder
                         quoteSrch = re.findall(r'"([^"]*)"', (rawtext)) 
                         ####################################### Find TriGrams
-                        dict_to_json['TriGrams'] = findTriGrams(spaceTokens)
+                        dict_to_json['TriGrams'] = findTriGrams(TrueTextWords)
                         ####################################### Token break and Find Named Entities
                         TTATNE = tokenize_text_and_tag_named_entities(rawtext)
                         Sentities = TTATNE["SB"]
