@@ -816,7 +816,7 @@ var showArticleFamily = function(obj, opac1, opac2, opac3, speed) {
         $('#'+element.id+' .ringpath').css({'opacity': (opac1)});
     }
     parentArray.forEach(function(d, i){ 
-                                        $('#'+d+'_publight').stop().animate({ opacity: opac3}, speed-60, 'linear', function() { });
+                                        $('#'+d+'_publight').stop().animate({ opacity: opac3}, speed-100, 'linear', function() { });
                                     });
 }
 
