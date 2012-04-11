@@ -38,7 +38,7 @@ $(document).ready(function(){
 var filesArray; //use this to store the svg objects for each article (set by selectAll class)
 var articlePubs = [], dataArray = []; //use this to store the data objects for each article
 var w = window.innerWidth-120, h = window.innerHeight-0, w2 = w*0.5, h2 = h*0.5;
-var articleStorageArray, totalstories, mainSVG, langmap, articlefile, simInfo;
+var articleStorageArray, totalstories, mainArtSVG, levelsSVG, langmap, articlefile, simInfo;
 var wordmap = { w: 0, h: 0, boxH: 6},  spacing  = 40, wordCount = 0;
 var namedOnScreen = false, dat = [1];
 var entitiesString = ['PERSON', 'ORGANIZATION', 'LOCATION', 'DATE', 'TIME', 'MONEY', 'PERCENT', 'FACILITY', 'GSP'];
@@ -58,25 +58,35 @@ var setupSVG = function(){
         
     totalstories = level = articleStorageArray.length;
     wordmap.w = ~~(w / totalstories) - spacing; 
-
-    mainSVG = d3.select("#SVGcontainer").append("svg:svg") //SVG that holds all individual charts
-        .attr("id", "mainSVG")
+    
+    levelsSVG = d3.select("#SVGcontainer").append("svg:svg") //SVG that holds all individual charts
+        .attr("id", "levelsSVG")
         .attr("width", w)
-        .attr("height", 1000) //will need to be appended based on the data
+        .attr("height", 0)
         .attr("viewBox","0 0 0 0")
-        .style("fill", "#F0F3DA")
       .append("g")
         .attr("transform", "translate(20,2)");
+
+    mainArtSVG = d3.select("#SVGcontainer").append("svg:svg") //SVG that holds all individual charts
+        .attr("id", "mainArtSVG")
+        .attr("width", w)
+        .attr("height", 500) //will need to be appended based on the data
+        .attr("viewBox","0 0 0 0")
+        .style("fill", 'rgba(255,255,255,0)')
+        .style("margin-top", '-20px')
+      .append("g")
+        .attr("transform", "translate(20,2)");
+        
                     
     // Add a file for each article.
-    articlefile = mainSVG.selectAll("g.articlefile")
+    articlefile = mainArtSVG.selectAll("g.articlefile")
             .data(articleStorageArray)
         .enter().append("g")
             .attr("id", function(d,i){ return "articlefile"+i})
             .attr("class", "articleClass")
-            .attr("transform", function(d,i){ return "translate("+((i*wordmap.w)+(i*spacing))+",60)"; });
+            .attr("transform", function(d,i){ return "translate("+((i*wordmap.w)+(i*spacing))+",34)"; });
     
-    filesArray = mainSVG.selectAll(".articleClass"); 
+    filesArray = mainArtSVG.selectAll(".articleClass"); 
     setArtFileLocs();//get the translate for each articlefile and store it for updates  
 }
 
@@ -87,7 +97,7 @@ var artfileLocs = { 0:afLoc0, 1:afLoc1, 2:afLoc2, 3:afLoc3, 4:afLoc4, 5:afLoc5, 
 //////////////////////////////////////////////////////////////////////////////////////////////FUNCTION: articlefile position storage for updates
 var setArtFileLocs = function(){
     filesArray[0].forEach(function(d, i) {
-        filetrans = mainSVG.select("#articlefile"+i);
+        filetrans = mainArtSVG.select("#articlefile"+i);
         trans = filetrans[0][0].attributes[2]['nodeValue'];
         transVal = trans.match(/\(([^}]+)\)/);
         transVal = transVal[1].split(','); 
@@ -202,7 +212,7 @@ var parseArticleData = function (articleJSON, callback, column){
 //////////////////////////////////////////////////////////////////////////////////////////////FUNCTION: make article column map of rects
 var initChart = function(article_data, column){
     
-    var file = mainSVG.select("#articlefile"+column);
+    var file = mainArtSVG.select("#articlefile"+column);
     var prevd1 = 0, prevd2 = 0, prevd3 = 0, prevd4 = 0, ycount = 0, yp = 0, 
         linecount = 0, lplace = 0, lp = 0, linecount2 = 0, lplace2 = 0, lp2 = 0;
     var langmap = file.selectAll("rect")
@@ -307,9 +317,9 @@ var initChart = function(article_data, column){
 				});
      
     //Get rid of all the XendsentX objs
-    xsent = mainSVG.selectAll('.XendsentX');
+    xsent = mainArtSVG.selectAll('.XendsentX');
     xsent[0].forEach(function(d){
-        mainSVG.select("#XendsentX").remove();
+        mainArtSVG.select("#XendsentX").remove();
     });
     
     compareCorpora(article_data, column); ///////////////////CALL: send the data for this article to concordance function
@@ -349,7 +359,7 @@ var compareCorpora = function(article_data, column){
             else { allEntities[word]['POS'] = d[0]; }                                
             
             try{
-                instances = mainSVG.selectAll("."+word);
+                instances = mainArtSVG.selectAll("."+word);
                 allEntities[word]['freq'] = instances[0].length;
             } catch(err){
                 allEntities[word]['freq'] = 1;
@@ -370,8 +380,8 @@ var writeFactsToScreen = function(){
     $('.publinks').each(function(index){ publishers.push($(this).html())});
     //console.log(publishers);
     filesArray[0].forEach(function(d, i) {
-        filetrans = mainSVG.select("#articlefile"+i);
-        artid = mainSVG.select("#articlefile"+i);
+        filetrans = mainArtSVG.select("#articlefile"+i);
+        artid = mainArtSVG.select("#articlefile"+i);
         bottom = filetrans[0][0].childNodes[filetrans[0][0].childElementCount-2].y.baseVal.value;
                 
         artid.append("text")
@@ -438,7 +448,8 @@ var makeWordBox = function(obj){
     var sentenceArray = [], idArray = [];
     objectX = obj.x.baseVal.value;//get obj x location
     objectY = obj.y.baseVal.value;//get obj y location
-    headTop = $('#story_headline').outerHeight();
+    mainOff = $('#mainArtSVG').offset();
+    mainOff_top = mainOff.top;
     parent = obj.parentNode;
    if(objectY != prevObjY || parent.id != prevparent.id){ //if no longer on the same line or the same article, remove window
         $('.readWindow').remove();
@@ -464,7 +475,7 @@ var makeWordBox = function(obj){
         }
         
         //make text purely for computing textline width
-        var textsvg = mainSVG.append("text")
+        var textsvg = mainArtSVG.append("text")
                 .attr("id", "textfiller")
                 .text(sentenceArray.join(" "))
                 .attr("x", 0)
@@ -478,13 +489,13 @@ var makeWordBox = function(obj){
         
  
         $('#SVGoverlay')
-            .append("<div id='removeme"+thisId+"' class='readWindow'> <ul class='sentlist'></ul></div>");
+            .append("<div id='removeme"+thisId+"' class='readWindow'> <ul class='sentlist'></ul></div>"); //transy-(-objectY-70)
         sentenceArray.forEach(function(d,i){
             thisword = d.split(" ");
             thisword = thisword.join("");
             $('.sentlist').append("<li id='"+idArray[i]+"_"+thisword+"' class='innerText'>"+d+"</li>");
         });
-        $('#removeme'+thisId).css({ "top": (transy-(-objectY-70))+"px", "left": (transx-(-65))+"px", "text-align":"left", "width": (wordmap.w-(-20))+"px", "max-height": "20px" });
+        $('#removeme'+thisId).css({ "top": (mainOff_top-(-objectY+80))+"px", "left": (transx-(-32))+"px", "text-align":"left", "width": (wordmap.w-(-20))+"px", "max-height": "20px" });
         $('#innerText'+thisId).css({ "top": "0px", "left": woffset+"px" });
         //sentwidth = $('.innerText').forEach(function(d,i){d.});
         $('.innerText').each(function(index) {
@@ -541,7 +552,7 @@ var moveTextflow = function(obj){
 //////////////////////////////////////////////////////////////////////////////////////////////VARIABLES: Named Entity display
 var shift = 0, level = 0, firsttime = true, currentWord = "", currentColor = "";
 var r = Math.min(w, h) *0.5,
-    inner = 0, outer = 0,
+    inner = 0, outer = 0, levelHeight = 0;
     color = d3.scale.category10(),
     donut = d3.layout.pie().startAngle( 6 ).endAngle( 3 ).sort(null);
 //////////////////////////////////////////////////////////////////////////////////////////////FUNCTION: Named Entity display
@@ -550,13 +561,17 @@ var namedLevels = function(level, change){
         change += 30;
         firsttime = false;
     }
+        
     r = (w*0.6)*((10-totalstories)*0.12);//Math.min(w, h)*((10-totalstories)*0.12);
     inner += 0.2;
     outer = inner+0.1;
     var arc = d3.svg.arc().innerRadius(r*inner+20).outerRadius(r*outer+8);
     var arcs, paths;
+    levelHeight = (r*outer)+76;    
+    
     if (level > 0){
-        moveArticles(change);
+        //moveArticles(change);
+        $('#levelsSVG').stop().animate({ 'height': levelHeight}, 400, 'easeOutQuart', function() { });
         var nodeArray = [];
         var nodeWords = [];
         var nodePOS = [];
@@ -570,7 +585,7 @@ var namedLevels = function(level, change){
         
         
         
-        nameBlock = mainSVG.selectAll("g.nameBlock"+level)
+        nameBlock = levelsSVG.selectAll("g.nameBlock"+level)
                 .data(dat)
             .enter().append("g")
                 .data([nodeArray])
@@ -579,7 +594,7 @@ var namedLevels = function(level, change){
                 .attr("width", w-20)
                 .attr("height", 100) //will need to be appended based on the data
                 .attr("transform", "translate("+0+","+(0)+")");
-        nblk = mainSVG.select("#nameBlock"+level);
+        nblk = levelsSVG.select("#nameBlock"+level);
 
         
         if(nodeWords.length == 0) { //if there are no entities at this level, make a "NULL" arc
@@ -748,7 +763,7 @@ var showArticleFamily = function(obj, opac1, opac2) {
 //////////////////////////////////////////////////////////////////////////////////////////////FUNCTION: shift articles down/up
 var moveArticles = function(change){
     filesArray[0].forEach(function(d, i) {
-        filetrans = mainSVG.select("#articlefile"+i);
+        filetrans = mainArtSVG.select("#articlefile"+i);
         trans = filetrans[0][0].attributes[2]['nodeValue'];
         transVal = trans.match(/\(([^}]+)\)/);
         transVal = transVal[1].split(','); 
@@ -760,12 +775,14 @@ var moveArticles = function(change){
                 .duration(500)
                 .ease("exp-out",1,1);
         if(namedOnScreen){
-            links = mainSVG.selectAll('.namelink')
+          /*
+  links = mainArtSVG.selectAll('.namelink')
                 .transition()
                     .attr("y2", (artfileLocs[i].y-32))
                     .attr("opacity", 0.35)
                     .duration(500)
                     .ease("exp-out",1,1);
+*/
         }
     });
 }
@@ -776,7 +793,7 @@ var dat = [1];
 var counter = 0, color;
 var changeWordRects = function(count, conditional){
         dat.forEach(function(d, i) {
-            artfile = mainSVG.select("#articlefile"+count);
+            artfile = mainArtSVG.select("#articlefile"+count);
             allwords = artfile.selectAll(".wordrect");
             allwords[0].forEach(function(d, ii){
                     d3.select(d).transition()
