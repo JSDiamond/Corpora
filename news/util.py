@@ -153,23 +153,25 @@ def tokenize_text_and_tag_named_entities(text):
 def SetWordDictionary(text, dist, entString, stops):
     word_list = list()
     uniqueKey = dict()
+    important_list = list()
+    filler_list = list()
     for idx, sent in enumerate(text): 
         for idx, tggd_tup in enumerate(sent):                                       
             if tggd_tup[0] in entString:
                 allparts = list()
                 for word in tggd_tup[1]:
-                    wdsubl = annotateToken(word_list, uniqueKey, word, tggd_tup[0], dist, stops)
+                    wdsubl = annotateToken(word_list, uniqueKey, word, tggd_tup[0], dist, stops, filler_list)
                     allparts.append(wdsubl)
                 word_list.append((tggd_tup[0], allparts))              
             else:
-                wdsubl = annotateToken(word_list, uniqueKey, tggd_tup[1], tggd_tup[0], dist, stops)
+                wdsubl = annotateToken(word_list, uniqueKey, tggd_tup[1], tggd_tup[0], dist, stops, important_list)
                 word_list.append((tggd_tup[0], wdsubl))
-        endofsent = annotateToken(word_list, uniqueKey, "XendsentX", "END", dist, stops)
+        endofsent = annotateToken(word_list, uniqueKey, "XendsentX", "END", dist, stops, filler_list)
         word_list.append(("END", endofsent))
-    return word_list
+    return {'word_list': word_list, 'important_list': important_list}
 
 # SubFunction of SetWordDictionary 
-def annotateToken(word_list, uniqueKey, token, pos, dist, stops):
+def annotateToken(word_list, uniqueKey, token, pos, dist, stops, important_list):
     word_sublist = list()
     word_sublist.append(('token', token))                            #add the token
     #word_sublist.append(('pos', pos))                               #add the part of speech
@@ -190,8 +192,9 @@ def annotateToken(word_list, uniqueKey, token, pos, dist, stops):
         uniqueKey[token] = 1
         if token in stops:
             word_sublist.append(('important', 'no'))
-        elif len(token) > 2 and dist[token] > 2:
+        elif len(token) > 3 and dist[token] > 2:
             word_sublist.append(('important', 'yes'))
+            important_list.append((token, dist[token]))
         else:
             word_sublist.append(('important', 'no'))
     return word_sublist

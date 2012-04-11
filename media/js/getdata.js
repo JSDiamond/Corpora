@@ -44,7 +44,7 @@ var namedOnScreen = false, dat = [1];
 var entitiesString = ['PERSON', 'ORGANIZATION', 'LOCATION', 'DATE', 'TIME', 'MONEY', 'PERCENT', 'FACILITY', 'GSP'];
 /* var namedColors = {'PERSON': 'AC6A51', 'ORGANIZATION': '537EA3', 'LOCATION': '569677', 'DATE': 'D5D964', 'TIME': '773D99', 'MONEY': 'C8CB6D', 'PERCENT': 'A6984B', 'FACILITY': 'BF9D54', 'GSP': 'AABA56'}; */
 /* var namedColors = {'PERSON': '987162', 'ORGANIZATION': '666884', 'LOCATION': '59826E', 'DATE': 'D5D964', 'TIME': '773D99', 'MONEY': 'B0B177', 'PERCENT': 'A6984B', 'FACILITY': 'A08A64', 'GSP': 'AABA56'}; */
-var namedColors = {'PERSON': 'C7D284', 'ORGANIZATION': 'B9886F', 'LOCATION': '86B2AC', 'DATE': 'D5D964', 'TIME': '773D99', 'MONEY': '516482', 'PERCENT': 'A6984B', 'FACILITY': '516482', 'GSP': 'AABA56'};
+var namedColors = {'PERSON': 'B9886F', 'ORGANIZATION': 'C7D284', 'LOCATION': '86B2AC', 'DATE': 'D5D964', 'TIME': '773D99', 'MONEY': '516482', 'PERCENT': 'A6984B', 'FACILITY': '516482', 'GSP': 'AABA56'};
 
 
 //////////////////////////////////////////////////////////////////////////////////////////////FUNCTION: start her engines
@@ -87,10 +87,13 @@ var setupSVG = function(){
         .enter().append("g")
             .attr("id", function(d,i){ return "articlefile"+i})
             .attr("class", "articleClass")
-            .attr("transform", function(d,i){ return "translate("+((i*wordmap.w)+(i*spacing))+",34)"; });
+            .attr("transform", function(d,i){ return "translate("+((i*wordmap.w)+(i*spacing)+20)+",34)"; });
     
     filesArray = mainArtSVG.selectAll(".articleClass"); 
-    setArtFileLocs();//get the translate for each articlefile and store it for updates  
+    setArtFileLocs();//get the translate for each articlefile and store it for updates 
+    
+        setTimeout(writeFactsToScreen, 400);
+     
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////VARIABLES: set articlefile object
@@ -326,6 +329,26 @@ var initChart = function(article_data, column){
     });
     
     compareCorpora(article_data, column); ///////////////////CALL: send the data for this article to concordance function
+    if(column == totalstories-1){
+        //////////////////////////////////////////////BIND FUNCTIONS: readingWindow make/remove and text scrolling with timers
+        $('.wordrect').bind('mouseover', function() {
+            event.stopPropagation();
+            clearTimeout(timer2);
+            timer1 = setTimeout(makeWordBox, 300, this);
+            //timer2 = setTimeout(moveTextflow, 50, this);
+            //makeWordBox(this);
+            moveTextflow(this);
+            //if(mousedraging){moveTextflow(this);}
+        });
+        $('.wordrect').bind('mouseout', function() {
+            event.stopPropagation();
+            timer2 = setTimeout(killReader, 1000);
+            clearTimeout(timer1);
+            //clearTimeout(timer2);
+            //wordrectMouseTrack();
+        });
+
+    }
 }
 
 
@@ -370,23 +393,58 @@ var compareCorpora = function(article_data, column){
         }
     });
     
-    if(column == totalstories-1){
-        setTimeout(writeFactsToScreen, 400);
-        //console.log(allEntities)
-    }
 }
+ 
 
 
 //////////////////////////////////////////////////////////////////////////////////////////////FUNCTION: Put ink on paper
+var artcolor = d3.interpolate('#596128', '#612848' );
 var writeFactsToScreen = function(){
+    ///////////////////////////////////////MAKE A GRADIENT///////////
+    var gradient = mainArtSVG.append("svg:svg")
+      .append("svg:linearGradient")
+        .attr("id", "gradient")
+        /*
+.attr("x1", "0%")
+        .attr("y1", "20%")
+        .attr("x2", "30%")
+        .attr("y2", "30%")
+*/
+        .attr("x1", "0%")
+        .attr("y1", "0%")
+        .attr("x2", "0%")
+        .attr("y2", "80%")
+        .attr("spreadMethod", "pad");
+    
+    gradient.append("svg:stop")
+        .attr("offset", "0%")
+        .attr("stop-color", "#A6A794")//5694F4
+        .attr("stop-opacity", 0.8);
+    
+    gradient.append("svg:stop")
+        .attr("offset", "40%")
+        .attr("stop-color", "#fff")
+        .attr("stop-opacity", 0);
+    ///////////////////////////////////////MAKE A GRADIENT///////////
+
     var publishers = [];
     $('.publinks').each(function(index){ publishers.push($(this).html())});
     //console.log(publishers);
     filesArray[0].forEach(function(d, i) {
         filetrans = mainArtSVG.select("#articlefile"+i);
         artid = mainArtSVG.select("#articlefile"+i);
-        bottom = filetrans[0][0].childNodes[filetrans[0][0].childElementCount-2].y.baseVal.value;
+        //bottom = filetrans[0][0].childNodes[filetrans[0][0].childElementCount-2].y.baseVal.value;
                 
+        
+        artid.append("rect")
+            .attr("id", "article"+i+"_publight")
+            .attr('class', 'pub_highlight')
+            .attr("x", -16)
+            .attr("y", -33)
+            .attr("width", 10)
+            .attr("height", 26)
+            .attr("opacity", 0.0)
+            .style("fill", function(){return artcolor(i)});//"url(#gradient)" #B8B5FF
         artid.append("text")
             .attr("x", 0)
             .attr("y", -2)
@@ -409,12 +467,14 @@ var writeFactsToScreen = function(){
             .attr("x2", wordmap.w)
             .attr("y2", -8)
             .style("stroke", "#222");   
-        artid.append("line")
+        /*
+artid.append("line")
             .attr("x1", 0)
             .attr("y1", bottom+16)
             .attr("x2", wordmap.w)
             .attr("y2", bottom+16)
-            .style("stroke", "#222");        
+            .style("stroke", "#222"); 
+*/       
     });
       
     /*
@@ -425,23 +485,6 @@ $('.wordrect').bind('mousedown', function() {
         mousedraging = true;
     });
 */  
-    //////////////////////////////////////////////BIND FUNCTIONS: readingWindow make/remove and text scrolling with timers
-    $('.wordrect').bind('mouseover', function() {
-        event.stopPropagation();
-        clearTimeout(timer2);
-        timer1 = setTimeout(makeWordBox, 300, this);
-        //timer2 = setTimeout(moveTextflow, 50, this);
-        //makeWordBox(this);
-        moveTextflow(this);
-        //if(mousedraging){moveTextflow(this);}
-    });
-    $('.wordrect').bind('mouseout', function() {
-        event.stopPropagation();
-        timer2 = setTimeout(killReader, 1000);
-        clearTimeout(timer1);
-        //clearTimeout(timer2);
-        //wordrectMouseTrack();
-    });
 }
 var timer1 = "", timer2 = "";
 var killReader = function(){
@@ -514,13 +557,13 @@ var makeWordBox = function(obj){
              sw = $(this).outerWidth();
              textsvg_width += sw;
         });
-        sentenceArray.forEach(function(d,i){ if(d=="."||d=="!"||d=="?" ){ textsvg_width+=42;} });
+        //sentenceArray.forEach(function(d,i){ if(d=="."||d=="!"||d=="?" ){ textsvg_width+=30;} });
          
         //actual length of the line of wordrects
         totalLinewidth = (allWordObjs[allWordObjs.length-1].x.baseVal.value) + (allWordObjs[allWordObjs.length-1].width.baseVal.value);
         //scale the textline width to the width of the column for scrollability
         textflow = d3.scale.linear()
-            .domain([0, (totalLinewidth+20)])
+            .domain([0, (totalLinewidth+8)])
             .range([0, textsvg_width+100]);
         //after calculating the textflow, remove textsvg
         textsvg.remove();
@@ -541,13 +584,15 @@ var moveTextflow = function(obj){
 
         if(thisline == prevlineFlow && thisparent == prevparentFlow){//if we are on the same line & article, scroll text
             thisword = $('#'+obj.id).attr('word');
+            thiscount = parseInt(obj.id.substr(1));
+            prevword = $('#w'+(thiscount-1)).attr('word');//get the previous word to see if added space needed due to sentence ending
             thisword = thisword.split(" ");
             thisword = thisword.join("");
-            objectX = obj.x.baseVal.value;
             objectX = obj.x.baseVal.value;
             $("#"+obj.id+"_"+thisword).css({"color": "#000"});
             var lineX = function(oX) { return textflow(oX); };
             var woffset = -(lineX(objectX));
+            if(prevword=="."|| prevword=="!" || prevword=="?" ){ woffset+=50;}//check previous word and add space if new sentence
             $(".sentlist").stop()
                 .animate({ left: woffset}, 400, 'easeOutSine', function() {});
         }
@@ -640,7 +685,7 @@ var namedLevels = function(level, change){
                     .style('cursor', 'pointer')
                     .style("stroke-width", "2px")
                     .attr("transform", "translate(" + (w2-10) + "," + ((-inner*30)-((r*inner)*0.2)) + ") rotate(282)")
-                    .attr('opacity', 0.75)
+                    .attr('opacity', 0.8)
                     .on("mouseout",function(){ arcMouseOut(this);})
                     .on("mouseover",function(){ arcMouseOver(this);})
                     .on("click",function(){
@@ -675,12 +720,12 @@ var namedLevels = function(level, change){
                 //.attr("fill", function(d,i) { return d3.rgb("hsl("+nodeArray[i]*nodeArray[i]*10+",45,40)"); })
                 .attr('fill', function(d,i) { return namedColors[nodePOS[i]] })
                 .attr("d", d3.svg.arc().innerRadius(r*inner+20).outerRadius(r*outer+8))
-                .attr('opacity', 0.3);
+                .attr('opacity', 0.4);
 
             arcs.transition()
                 .ease("cubic-out")
                 .duration(400)
-                .attr("transform", "translate(" + (w2-10) + "," + (-inner*30) + ") rotate(282)");
+                .attr("transform", "translate(" + (w2-10) + "," + (-inner*27.5) + ") rotate(282)");
   		
     }
     
@@ -727,9 +772,9 @@ var arcMouseOut = function(obj){
 		.attr('opacity', 0.75)
 		.duration(200)
 		.ease("linear",1,1)
-		.call(function(){ showArticleFamily(this, 0.3, 0.75) })
+		.call(function(){ showArticleFamily(this, 0.4, 0.75, 0, 400) })
 		//.call(function(){ d3.select(this[0][0]['node']['childNodes'][0]).transition().attr('opacity', '0.3').duration(90) })
-		.call(function(){ d3.select(this[0][0]['node']['childNodes'][1]).transition().attr('fill', '#3c3c3c').style('font-size', '9px').duration(150) })
+		.call(function(){ d3.select(this[0][0]['node']['childNodes'][1]).transition().attr('fill', '#3c3c3c').style('font-size', '9px').duration(170) })
 	d3.selectAll('.'+currentWord).transition()
 		.style("stroke", "none")
 		//.style('fill', currentColor)
@@ -742,7 +787,7 @@ var arcMouseOver = function(obj){
 		.attr('opacity', 1)
 		.duration(100)
 		.ease("linear",1,1)
-		.call(function(){ showArticleFamily(this, 0.75, 1) })
+		.call(function(){ showArticleFamily(this, 0.8, 1, 1, 160) })
 		.call(function(){ 
 		                  currentWord = this[0][0]['node']['id']; 
 		                 // d3.select(this[0][0]['node']['childNodes'][0]).transition().attr('opacity', '0.9').duration(80) 
@@ -756,20 +801,23 @@ var arcMouseOver = function(obj){
 } 
 
 var showFam = false;
-var showArticleFamily = function(obj, opac1, opac2) {
+var showArticleFamily = function(obj, opac1, opac2, opac3, speed) {
     //console.log(obj[0][0]['node'].id);
     element = obj[0][0]['node'];
+    parents = $('#'+element.id).attr('parents');
+    parentArray = parents.split(',');
     if(showFam){
-        parents = $('#'+element.id).attr('parents');
-        parentArray = parents.split(',');
         parentArray.forEach(function(d, i){ 
-                                            $('.'+d).stop().animate({ opacity: opac2}, 160, 'linear', function() { }); 
-                                            $('.'+d+' .ringpath').css({'opacity': (opac1)});
+                                            $('.'+d).stop().animate({ opacity: opac2}, speed, 'linear', function() { }); 
+                                            $('.'+d+' .ringpath').stop().animate({ opacity: opac1}, speed-100, 'linear', function() { });
                                             //d3.selectAll('.'+d).transition().attr('opacity', function(){ return (opac-0.25) }).duration(150);
         });
     } else {
         $('#'+element.id+' .ringpath').css({'opacity': (opac1)});
     }
+    parentArray.forEach(function(d, i){ 
+                                        $('#'+d+'_publight').stop().animate({ opacity: opac3}, speed-60, 'linear', function() { });
+                                    });
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////FUNCTION: shift articles down/up

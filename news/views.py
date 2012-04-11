@@ -64,6 +64,7 @@ def special(request):
     stops.add("?")
     stops.add("\"")
     stops.add("\'")
+    stops.add("The")
     uniqueURLS = list()
     entitiesString = 'PERSON ORGANIZATION LOCATION DATE TIME MONEY PERCENT FACILITY GSP'
     #//////////////////////////////////////////////////////////////////
@@ -115,7 +116,9 @@ def special(request):
                         TTATNE = tokenize_text_and_tag_named_entities(rawtext)
                         Sentities = TTATNE["SB"]
                         ####################################### FILL DICT WITH DATA 
-                        dict_to_json['Corpus'] = SetWordDictionary(Sentities, fdist, entitiesString, stops)
+                        annotate = SetWordDictionary(Sentities, fdist, entitiesString, stops)
+                        dict_to_json['Corpus'] = annotate['word_list']
+                        dict_to_json['Important'] = annotate['important_list']
                         ####################################### IMPORTANT WORD INDEX FIND & PLACE
                         Find_Important_Words(dict_to_json['Corpus'], TrueTextWords, fdist, entitiesString)
                         dict_to_json['NamedEnts'] = list(TTATNE["UNE"])
