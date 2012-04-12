@@ -72,13 +72,15 @@ var setupSVG = function(){
 
     mainArtSVG = d3.select("#SVGcontainer").append("svg:svg") //SVG that holds all individual charts
         .attr("id", "mainArtSVG")
-        .attr("width", w)
-        .attr("height", 500) //will need to be appended based on the data
+        .attr("width", w+40)
+        .attr("height", 0) //will need to be appended based on the data
         .attr("viewBox","0 0 0 0")
         .style("fill", 'rgba(255,255,255,0)')
         .style("margin-top", '-20px')
       .append("g")
-        .attr("transform", "translate(20,2)");
+        .attr("width", w)
+        .attr("transform", "translate(22,2)");
+        
         
                     
     // Add a file for each article.
@@ -87,13 +89,13 @@ var setupSVG = function(){
         .enter().append("g")
             .attr("id", function(d,i){ return "articlefile"+i})
             .attr("class", "articleClass")
+            //.style("background", "#fff")
+            //.attr("width", wordmap.w)
             .attr("transform", function(d,i){ return "translate("+((i*wordmap.w)+(i*spacing)+20)+",34)"; });
     
     filesArray = mainArtSVG.selectAll(".articleClass"); 
     setArtFileLocs();//get the translate for each articlefile and store it for updates 
-    
-        setTimeout(writeFactsToScreen, 400);
-     
+         
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////VARIABLES: set articlefile object
@@ -126,6 +128,7 @@ var parseArticleData = function (articleJSON, callback, column){
              sentiment = [],
              numbers = [],
              quotes = [],
+             important = [],
              sentlenghts = [];
         
         var parseJSON = function(article_corp) { //Parse JSON into categories
@@ -150,6 +153,10 @@ var parseArticleData = function (articleJSON, callback, column){
             
             article_corp.Quotes.forEach(function(d) {
                 quotes.push(d); //push all quotes lenghts to data
+            });
+            
+            article_corp.Important.forEach(function(d) {
+                important.push(d); //push all important words to data
             });
             
             article_corp.Corpus.forEach(function(d) {
@@ -193,11 +200,18 @@ var parseArticleData = function (articleJSON, callback, column){
         "SentLengths": sentlenghts,
         "Numbers": numbers,
         "Quotes": quotes,
+        "Important": important,
     }
     //console.log(articleData);
     dataArray.push(articleData);
     setTimeout(callback, 1000, articleData, column);///////////CALLBACK (initChart): wait 1s for load
      
+    $('#important ul').append('<li>'+column+'</li>');
+    articleData['Important'].forEach(function(d,i){
+        var quote = d;
+        $('#important ul').append('<li><p>'+d+'</p></li>');
+    });
+    
     
     $('#trigrams ul').append('<li>'+column+'</li>');
     articleData['TriGrams'].forEach(function(d,i){
@@ -349,6 +363,11 @@ var initChart = function(article_data, column){
         });
 
     }
+    
+    if(column == totalstories-1){
+        setTimeout(writeFactsToScreen, 20);
+    }
+    
 }
 
 
@@ -399,6 +418,7 @@ var compareCorpora = function(article_data, column){
 
 //////////////////////////////////////////////////////////////////////////////////////////////FUNCTION: Put ink on paper
 var artcolor = d3.interpolate('#596128', '#612848' );
+var publishers = [], bottoms = [];
 var writeFactsToScreen = function(){
     ///////////////////////////////////////MAKE A GRADIENT///////////
     var gradient = mainArtSVG.append("svg:svg")
@@ -410,16 +430,16 @@ var writeFactsToScreen = function(){
         .attr("x2", "30%")
         .attr("y2", "30%")
 */
-        .attr("x1", "0%")
+        .attr("x1", "34%")
         .attr("y1", "0%")
-        .attr("x2", "0%")
-        .attr("y2", "80%")
+        .attr("x2", "8%")
+        .attr("y2", "0%")
         .attr("spreadMethod", "pad");
     
     gradient.append("svg:stop")
         .attr("offset", "0%")
-        .attr("stop-color", "#A6A794")//5694F4
-        .attr("stop-opacity", 0.8);
+        .attr("stop-color", "#fff")//5694F4
+        .attr("stop-opacity", 1);
     
     gradient.append("svg:stop")
         .attr("offset", "40%")
@@ -427,15 +447,22 @@ var writeFactsToScreen = function(){
         .attr("stop-opacity", 0);
     ///////////////////////////////////////MAKE A GRADIENT///////////
 
-    var publishers = [];
+    
     $('.publinks').each(function(index){ publishers.push($(this).html())});
     //console.log(publishers);
     filesArray[0].forEach(function(d, i) {
         filetrans = mainArtSVG.select("#articlefile"+i);
         artid = mainArtSVG.select("#articlefile"+i);
-        //bottom = filetrans[0][0].childNodes[filetrans[0][0].childElementCount-2].y.baseVal.value;
-                
+        bottom = filetrans[0][0].childNodes[filetrans[0][0].childElementCount-2].y.baseVal.value;
+        bottoms.push(Math.ceil(bottom));
         
+        artid.append("rect")
+            .attr('class', 'pub_blocker')
+            .attr("x", -76)
+            .attr("y", -33)
+            .attr("width", wordmap.w)
+            .attr("height", 26)
+            .style("fill", "url(#gradient)");
         artid.append("rect")
             .attr("id", "article"+i+"_publight")
             .attr('class', 'pub_highlight')
@@ -449,8 +476,11 @@ var writeFactsToScreen = function(){
             .attr("x", 0)
             .attr("y", -2)
             .attr("dy", "-12px")
+            .attr("width", wordmap.w)
             .style("fill", "#222")
-            .style("font-size", "16px")
+            .style("font-size", "19px")
+            .style('text-transform', 'uppercase')
+            .style("font-family", "Oswald-Light")
             .text(publishers[i]); 
 /*
             .on('mouseover',function(){
@@ -467,15 +497,20 @@ var writeFactsToScreen = function(){
             .attr("x2", wordmap.w)
             .attr("y2", -8)
             .style("stroke", "#222");   
-        /*
-artid.append("line")
+        artid.append("line")
             .attr("x1", 0)
             .attr("y1", bottom+16)
             .attr("x2", wordmap.w)
             .attr("y2", bottom+16)
-            .style("stroke", "#222"); 
-*/       
+            .style("stroke", "#222");        
     });
+    
+    
+    bottoms_sort = bottoms.sort(sortfunc);
+    function sortfunc(a,b) { return b - a; }
+    lowest = bottoms_sort[0];
+    $('#mainArtSVG').stop().animate({ 'height': lowest+60}, 240, 'easeOutQuart', function() { });
+    
       
     /*
 $('.wordrect').bind('mousedown', function() {
@@ -620,11 +655,11 @@ var namedLevels = function(level, change){
     }
         
     r = (w*0.6)*((10-totalstories)*0.12);//Math.min(w, h)*((10-totalstories)*0.12);
-    inner += 0.2;
+    inner += 0.21//0.7-(level*0.08);
     outer = inner+0.1;
     var arc = d3.svg.arc().innerRadius(r*inner+20).outerRadius(r*outer+8);
     var arcs, paths;
-    levelHeight = (r*outer)+76;    
+    levelHeight = (r*outer)+80;    
     
     if (level > 0){
         //moveArticles(change);
@@ -661,7 +696,7 @@ var namedLevels = function(level, change){
                 arcs = nblk.selectAll("g.arc")
                     .data(donut)
                   .enter().append("g")
-                    .attr('id', function(d, i) { return nodeWords[i]; })
+                    //.attr('id', function(d, i) { return nodeWords[i]; })
                     .attr("class", "arc")
                     .style("stroke", "#fff")
                     .style('cursor', 'pointer')
@@ -685,8 +720,9 @@ var namedLevels = function(level, change){
                     .style('cursor', 'pointer')
                     .style("stroke-width", "2px")
                     .attr("transform", "translate(" + (w2-10) + "," + ((-inner*30)-((r*inner)*0.2)) + ") rotate(282)")
-                    .attr('opacity', 0.8)
-                    .on("mouseout",function(){ arcMouseOut(this);})
+                    .attr('opacity', 0.8);
+                    /*
+.on("mouseout",function(){ arcMouseOut(this);})
                     .on("mouseover",function(){ arcMouseOver(this);})
                     .on("click",function(){
                             if($('.'+currentWord).css('fill') == '#338888'){ 
@@ -714,28 +750,30 @@ var namedLevels = function(level, change){
                 					.ease("linear",1,1);
                             }
         				});
-        				
+*/
             paths = arcs.append("path")
                 .attr('class', 'ringpath')
                 //.attr("fill", function(d,i) { return d3.rgb("hsl("+nodeArray[i]*nodeArray[i]*10+",45,40)"); })
                 .attr('fill', function(d,i) { return namedColors[nodePOS[i]] })
-                .attr("d", d3.svg.arc().innerRadius(r*inner+20).outerRadius(r*outer+8))
+                .attr("d", d3.svg.arc().innerRadius(r*inner+20).outerRadius(function(d,i){ return r*outer+2+(nodeArray[i]*1.4); }))//r*outer+8
                 .attr('opacity', 0.4);
+            
 
             arcs.transition()
                 .ease("cubic-out")
                 .duration(400)
                 .attr("transform", "translate(" + (w2-10) + "," + (-inner*27.5) + ") rotate(282)");
-  		
+            
+  		    arc.outerRadius(function(d,i){ return ((r*outer+8)-(r*inner+20))+(r*outer+4) });
     }
     
-    arc.outerRadius(((r*outer+8)-(r*inner+20))+(r*outer+8));
     
     
+        
     textbits = arcs.append("text")
         .attr("transform", function(d,i) { 
                                         var a = (d.startAngle/2-d.endAngle/2)+d.endAngle;
-                                        var angle = (((a*180) / 10 * Math.PI)+90);
+                                        var angle = (((a*180) / 10 * Math.PI)+94);
                                         if(angle<350){ angle+=180; }
                                         if(nodeWords[i]=="NULL") { angle -= 90 };
                                         return "translate(" + arc.centroid(d) + ") rotate("+ angle +")"; 
@@ -749,7 +787,7 @@ var namedLevels = function(level, change){
         .style("font-weight", "600")
         .attr("text-anchor", function(d,i) { 
                                         var a = (d.startAngle/2-d.endAngle/2)+d.endAngle;
-                                        var angle = (((a*180) / 10 * Math.PI)+90);
+                                        var angle = (((a*180) / 10 * Math.PI)+94);
                                         var anchor = "end";
                                         if(angle<350){ anchor = "start"; }
                                         if(nodeWords[i]=="NULL") { anchor = "middle"; };
@@ -761,18 +799,49 @@ var namedLevels = function(level, change){
     
 	level--;
 	setTimeout(namedLevels, 600, level, (r/5)+(30-totalstories*2.4));
+	setTimeout(bindArcEvents, 600, arcs);
       
     } else if (level == 0){
         //killLinks();
     }
 }
 
+var bindArcEvents = function(arcs){
+    arcs.on("mouseout",function(){ arcMouseOut(this);})
+        .on("mouseover",function(){ arcMouseOver(this);})
+        .on("click",function(){
+                if($('.'+currentWord).css('fill') == '#338888'){ 
+                    d3.select(this).on('mouseout', function(){ arcMouseOut(this);})
+                    d3.select(this).transition()
+    					.attr('opacity', 0.75)
+    					.duration(100)
+    					.ease("linear",1,1)
+    					.call(function(){ d3.select(this[0][0]['node']['childNodes'][0]).transition().attr('opacity', '0.3').style('stroke', '#fff').duration(80) });
+					d3.selectAll('.'+currentWord).transition()
+    				    .style('fill', function(){ return currentColor })
+    				    .style("stroke", "none")
+    					.duration(150)
+    					.ease("linear",1,1);
+                } else {
+                    d3.select(this).on('mouseout', null);
+                    d3.select(this).transition()
+    					.attr('opacity', 1)
+    					.duration(100)
+    					.ease("linear",1,1)
+    					.call(function(){ d3.select(this[0][0]['node']['childNodes'][0]).transition().style('stroke', '#222').duration(70) });
+					d3.selectAll('.'+currentWord).transition()
+    				    .style('fill', function(){ currentColor = $('.'+currentWord).css('fill'); return '#338888' })
+    					.duration(150)
+    					.ease("linear",1,1);
+                }
+			});
+}
 var arcMouseOut = function(obj){
     d3.select(obj).transition()
 		.attr('opacity', 0.75)
 		.duration(200)
 		.ease("linear",1,1)
-		.call(function(){ showArticleFamily(this, 0.4, 0.75, 0, 400) })
+		.call(function(){ showArticleFamily(this, 0.4, 0.75, 0, 360) })
 		//.call(function(){ d3.select(this[0][0]['node']['childNodes'][0]).transition().attr('opacity', '0.3').duration(90) })
 		.call(function(){ d3.select(this[0][0]['node']['childNodes'][1]).transition().attr('fill', '#3c3c3c').style('font-size', '9px').duration(170) })
 	d3.selectAll('.'+currentWord).transition()
@@ -816,7 +885,7 @@ var showArticleFamily = function(obj, opac1, opac2, opac3, speed) {
         $('#'+element.id+' .ringpath').css({'opacity': (opac1)});
     }
     parentArray.forEach(function(d, i){ 
-                                        $('#'+d+'_publight').stop().animate({ opacity: opac3}, speed-100, 'linear', function() { });
+                                        $('#'+d+'_publight').stop().animate({ opacity: opac3}, speed-160, 'linear', function() { });
                                     });
 }
 

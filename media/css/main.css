@@ -2,8 +2,23 @@
     padding: 0px;
     margin: 0px;
 }
+
+@font-face {
+	font-family: Oswald-Light;
+	src: url('Oswald-Light.otf');
+}
+@font-face {
+	font-family: Oswald-Regular;
+	src: url('Oswald-Regular.otf');
+}
+@font-face {
+	font-family: Oswald-Bold;
+	src: url('Oswald-Bold.otf');
+}
+
 body {
-    font-family: Helvetica;
+    font-family: Oswald-Regular, Helvetica, 'sans serif';
+    background-color: rgb(250,240,242);
 }
 #content {
     padding: 20px;
@@ -11,12 +26,15 @@ body {
 a {
     text-decoration: none;
     font-weight: 600;
+    cursor: pointer;
 }
 a:hover {
     color: #666;
 }
 a.publinks {
     color: #444;
+    font-family: Oswald-Light;
+    text-transform: uppercase;
 }
 a.publinks:hover {
     color: #dd5555;
@@ -24,6 +42,14 @@ a.publinks:hover {
 h3 {clear: both;}
 h3 a {
     color: #222;
+    cursor: pointer;
+    font-size: 34px;
+    font-family: Oswald-Bold;
+    border-bottom: 3px solid #fff;
+}
+h3 a:hover {
+    color: #222;
+    border-bottom: 3px solid #333;
 }
 ul {
     list-style: none;
@@ -34,18 +60,23 @@ ul li {
 }
 ul li.latest_items {
     float: left;
-    margin: 10px 10px 0px 0px; 
+    margin: 6px 20px 0px 0px; 
 }
 ul h3.latest_headlines {
     clear: both;
     margin: 10px 10px 0px 0px; 
 }
 
+#SVGcontainer {
+    background-color: #fff;
+}
 .story_preview {
     padding: 20px 20px;
     margin: 10px 0px;
-    border: 1px #eee solid;
+    border: 1px #e4e4e4 solid;
     overflow: hidden;
+    background-color: #fff;
+    display: inline-table;
 }
 
 
@@ -82,6 +113,7 @@ div.clicked {
     letter-spacing: 1px;
     font-weight: 100;
     cursor: pointer;
+     font-family: "Oswald-Light"
 }
 .button:hover {
     background-color: #555;
@@ -141,7 +173,7 @@ div.clicked {
 }
 .readWindow {
     overflow: hidden;
-    background-color: rgba(255,255,255,0.85);
+    background-color: rgba(255,255,255,0.9);
     position: absolute;
     z-index: 10;
     text-wrap: none;
