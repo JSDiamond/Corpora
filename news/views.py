@@ -71,9 +71,10 @@ def special(request):
             if len(article_exists)<1:
                 filler.append("_NewArticle , ")
                 ###################if not in db, make an Article, a StoryGroup w/ date, and check for each Publisher to see if it needs to be entered
-                existing_storygroup = StoryGroup.objects.filter(slugline=slugify(story[0]))
+                slug = slugify(story[0])
+                existing_storygroup = StoryGroup.objects.filter(slugline=slug)
                 if not existing_storygroup.count():
-                    new_storygroup = StoryGroup.objects.create(date=datetime.datetime.now(), slugline=story[0])
+                    new_storygroup = StoryGroup.objects.create(date=datetime.datetime.now(), slugline=slug)
                 else:
                     continue
                 for link in story[1]:
