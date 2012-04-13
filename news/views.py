@@ -70,8 +70,12 @@ def special(request):
             article_exists = Article.objects.filter(headline=story[0])
             if len(article_exists)<1:
                 filler.append("_NewArticle , ")
-                ###################if not in db, make an Article, a StoryGroup w/ date, and check for each Publisher to see if it needs to be entered 
-                new_storygroup = StoryGroup.objects.create(date=datetime.datetime.now(), slugline=story[0])
+                ###################if not in db, make an Article, a StoryGroup w/ date, and check for each Publisher to see if it needs to be entered
+                existing_storygroup = StoryGroup.objects.filter(slugline=slugify(story[0]))
+                if not existing_storygroup.count():
+                    new_storygroup = StoryGroup.objects.create(date=datetime.datetime.now(), slugline=story[0])
+                else:
+                    continue
                 for link in story[1]:
                     if link in uniqueURLS:
                         None
@@ -122,7 +126,7 @@ def special(request):
                         dict_to_json['Raw_Text'] = rawtext
                         JSON_output = json.dumps( dict_to_json )
                         new_article = Article.objects.create(headline=story[0], url=link[1], date=datetime.datetime.now(), group=new_storygroup, raw_text=rawtext, image_link=imagelink, analyzed_text=JSON_output, master=masterBool, publisher=pubObj)
-        except (Article.DoesNotExist, IntegrityError):
+        except Article.DoesNotExist:
             filler.append(" Database error ")
     
     return HttpResponse(filler)
