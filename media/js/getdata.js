@@ -250,9 +250,7 @@ var initChart = function(article_data, column){
                                                 lp = linecount;
                                             }
                                             var word = article_data["Words"][i];
-                                            word = String(word).replace(/[.]/g, "");
-                                            word = String(word).replace(/[']/g, "");
-                                            word = String(word).replace(/ /g, "");
+                                            word = String(word).replace(/[.'& ]/g, "");
                                             return word+" "+ article_data["POS"][i] +" "+"wordrect"+" "+"art_"+column+"_line_"+lplace; 
                                         })
             .attr("id", function(d,i){ 
@@ -379,12 +377,8 @@ var compareCorpora = function(article_data, column){
     article_data["NamedEnts"].forEach(function(d) {
         
         var word = d[1];
-        word = String(word).replace(/[.]/g, "");
-        word = String(word).replace(/[']/g, "");
-        word = String(word).replace(/ /g, "");
-        
-        //if (word == "XL") { console.log("'XL' : article"+column)};
-        
+        word = String(word).replace(/[.'& ]/g, "");
+                
         if (allEntities[word]) { //if entry already exists, add 1 to the frequency and add article it's parent article
             var already = false;
             allEntities[word][1].forEach(function(d){ //some entities are defined more than once, this tests to make sure they only get in once
@@ -924,20 +918,32 @@ var changeWordRects = function(count, conditional){
         dat.forEach(function(d, i) {
             artfile = mainArtSVG.select("#articlefile"+count);
             allwords = artfile.selectAll(".wordrect");
-            allwords[0].forEach(function(d, ii){
-                    d3.select(d).transition()
-    					//.style("fill", function(d) { return d3.rgb("hsl("+d.y+",50,94)"); })
-                        .style("fill", function(d, iii) { 
-                            fq = dataArray[count]["FreqDist"][ii]
-                            if (conditional == "heat"){
-                                color = d3.rgb("hsl("+0+","+(20+fq*6)+","+(90-(fq*0.9))+")");
-                            } else if (conditional == "length"){
-                                color = d3.rgb("hsl("+d*d*20+","+30+","+70+")");
-                            }
-                            return color; 
-                        })
-                        .duration(1100)
-    					.ease("linear",1,1); 
+            dataArray[count]["Important"].forEach(function(d, ii){
+                artfile.selectAll("."+d[0]).transition()
+                    //.style("fill", "#000")
+                    .style("fill", function() { 
+                                    fq = d[1]
+                                    console.log(d[0]+" : "+fq);
+                                    color = d3.rgb("hsl("+0+","+(20+fq*10)+","+(90-(fq*2))+")");
+                                    return color; 
+                                })
+                    .duration(600)
+					.ease("linear",1,1); 
+            });
+            dataArray[count]["NamedEnts"].forEach(function(d, ii){
+                //fq = $("#articlefile"+count+" ."+d[1]).each(function(this){ return $(this).attr('freq');});
+                var word = d[1];
+                word = String(word).replace(/[.'& ]/g, "");
+                console.log(word);
+                artfile.selectAll("."+word).transition()
+                     //.style("fill", "#000")
+                    .style("fill", function() { 
+                                    fq = $("#"+this.id).attr('freq');
+                                    color = d3.rgb("hsl("+0+","+(20+fq*10)+","+(90-(fq*2))+")");
+                                    return color; 
+                                })
+                    .duration(600)
+					.ease("linear",1,1); 
             });
         });
         if(counter < totalstories-1){
@@ -946,5 +952,4 @@ var changeWordRects = function(count, conditional){
         } else {
             counter = 0;
         }
-
 }
