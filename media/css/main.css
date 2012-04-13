@@ -195,3 +195,7 @@ div.clicked {
     margin: 0px 3px;
     color: #666;
 }
+.underColumn {
+    font-family: Oswald-Light;
+    border-bottom: 1px #333 solid;
+}

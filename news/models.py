@@ -5,6 +5,7 @@ import datetime
 class StoryGroup(models.Model):
     date = models.DateTimeField()
     slugline = models.SlugField(blank=True, unique=True)
+    entities = models.TextField(blank=True)
     
     def __unicode__(self):
         return str(self.id)

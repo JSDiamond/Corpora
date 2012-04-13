@@ -412,7 +412,7 @@ var compareCorpora = function(article_data, column){
 
 //////////////////////////////////////////////////////////////////////////////////////////////FUNCTION: Put ink on paper
 var artcolor = d3.interpolate('#596128', '#612848' );
-var publishers = [], bottoms = [];
+var publishers = [], bottoms = [], bottoms_sort = [];
 var writeFactsToScreen = function(){
     ///////////////////////////////////////MAKE A GRADIENT///////////
     var gradient = mainArtSVG.append("svg:svg")
@@ -449,6 +449,7 @@ var writeFactsToScreen = function(){
         artid = mainArtSVG.select("#articlefile"+i);
         bottom = filetrans[0][0].childNodes[filetrans[0][0].childElementCount-2].y.baseVal.value;
         bottoms.push(Math.ceil(bottom));
+        bottoms_sort.push(Math.ceil(bottom));
         
         artid.append("rect")
             .attr('class', 'pub_blocker')
@@ -500,10 +501,10 @@ var writeFactsToScreen = function(){
     });
     
     
-    bottoms_sort = bottoms.sort(sortfunc);
+    bottoms_sort = bottoms_sort.sort(sortfunc);
     function sortfunc(a,b) { return b - a; }
     lowest = bottoms_sort[0];
-    $('#mainArtSVG').stop().animate({ 'height': lowest+60}, 240, 'easeOutQuart', function() { });
+    $('#mainArtSVG').stop().animate({ 'height': lowest+60}, 300, 'easeOutQuart', function() { buildSupplemental(bottoms) });
     
       
     /*
@@ -910,6 +911,29 @@ var moveArticles = function(change){
     });
 }
 
+
+
+//////////////////////////////////////////////////////////////////////////////////////////////FUNCTION: add elements below each article
+var buildSupplemental = function(bottoms){
+    ul = $('#underlist');
+    offHeight = $('#mainArtSVG').outerHeight();
+    console.log(offHeight);
+    bottoms.forEach(function(d,i){
+        ul.append('<li class="underColumn" style="float: left; margin-top: '+(-offHeight+d+50)+'px; margin-left: '+((i*wordmap.w)+(i*spacing)+42)+'px;  width: '+wordmap.w+'px; "><p>Sentiment</p></li>');
+    });
+    //$('.underColumn').each(function(index){ console.log(dataArray[index]['Sentiment'].valueOf()); $(this).append('<p>'+dataArray[index]['Sentiment'].valueOf()+'</p>') });
+   /*
+ $('#SVGoverlay')
+            .append("<div id='removeme"+thisId+"' class='readWindow'> <ul class='sentlist'></ul></div>"); //transy-(-objectY-70)
+        sentenceArray.forEach(function(d,i){
+            thisword = d.split(" ");
+            thisword = thisword.join("");
+            $('.sentlist').append("<li id='"+idArray[i]+"_"+thisword+"' class='innerText'>"+d+"</li>");
+        });
+        $('#removeme'+thisId).css({ "top": (mainOff_top-(-objectY+80))+"px", "left": (transx-(-32))+"px", "text-align":"left", "width": (wordmap.w-(-20))+"px", "max-height": "20px" });
+*/
+    
+}
 
 //////////////////////////////////////////////////////////////////////////////////////////////FUNCTION: transition for all wordrects
 var dat = [1];

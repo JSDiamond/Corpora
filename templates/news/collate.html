@@ -37,6 +37,10 @@
             
             <div id="SVGcontainer"></div>
             
+            <div id="supplemental">
+                <ul id="underlist"></ul>
+            </div>
+            
             <ul style="display: none;">
             {% for article in all_articles %}
                 <li class="pubs"> {{ forloop.counter }} <a href="{{ article.url }}" class="publinks" style="margin-left: 8px">{{ article.publisher|safe }}</a></li>
