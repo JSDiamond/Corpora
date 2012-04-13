@@ -250,7 +250,8 @@ var initChart = function(article_data, column){
                                                 lp = linecount;
                                             }
                                             var word = article_data["Words"][i];
-                                            word = String(word).replace(/[.'-& ]/g, "");
+                                            word = String(word).replace(/[.'& ]/g, "");
+                                            word = String(word).replace(/[-]/g, "");
                                             return word+" "+ article_data["POS"][i] +" "+"wordrect"+" "+"art_"+column+"_line_"+lplace; 
                                         })
             .attr("id", function(d,i){ 
@@ -377,7 +378,8 @@ var compareCorpora = function(article_data, column){
     article_data["NamedEnts"].forEach(function(d) {
         
         var word = d[1];
-        word = String(word).replace(/[.'-& ]/g, "");
+        word = String(word).replace(/[.'& ]/g, "");
+        word = String(word).replace(/[-]/g, "");
                 
         if (allEntities[word]) { //if entry already exists, add 1 to the frequency and add article it's parent article
             var already = false;
@@ -957,7 +959,8 @@ var changeWordRects = function(count, conditional){
             dataArray[count]["NamedEnts"].forEach(function(d, ii){
                 //fq = $("#articlefile"+count+" ."+d[1]).each(function(this){ return $(this).attr('freq');});
                 var word = d[1];
-                word = String(word).replace(/[.'-& ]/g, "");
+                word = String(word).replace(/[.'& ]/g, "");
+                word = String(word).replace(/[-]/g, "");
                 console.log(word);
                 artfile.selectAll("."+word).transition()
                      //.style("fill", "#000")
