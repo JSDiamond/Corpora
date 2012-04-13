@@ -44,6 +44,8 @@ def get_google():
             netloca = urlparse(link)
             if "hostednews/ap/"in link:
                 pubName = "associatedpress"
+            elif "hostednews/afp/"in link:
+                pubName = "afp"
             else:
                 if "www" in netloca.netloc:
                     pubName = netloca.netloc[4:]

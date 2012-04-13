@@ -7,11 +7,11 @@
 
 {% if latest_news %}
     {% with latest_news.0 as article %}
-        <h1>{{ article.1.1.date }}</h1>
+        <h1 style="font-weight: 100; font-size: 36px;"> <span style="font-weight: 600; font-size: 38px;">inarticle :</span> {{ article.1.1.date }}</h1>
     {% endwith %}
     
     {% for story in latest_news.1 %}
-    <div class="story_preview">
+    <div class="story_preview" style="clear: both;">
         {% with story.0 as article %}
             <h3 class="latest_headlines" group="{{ article.group }}">
                 <a href="{{ article.group }}"> {{ story.1|safe }}</a>

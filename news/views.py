@@ -1,3 +1,4 @@
+from django.db import IntegrityError
 from django.http import HttpResponse
 from django.template import Context, loader
 from django.template.defaultfilters import slugify
@@ -70,7 +71,7 @@ def special(request):
             if len(article_exists)<1:
                 filler.append("_NewArticle , ")
                 ###################if not in db, make an Article, a StoryGroup w/ date, and check for each Publisher to see if it needs to be entered 
-                new_storygroup = StoryGroup.objects.create(date=datetime.datetime.now(), slugline=story[0], entities="")
+                new_storygroup = StoryGroup.objects.create(date=datetime.datetime.now(), slugline=story[0])
                 for link in story[1]:
                     if link in uniqueURLS:
                         None
@@ -121,7 +122,7 @@ def special(request):
                         dict_to_json['Raw_Text'] = rawtext
                         JSON_output = json.dumps( dict_to_json )
                         new_article = Article.objects.create(headline=story[0], url=link[1], date=datetime.datetime.now(), group=new_storygroup, raw_text=rawtext, image_link=imagelink, analyzed_text=JSON_output, master=masterBool, publisher=pubObj)
-        except Article.DoesNotExist:
+        except (Article.DoesNotExist, IntegrityError):
             filler.append(" Database error ")
     
     return HttpResponse(filler)
