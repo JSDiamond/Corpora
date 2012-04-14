@@ -130,8 +130,8 @@ def tokenize_text_and_tag_named_entities(text):
     # for each chunk that does not contain a NE, add the word & pos to the list of tokens for the sentence
     for sentence in nltk.sent_tokenize(text):
         tokens = []
-        senttokens = nltk.word_tokenize(sentence)
-        sentLengths.append(len(senttokens))
+        #senttokens = nltk.word_tokenize(sentence)
+        sentLengths.append(sentence)
         for chunk in nltk.ne_chunk(nltk.pos_tag(nltk.word_tokenize(sentence))):
             if hasattr(chunk,  'node'):
                 if chunk.node != 'GPE':
@@ -206,26 +206,29 @@ def annotateToken(word_list, uniqueKey, token, pos, dist, stops, important_list)
 
 # IMPORTANT WORD INDEX FIND & PLACE
 def Find_Important_Words(subdict, text, dist, entString):
-     for idx, d in enumerate(subdict):
+    all_important = set()
+    for idx, d in enumerate(subdict):
         if d[0] in entString:
             for tup in d[1]:
                 inList = list()
                 if tup[3][1] == 'no':
                      tup.append(('other_indexes', 0))
                 else:
-                    for idx2, w in enumerate(text):
-                        if tup[0][1] == w:
-                            inList.append(idx2)
-                    tup.append(('other_indexes', inList))
+                    #for idx2, w in enumerate(text):
+                        #if tup[0][1] == w:
+                            #inList.append(idx2)
+                    tup.append(('other_indexes', 0))
         else:
             inList = list()
             if d[1][3][1] == 'no': 
                 d[1].append(('other_indexes', 0))
             else:
-                for idx2, w in enumerate(text):
-                    if d[1][0][1] == w:
-                        inList.append(idx2)
-                d[1].append(('other_indexes', inList))
+                all_important.add(d[1][0][1])
+                #for idx2, w in enumerate(text):
+                    #if d[1][0][1] == w:
+                        #inList.append(idx2)
+                d[1].append(('other_indexes', 0))
+    return all_important
 ############################################################################################
 
 

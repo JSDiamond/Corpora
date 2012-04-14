@@ -19,6 +19,13 @@ $(document).ready(function(){
         $(this).toggleClass('clicked');
     });
     
+    $('#importantnet').click(function(){
+        if(!buildone){
+            buildImportantNetwork(links);
+            buildone = true;
+        }
+    });
+    
     $('#heatbutton').click(function(){
         changeWordRects(counter, "heat");           
     });  
@@ -29,6 +36,8 @@ $(document).ready(function(){
             namedLevels(level,(r/5)+(30-totalstories*2.4));  //70+(40-totalstories*6)-(totalstories)
             level--;
         }
+        $('#familybutton').show();
+        $('#importantnet').show();
     });
     
 });
@@ -38,9 +47,9 @@ $(document).ready(function(){
 var filesArray; //use this to store the svg objects for each article (set by selectAll class)
 var articlePubs = [], dataArray = []; //use this to store the data objects for each article
 var w = window.innerWidth-120, h = window.innerHeight-0, w2 = w*0.5, h2 = h*0.5;
-var articleStorageArray, totalstories, mainArtSVG, levelsSVG, langmap, articlefile, simInfo;
+var articleStorageArray, totalstories, mainArtSVG, levelsSVG, netowrkSVG, langmap, articlefile, simInfo;
 var wordmap = { w: 0, h: 0, boxH: 6},  spacing  = 40, wordCount = 0;
-var namedOnScreen = false, dat = [1];
+var namedOnScreen = false, dat = [1], buildone = false;
 var entitiesString = ['PERSON', 'ORGANIZATION', 'LOCATION', 'DATE', 'TIME', 'MONEY', 'PERCENT', 'FACILITY', 'GSP'];
 /* var namedColors = {'PERSON': 'AC6A51', 'ORGANIZATION': '537EA3', 'LOCATION': '569677', 'DATE': 'D5D964', 'TIME': '773D99', 'MONEY': 'C8CB6D', 'PERCENT': 'A6984B', 'FACILITY': 'BF9D54', 'GSP': 'AABA56'}; */
 /* var namedColors = {'PERSON': '987162', 'ORGANIZATION': '666884', 'LOCATION': '59826E', 'DATE': 'D5D964', 'TIME': '773D99', 'MONEY': 'B0B177', 'PERCENT': 'A6984B', 'FACILITY': 'A08A64', 'GSP': 'AABA56'}; */
@@ -68,7 +77,15 @@ var setupSVG = function(){
         .attr("height", 0)
         .attr("viewBox","0 0 0 0")
       .append("g")
-        .attr("transform", "translate(20,2)");
+        .attr("transform", "translate(40,2)");
+    
+    netowrkSVG = d3.select("#SVGcontainer").append("svg:svg") //SVG that holds all individual charts
+        .attr("id", "netowrkSVG")
+        .attr("width", w)
+        .attr("height", 0)
+        .attr("viewBox","0 0 0 0")
+      .append("g")
+        .attr("transform", "translate(40,2)");
 
     mainArtSVG = d3.select("#SVGcontainer").append("svg:svg") //SVG that holds all individual charts
         .attr("id", "mainArtSVG")
@@ -129,6 +146,7 @@ var parseArticleData = function (articleJSON, callback, column){
              numbers = [],
              quotes = [],
              important = [],
+             imporatnt_named = []
              sentlenghts = [];
         
         var parseJSON = function(article_corp) { //Parse JSON into categories
@@ -143,12 +161,16 @@ var parseArticleData = function (articleJSON, callback, column){
             
             sentiment.push(article_corp.Sentiment)//push sentiment analysis to data
             
-            article_corp.SentLengths.forEach(function(d) {
-                sentlenghts.push(d); //push all sentence lenghts to data
-            });
+            //article_corp.SentLengths.forEach(function(d) {
+            //    sentlenghts.push(d); //push all sentence lenghts to data
+            //});
             
-            article_corp.Numbers.forEach(function(d) {
-                numbers.push(d); //push all numbers lenghts to data
+            //article_corp.Numbers.forEach(function(d) {
+            //    numbers.push(d); //push all numbers lenghts to data
+            //});
+            
+            article_corp.Imporatnt_Named.forEach(function(d) {
+                imporatnt_named.push(d); //push all Named with sentence-related impotrant to data
             });
             
             article_corp.Quotes.forEach(function(d) {
@@ -201,6 +223,7 @@ var parseArticleData = function (articleJSON, callback, column){
         "Numbers": numbers,
         "Quotes": quotes,
         "Important": important,
+        "Imporatnt_Named": imporatnt_named,
     }
     //console.log(articleData);
     dataArray.push(articleData);
@@ -373,6 +396,7 @@ var initChart = function(article_data, column){
 
 //////////////////////////////////////////////////////////////////////////////////////////////FUNCTION: go through each article and make concordances 
 var allEntities = {}, entitiesList = []; //this is used for Named Entities Concordance
+var allImportant = {}, importantList = [], links = []; //this is used for Important Words Concordance
 var compareCorpora = function(article_data, column){
     
     article_data["NamedEnts"].forEach(function(d) {
@@ -408,9 +432,77 @@ var compareCorpora = function(article_data, column){
         }
     });
     
+    article_data["Imporatnt_Named"].forEach(function(d) {
+        
+        var word = d[0];
+        word = String(word).replace(/[.'& ]/g, "");
+        word = String(word).replace(/[-]/g, "");
+                
+        if (allImportant[word]) { //if entry already exists, add 1 to the frequency and add article it's parent article
+            d[1].forEach(function(dd,i){
+                allImportant[word].push(dd);
+            })
+        } else {                //if entry is new, set frequency 1 and add article it is from
+            allImportant[word] = [];
+            d[1].forEach(function(dd,i){
+                allImportant[word].push(dd);
+            })
+            //entitiesList.push(word);
+        }
+    });
+    
+    
+    article_data["Imporatnt_Named"].forEach(function(d,i){
+        var word = d[0];
+        word = String(word).replace(/[.'& ]/g, "");
+        word = String(word).replace(/[-]/g, "");
+        allImportant[word].forEach(function(dd, i){
+            links.push({source: word, target: dd, type: "direct", x: 0, y: 0})
+        });        
+    });
+        
+    
 }
  
+var nodes = {};
 
+var buildImportantNetwork = function(linkz) {
+    $('#netowrkSVG').stop().animate({ 'height': levelHeight}, 400, 'easeOutQuart', function() { });
+    // Compute the distinct nodes from the links.
+    linkz.forEach(function(link, i) {
+        //topset = $('#'+link.source).offset().top;
+        arclocs = {};
+        arc = levelsSVG.selectAll('#'+link.source); //////////////get the translates for the arc and it's text
+        ntext = levelsSVG.selectAll('#'+link.source);
+        console.log(link.source);
+        trans = arc[0][0].attributes[4]['nodeValue'];
+        ntext = arc[0][0].childNodes[1].attributes[0]['nodeValue'];
+            console.log(ntext);
+        transVal = trans.match(/translate\(([^}]+)\)rotate/);
+        transVal = transVal[1].split(','); 
+        ntextVal = ntext.match(/translate\(([^}]+)\) rotate/);
+        console.log(ntextVal);
+        ntextVal = ntextVal[1].split(','); 
+        arclocs.x1 = transVal[0];
+        arclocs.y1 = transVal[1];
+        arclocs.x2 = ntextVal[0];
+        arclocs.y2 = ntextVal[1];
+            console.log(arclocs);
+        
+        var rrrr = netowrkSVG.selectAll("rect")
+            .data(arclocs) //article_data["WordLength"]
+        .enter().append("rect")
+            .attr('width', 4)
+            .attr('height', 4)
+            .attr('fill','#000')
+            .attr('translate', function(d){ return "transform("+d.x1+" ,"+d.y1+")"; })
+    
+            
+        netowrkSVG.append()
+      //link.source = nodes[link.source] || (nodes[link.source] = {name: link.source, class: "link", x: (600-(i*100)), y: (100+(i*50)), charge: 0, fixed: true});
+      //link.target = nodes[link.target] || (nodes[link.target] = {name: link.target, class: "link slink", x: (w/2), y: (h/2), charge: -200});
+    });
+}
 
 //////////////////////////////////////////////////////////////////////////////////////////////FUNCTION: Put ink on paper
 var artcolor = d3.interpolate('#596128', '#612848' );
@@ -477,7 +569,7 @@ var writeFactsToScreen = function(){
             .style("fill", "#222")
             .style("font-size", "19px")
             .style('text-transform', 'uppercase')
-            .style("font-family", "Oswald-Light")
+            .style("font-family", "Oswald-Regular")
             .text(publishers[i]); 
 /*
             .on('mouseover',function(){

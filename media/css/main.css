@@ -5,7 +5,7 @@
 
 @font-face {
 	font-family: Oswald-Light;
-	src: url('Oswald-Light.otf');
+	src: url('Oswald-Light.otf'):
 }
 @font-face {
 	font-family: Oswald-Regular;
@@ -33,7 +33,7 @@ a:hover {
 }
 a.publinks {
     color: #444;
-    font-family: Oswald-Light;
+    /* font-family: Oswald-Light; */
     text-transform: uppercase;
 }
 a.publinks:hover {
@@ -44,7 +44,7 @@ h3 a {
     color: #222;
     cursor: pointer;
     font-size: 30px;
-    font-family: Oswald-Bold;
+    /* font-family: Oswald-Bold; */
     border-bottom: 3px solid #fff;
 }
 h3 a:hover {
@@ -69,6 +69,7 @@ ul h3.latest_headlines {
 
 #SVGcontainer {
     background-color: #fff;
+    position: relative;
 }
 .story_preview {
     padding: 20px 20px;
@@ -113,14 +114,15 @@ div.clicked {
     letter-spacing: 1px;
     font-weight: 100;
     cursor: pointer;
-     font-family: "Oswald-Light"
+     font-family: "Oswald-Regular"
 }
 .button:hover {
     background-color: #555;
     color: #eee;
 }
-#heatbutton {
+#familybutton, #importantnet {
     float: left;
+    display: none;
 }
 #SVGoverlay {
     position: relative;
@@ -196,6 +198,15 @@ div.clicked {
     color: #666;
 }
 .underColumn {
-    font-family: Oswald-Light;
+    font-family: Oswald-Regular;
     border-bottom: 1px #333 solid;
+}
+#supplemental {
+    position: relative;
+}
+#netowrkSVG {
+    position: absolute;
+    background-color: rgba(0,100);
+    top: 0px;
+    left: 0px;
 }
