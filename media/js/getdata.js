@@ -42,6 +42,12 @@ $(document).ready(function(){
     
 });
 
+//////////////////////////////////////////////////////////////////////////////////////////////FUNCTION: clean text for class or id selectors
+var CleanNJoinText = function(word){
+    word = String(word).replace(/[.'& ]/g, "");
+    word = String(word).replace(/[-]/g, "");
+    return word;
+}
 
 //////////////////////////////////////////////////////////////////////////////////////////////VARIABLES: starter globals
 var filesArray; //use this to store the svg objects for each article (set by selectAll class)
@@ -272,9 +278,7 @@ var initChart = function(article_data, column){
                                                 prevd3 += d+1;
                                                 lp = linecount;
                                             }
-                                            var word = article_data["Words"][i];
-                                            word = String(word).replace(/[.'& ]/g, "");
-                                            word = String(word).replace(/[-]/g, "");
+                                            var word = CleanNJoinText(article_data["Words"][i]);
                                             return word+" "+ article_data["POS"][i] +" "+"wordrect"+" "+"art_"+column+"_line_"+lplace; 
                                         })
             .attr("id", function(d,i){ 
@@ -396,14 +400,12 @@ var initChart = function(article_data, column){
 
 //////////////////////////////////////////////////////////////////////////////////////////////FUNCTION: go through each article and make concordances 
 var allEntities = {}, entitiesList = []; //this is used for Named Entities Concordance
-var allImportant = {}, importantList = [], links = []; //this is used for Important Words Concordance
+var allImportant = {}, links = []; //this is used for Important Words Concordance
 var compareCorpora = function(article_data, column){
     
     article_data["NamedEnts"].forEach(function(d) {
         
-        var word = d[1];
-        word = String(word).replace(/[.'& ]/g, "");
-        word = String(word).replace(/[-]/g, "");
+        var word = CleanNJoinText(d[1]);
                 
         if (allEntities[word]) { //if entry already exists, add 1 to the frequency and add article it's parent article
             var already = false;
@@ -434,15 +436,17 @@ var compareCorpora = function(article_data, column){
     
     article_data["Imporatnt_Named"].forEach(function(d) {
         
-        var word = d[0];
-        word = String(word).replace(/[.'& ]/g, "");
-        word = String(word).replace(/[-]/g, "");
-                
-        if (allImportant[word]) { //if entry already exists, add 1 to the frequency and add article it's parent article
+        var word = CleanNJoinText(d[0]);
+        var importantLog = {};
+        if (allImportant[word]) { //if entry already exists
             d[1].forEach(function(dd,i){
-                allImportant[word].push(dd);
+                if(!importantLog[dd]){
+                    allImportant[word].push(dd);
+                    importantLog[dd] = "in";
+                    console.log(word+" : "+dd);
+                }
             })
-        } else {                //if entry is new, set frequency 1 and add article it is from
+        } else {                //if entry is new
             allImportant[word] = [];
             d[1].forEach(function(dd,i){
                 allImportant[word].push(dd);
@@ -453,56 +457,159 @@ var compareCorpora = function(article_data, column){
     
     
     article_data["Imporatnt_Named"].forEach(function(d,i){
-        var word = d[0];
-        word = String(word).replace(/[.'& ]/g, "");
-        word = String(word).replace(/[-]/g, "");
+        var word = CleanNJoinText(d[0]);
         allImportant[word].forEach(function(dd, i){
             links.push({source: word, target: dd, type: "direct", x: 0, y: 0})
         });        
     });
-        
     
 }
  
-var nodes = {};
-
+var nodes = {}, pathlink, force, arclocs = [{}];
+    
 var buildImportantNetwork = function(linkz) {
+    console.log(allImportant);
     $('#netowrkSVG').stop().animate({ 'height': levelHeight}, 400, 'easeOutQuart', function() { });
     // Compute the distinct nodes from the links.
     linkz.forEach(function(link, i) {
-        //topset = $('#'+link.source).offset().top;
-        arclocs = {};
-        arc = levelsSVG.selectAll('#'+link.source); //////////////get the translates for the arc and it's text
+        arcoff = $('#tx_'+link.source).offset();
+        arccolor = $('#rp_'+link.source).attr('fill');
+        
+        /*
+arc = levelsSVG.selectAll('#'+link.source); //////////////get the translates for the arc and it's text
         ntext = levelsSVG.selectAll('#'+link.source);
-        console.log(link.source);
+            //console.log(link.source);
         trans = arc[0][0].attributes[4]['nodeValue'];
         ntext = arc[0][0].childNodes[1].attributes[0]['nodeValue'];
-            console.log(ntext);
+            //console.log(ntext);
         transVal = trans.match(/translate\(([^}]+)\)rotate/);
         transVal = transVal[1].split(','); 
         ntextVal = ntext.match(/translate\(([^}]+)\) rotate/);
-        console.log(ntextVal);
+            //console.log(ntextVal);
         ntextVal = ntextVal[1].split(','); 
-        arclocs.x1 = transVal[0];
-        arclocs.y1 = transVal[1];
-        arclocs.x2 = ntextVal[0];
-        arclocs.y2 = ntextVal[1];
-            console.log(arclocs);
-        
-        var rrrr = netowrkSVG.selectAll("rect")
-            .data(arclocs) //article_data["WordLength"]
-        .enter().append("rect")
-            .attr('width', 4)
-            .attr('height', 4)
-            .attr('fill','#000')
-            .attr('translate', function(d){ return "transform("+d.x1+" ,"+d.y1+")"; })
-    
-            
-        netowrkSVG.append()
-      //link.source = nodes[link.source] || (nodes[link.source] = {name: link.source, class: "link", x: (600-(i*100)), y: (100+(i*50)), charge: 0, fixed: true});
-      //link.target = nodes[link.target] || (nodes[link.target] = {name: link.target, class: "link slink", x: (w/2), y: (h/2), charge: -200});
+        arclocs[i] = {x1: transVal[0], y1: transVal[1], x2: ntextVal[0], y2: ntextVal[0]};
+*/
+        //console.log(arclocs[i]);
+        /*
+arclocs[i]['y1'] = transVal[1];
+        arclocs[i]['x2'] = ntextVal[0];
+        arclocs[i]['y2'] = ntextVal[1];
+*/
+            //console.log(arclocs);           
+        link.source = nodes[link.source] || (nodes[link.source] = {name: "", class: "link", x: (arcoff.left-50), y: (arcoff.top-180), charge: 0, fixed: true, color: arccolor, stroke: '#fff', radius: 6});
+        //link.source = nodes[link.source] || (nodes[link.source] = {name: link.source, class: "link", x: (arclocs[i].x1-arclocs[i].x2), y: (arclocs[i].y1+arclocs[i].y2), charge: 0, fixed: true});
+
+        link.target = nodes[link.target] || (nodes[link.target] = {name: link.target, class: "link slink", x: (w/2), y: levelHeight/2, charge: -2000, color: '#777', stroke: 'none', radius: 4});
+        //$('#levelsSVG').find('g').find('.infoblock').hide();
     });
+        
+    force = d3.layout.force()
+        .nodes(d3.values(nodes))
+        .links(links)
+        .size([w, h])
+        .linkDistance(10)
+        .charge(function(d) { return d.charge; })
+        .on("tick", tick)
+        .friction(0.9)
+        .gravity(0)
+        .start();
+    
+    netowrkSVG.append("defs").selectAll("marker")
+        .data(["loose", "direct", "inherited"])
+      .enter().append("marker")
+        .attr("id", String)
+        .attr("viewBox", "0 -5 10 10")
+        .attr("refX", 16)
+        .attr("refY", -1.5)
+        .attr("markerWidth", 5)
+        .attr("markerHeight", 5)
+        .attr("orient", "auto")
+      .append("path")
+        .attr("d", "M0,-5L10,0L0,5");//SVG triangle
+    
+    
+    pathlink = netowrkSVG.append("g").selectAll("path")
+        .data(force.links())
+      .enter().append("path")
+        .attr("class", function(d) { return "link " + d.type; })
+        .style("stroke-width", 1)
+        .attr('opacity', 0.2);
+        //.attr("marker-end", function(d) { return "url(#" + d.type + ")"; })
+
+    var circle = netowrkSVG.append("g").selectAll("circle")
+        .data(force.nodes())
+      .enter().append("circle")
+        .attr("class", function(d) { return d.class; })
+        .attr("r", function(d) { return d.radius; })
+        .style("fill", function(d) { return d.color; })
+        .style("stroke", function(d) { return d.stroke; })
+        .call(force.drag);
+    
+    var text = netowrkSVG.append("g").selectAll("g")
+        .data(force.nodes())
+      .enter().append("g")
+        .style("font-size", "10px")
+        .style("font-family", "Oswald-Regular");
+    
+    // A copy of the text with a thick white stroke for legibility.
+    text.append("text")
+        .attr("x", 8)
+        .attr("y", ".31em")
+        .attr("class", "shadow")
+        .text(function(d) { return d.name; });
+    
+    text.append("text")
+        .attr("x", 8)
+        .attr("y", ".31em")
+        .style("fill", "#222")
+        //.style("display", "none")
+        .text(function(d) { return d.name; });    
+
+    function tick() {
+    // Use elliptical arc path segments to doubly-encode directionality.
+      pathlink.attr("d", function(d) {
+        var dx = d.target.x - d.source.x,
+            dy = d.target.y - d.source.y,
+            dr = Math.sqrt(dx * dx + dy * dy); //Math.sqrt(dx * dx + dy * dy)
+            //console.log(d.source.name +" : "+ dr);
+        return "M" + d.source.x + "," + d.source.y + "A" + (-dr*2) + "," + dr*2 + " 0 0,1 " + d.target.x + "," + d.target.y;
+      }).style("stroke-width", 1);
+    
+      //slinks = d3.selectAll('.slink');
+      //console.log(slinks);
+      circle.attr("transform", function(d) {
+        return "translate(" + d.x + "," + d.y + ")";
+      });
+    
+      text.attr("transform", function(d) {
+        return "translate(" + d.x + "," + d.y + ")";
+      });
+    }
+
+
 }
+
+var tick = function() {
+// Use elliptical arc path segments to doubly-encode directionality.
+  pathlink.attr("d", function(d) {
+    var dx = d.target.x - d.source.x,
+        dy = d.target.y - d.source.y,
+        dr = Math.sqrt(dx * dx + dy * dy); //Math.sqrt(dx * dx + dy * dy)
+        //console.log(d.source.name +" : "+ dr);
+    return "M" + d.source.x + "," + d.source.y + "A" + (-dr*2) + "," + dr*2 + " 0 0,1 " + d.target.x + "," + d.target.y;
+  }).style("stroke-width", 1);
+
+  //slinks = d3.selectAll('.slink');
+  //console.log(slinks);
+  circle.attr("transform", function(d) {
+    return "translate(" + d.x + "," + d.y + ")";
+  });
+
+  text.attr("transform", function(d) {
+    return "translate(" + d.x + "," + d.y + ")";
+  });
+}
+
 
 //////////////////////////////////////////////////////////////////////////////////////////////FUNCTION: Put ink on paper
 var artcolor = d3.interpolate('#596128', '#612848' );
@@ -841,6 +948,7 @@ var namedLevels = function(level, change){
         				});
 */
             paths = arcs.append("path")
+                .attr("id", function(d, i) { if(nodeWords[i]=="NULL") { return "NULL" }else{ return 'rp_'+CleanNJoinText($('.'+nodeWords[i]).attr('word')); } })
                 .attr('class', 'ringpath')
                 //.attr("fill", function(d,i) { return d3.rgb("hsl("+nodeArray[i]*nodeArray[i]*10+",45,40)"); })
                 .attr('fill', function(d,i) { return namedColors[nodePOS[i]] })
@@ -868,6 +976,7 @@ var namedLevels = function(level, change){
                                         return "translate(" + arc.centroid(d) + ") rotate("+ angle +")"; 
                                     })
         .attr("dy", ".35em")
+        .attr("id", function(d, i) { if(nodeWords[i]=="NULL") { return "NULL" }else{ return 'tx_'+CleanNJoinText($('.'+nodeWords[i]).attr('word')); } })
         .attr("class", "namedent")
         .attr("fill", "#3c3c3c")
         .style('cursor', 'pointer')
@@ -1050,9 +1159,7 @@ var changeWordRects = function(count, conditional){
             });
             dataArray[count]["NamedEnts"].forEach(function(d, ii){
                 //fq = $("#articlefile"+count+" ."+d[1]).each(function(this){ return $(this).attr('freq');});
-                var word = d[1];
-                word = String(word).replace(/[.'& ]/g, "");
-                word = String(word).replace(/[-]/g, "");
+                var word = CleanNJoinText(d[1]);
                 console.log(word);
                 artfile.selectAll("."+word).transition()
                      //.style("fill", "#000")

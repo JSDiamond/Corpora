@@ -194,7 +194,7 @@ def annotateToken(word_list, uniqueKey, token, pos, dist, stops, important_list)
         uniqueKey[token] = 1
         if token in stops:
             word_sublist.append(('important', 'no'))
-        elif len(token) > 3 and dist[token] > 2:
+        elif len(token) > 3 and dist[token] > 3:
             word_sublist.append(('important', 'yes'))
             important_list.append((token, dist[token]))
         else:
