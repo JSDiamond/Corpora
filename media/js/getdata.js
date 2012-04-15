@@ -400,7 +400,7 @@ var initChart = function(article_data, column){
 
 //////////////////////////////////////////////////////////////////////////////////////////////FUNCTION: go through each article and make concordances 
 var allEntities = {}, entitiesList = []; //this is used for Named Entities Concordance
-var allImportant = {}, links = []; //this is used for Important Words Concordance
+var allImportant = {}, wordtrack = {}, links = []; //this is used for Important Words Concordance
 var compareCorpora = function(article_data, column){
     
     article_data["NamedEnts"].forEach(function(d) {
@@ -434,7 +434,7 @@ var compareCorpora = function(article_data, column){
         }
     });
     
-    article_data["Imporatnt_Named"].forEach(function(d) {
+    article_data["Imporatnt_Named"].forEach(function(d, idx) {
         
         var word = CleanNJoinText(d[0]);
         var importantLog = {};
@@ -443,7 +443,6 @@ var compareCorpora = function(article_data, column){
                 if(!importantLog[dd]){
                     allImportant[word].push(dd);
                     importantLog[dd] = "in";
-                    console.log(word+" : "+dd);
                 }
             })
         } else {                //if entry is new
@@ -460,6 +459,7 @@ var compareCorpora = function(article_data, column){
         var word = CleanNJoinText(d[0]);
         allImportant[word].forEach(function(dd, i){
             links.push({source: word, target: dd, type: "direct", x: 0, y: 0})
+            wordtrack[dd] = wordtrack.length;
         });        
     });
     
@@ -474,7 +474,7 @@ var buildImportantNetwork = function(linkz) {
     linkz.forEach(function(link, i) {
         arcoff = $('#tx_'+link.source).offset();
         arccolor = $('#rp_'+link.source).attr('fill');
-        
+                
         /*
 arc = levelsSVG.selectAll('#'+link.source); //////////////get the translates for the arc and it's text
         ntext = levelsSVG.selectAll('#'+link.source);
@@ -499,10 +499,10 @@ arclocs[i]['y1'] = transVal[1];
         link.source = nodes[link.source] || (nodes[link.source] = {name: "", class: "link", x: (arcoff.left-50), y: (arcoff.top-180), charge: 0, fixed: true, color: arccolor, stroke: '#fff', radius: 6});
         //link.source = nodes[link.source] || (nodes[link.source] = {name: link.source, class: "link", x: (arclocs[i].x1-arclocs[i].x2), y: (arclocs[i].y1+arclocs[i].y2), charge: 0, fixed: true});
 
-        link.target = nodes[link.target] || (nodes[link.target] = {name: link.target, class: "link slink", x: (w/2), y: levelHeight/2, charge: -2000, color: '#777', stroke: 'none', radius: 4});
-        //$('#levelsSVG').find('g').find('.infoblock').hide();
+        link.target = nodes[link.target] || (nodes[link.target] = {name: link.target, class: "link slink", x: wordtrack[link.target]*20, y: 510, charge: -2000, color: '#777', stroke: 'none', radius: 4}); //x: (w/2), y: levelHeight/2        
     });
-        
+    //$('#levelsSVG').find('g').find('.infoblock').hide();
+      
     force = d3.layout.force()
         .nodes(d3.values(nodes))
         .links(links)
@@ -511,7 +511,7 @@ arclocs[i]['y1'] = transVal[1];
         .charge(function(d) { return d.charge; })
         .on("tick", tick)
         .friction(0.9)
-        .gravity(0)
+        .gravity(10)
         .start();
     
     netowrkSVG.append("defs").selectAll("marker")
@@ -531,19 +531,35 @@ arclocs[i]['y1'] = transVal[1];
     pathlink = netowrkSVG.append("g").selectAll("path")
         .data(force.links())
       .enter().append("path")
-        .attr("class", function(d) { return "link " + d.type; })
+        .attr("class", function(d) { return "link " + d.type +" link_"+d.target.name; })
         .style("stroke-width", 1)
-        .attr('opacity', 0.2);
+        .attr('opacity', 0.2)
+        .style('display', 'none');
         //.attr("marker-end", function(d) { return "url(#" + d.type + ")"; })
 
     var circle = netowrkSVG.append("g").selectAll("circle")
         .data(force.nodes())
       .enter().append("circle")
+        .attr("id", function(d) { return d.name; })
         .attr("class", function(d) { return d.class; })
         .attr("r", function(d) { return d.radius; })
+        .attr('opacity', 0.75)
         .style("fill", function(d) { return d.color; })
         .style("stroke", function(d) { return d.stroke; })
-        .call(force.drag);
+        //.call(force.drag)
+        //.attr("transform", function(d, i) {
+        //            return "translate(" + d.x + "," + d.y + ")";
+        //          })
+        .on('mouseover',function(){
+                                    if(this.id != ""){
+                                        $('.link_'+this.id).show();
+                                    }
+                				})
+        .on('mouseout',function(){
+                                    if(this.id != ""){
+                                        $('.link_'+this.id).hide();
+                                    }
+                				});
     
     var text = netowrkSVG.append("g").selectAll("g")
         .data(force.nodes())
@@ -556,32 +572,49 @@ arclocs[i]['y1'] = transVal[1];
         .attr("x", 8)
         .attr("y", ".31em")
         .attr("class", "shadow")
-        .text(function(d) { return d.name; });
+        .text(function(d) { return d.name; })
+        .attr('transform', 'rotate(-45)');
     
     text.append("text")
         .attr("x", 8)
         .attr("y", ".31em")
         .style("fill", "#222")
         //.style("display", "none")
-        .text(function(d) { return d.name; });    
-
+        .text(function(d) { return d.name; })
+        .attr('transform', 'rotate(-45)'); 
+        
+    var slinks = $('.slink').length;
+    var termPlace = d3.scale.linear()
+            .domain([0, slinks])
+            .range([0, w]); 
+    
+/*
+    d3.selectAll('.slink').transition()
+            
+			.attr("transform", function(d,i){ console.log("fuck you"); return "translate("+i*10+",510)"; })
+			.duration(200)
+			.ease("linear",1,1); 
+*/
+    /*
+$('.slink').each(function(index){
+        console.log(this);
+    })
+*/
+    
     function tick() {
     // Use elliptical arc path segments to doubly-encode directionality.
-      pathlink.attr("d", function(d) {
+      pathlink.attr("d", function(d, i) {
         var dx = d.target.x - d.source.x,
             dy = d.target.y - d.source.y,
             dr = Math.sqrt(dx * dx + dy * dy); //Math.sqrt(dx * dx + dy * dy)
-            //console.log(d.source.name +" : "+ dr);
         return "M" + d.source.x + "," + d.source.y + "A" + (-dr*2) + "," + dr*2 + " 0 0,1 " + d.target.x + "," + d.target.y;
       }).style("stroke-width", 1);
     
-      //slinks = d3.selectAll('.slink');
-      //console.log(slinks);
-      circle.attr("transform", function(d) {
+      circle.attr("transform", function(d, i) {
         return "translate(" + d.x + "," + d.y + ")";
       });
     
-      text.attr("transform", function(d) {
+      text.attr("transform", function(d, i) {
         return "translate(" + d.x + "," + d.y + ")";
       });
     }
