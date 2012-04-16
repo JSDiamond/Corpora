@@ -54,7 +54,7 @@ var filesArray; //use this to store the svg objects for each article (set by sel
 var articlePubs = [], dataArray = []; //use this to store the data objects for each article
 var w = window.innerWidth-120, h = window.innerHeight-0, w2 = w*0.5, h2 = h*0.5;
 var articleStorageArray, totalstories, mainArtSVG, levelsSVG, netowrkSVG, langmap, articlefile, simInfo;
-var wordmap = { w: 0, h: 0, boxH: 6},  spacing  = 40, wordCount = 0;
+var wordmap = { w: 0, h: 0, boxH: 6},  spacing  = 34, wordCount = 0;
 var namedOnScreen = false, dat = [1], buildone = false;
 var entitiesString = ['PERSON', 'ORGANIZATION', 'LOCATION', 'DATE', 'TIME', 'MONEY', 'PERCENT', 'FACILITY', 'GSP'];
 /* var namedColors = {'PERSON': 'AC6A51', 'ORGANIZATION': '537EA3', 'LOCATION': '569677', 'DATE': 'D5D964', 'TIME': '773D99', 'MONEY': 'C8CB6D', 'PERCENT': 'A6984B', 'FACILITY': 'BF9D54', 'GSP': 'AABA56'}; */
@@ -496,7 +496,7 @@ arclocs[i]['y1'] = transVal[1];
         arclocs[i]['y2'] = ntextVal[1];
 */
             //console.log(arclocs);           
-        link.source = nodes[link.source] || (nodes[link.source] = {name: "", class: "link", x: (arcoff.left-50), y: (arcoff.top-180), charge: 0, fixed: true, color: arccolor, stroke: '#fff', radius: 6});
+        link.source = nodes[link.source] || (nodes[link.source] = {name: "", class: "link", x: (arcoff.left-50), y: (arcoff.top-162), charge: 0, fixed: true, color: arccolor, stroke: '#fff', radius: 6});
         //link.source = nodes[link.source] || (nodes[link.source] = {name: link.source, class: "link", x: (arclocs[i].x1-arclocs[i].x2), y: (arclocs[i].y1+arclocs[i].y2), charge: 0, fixed: true});
 
         link.target = nodes[link.target] || (nodes[link.target] = {name: link.target, class: "link slink", x: wordtrack[link.target]*20, y: 510, charge: -2000, color: '#777', stroke: 'none', radius: 4}); //x: (w/2), y: levelHeight/2        
@@ -565,7 +565,8 @@ arclocs[i]['y1'] = transVal[1];
         .data(force.nodes())
       .enter().append("g")
         .style("font-size", "10px")
-        .style("font-family", "Oswald-Regular");
+        .style("font-family", "Oswald")
+        .style("font-weight", "600");
     
     // A copy of the text with a thick white stroke for legibility.
     text.append("text")
@@ -646,7 +647,7 @@ var tick = function() {
 
 //////////////////////////////////////////////////////////////////////////////////////////////FUNCTION: Put ink on paper
 var artcolor = d3.interpolate('#596128', '#612848' );
-var publishers = [], bottoms = [], bottoms_sort = [];
+var publishers = [], bottoms = [], bottoms_sort = [], artid;
 var writeFactsToScreen = function(){
     ///////////////////////////////////////MAKE A GRADIENT///////////
     var gradient = mainArtSVG.append("svg:svg")
@@ -685,13 +686,24 @@ var writeFactsToScreen = function(){
         bottoms.push(Math.ceil(bottom));
         bottoms_sort.push(Math.ceil(bottom));
         
-        artid.append("rect")
+        
+        artid.append('svg:image')
+            .attr("x", -60)
+            .attr("y", -33)
+            .attr("width", wordmap.w)
+            .attr("height", 26)
+            .attr('xlink:href', '/media/images/pape_fade.png');
+        
+        /*
+artid.append("rect")
             .attr('class', 'pub_blocker')
             .attr("x", -76)
             .attr("y", -33)
             .attr("width", wordmap.w)
-            .attr("height", 26)
-            .style("fill", "url(#gradient)");
+            .attr("height", 26);
+*/
+            //.style("fill", "url(#gradient)");rgb(250,240,242) url(/media/images/pape_light.png) repeat 0 0
+            //.style("fill", "rgb(250,240,242) url(/media/images/pape_fade.png) repeat 0 0");
         artid.append("rect")
             .attr("id", "article"+i+"_publight")
             .attr('class', 'pub_highlight')
@@ -709,7 +721,8 @@ var writeFactsToScreen = function(){
             .style("fill", "#222")
             .style("font-size", "19px")
             .style('text-transform', 'uppercase')
-            .style("font-family", "Oswald-Regular")
+            .style("font-family", "Oswald")
+            .style("font-weight", "200")
             .text(publishers[i]); 
 /*
             .on('mouseover',function(){
@@ -733,6 +746,13 @@ var writeFactsToScreen = function(){
             .attr("y2", bottom+16)
             .style("stroke", "#222");        
     });
+    
+     artid.append('svg:image')
+            .attr("x", wordmap.w-20)
+            .attr("y", -33)
+            .attr("width", wordmap.w)
+            .attr("height", 26)
+            .attr('xlink:href', '/media/images/pape_fade.png');
     
     
     bottoms_sort = bottoms_sort.sort(sortfunc);
@@ -814,7 +834,7 @@ var makeWordBox = function(obj){
             thisword = thisword.join("");
             $('.sentlist').append("<li id='"+idArray[i]+"_"+thisword+"' class='innerText'>"+d+"</li>");
         });
-        $('#removeme'+thisId).css({ "top": (mainOff_top-(-objectY+80))+"px", "left": (transx-(-32))+"px", "text-align":"left", "width": (wordmap.w-(-20))+"px", "max-height": "20px" });
+        $('#removeme'+thisId).css({ "top": (mainOff_top-(-objectY+68))+"px", "left": (transx-(-32))+"px", "text-align":"left", "width": (wordmap.w-(-20))+"px", "max-height": "20px" });
         $('#innerText'+thisId).css({ "top": "0px", "left": woffset+"px" });
         //sentwidth = $('.innerText').forEach(function(d,i){d.});
         $('.innerText').each(function(index) {
@@ -1072,7 +1092,7 @@ var arcMouseOut = function(obj){
 		.attr('opacity', 0.75)
 		.duration(200)
 		.ease("linear",1,1)
-		.call(function(){ showArticleFamily(this, 0.4, 0.75, 0, 360) })
+		.call(function(){ showArticleFamily(this, 0.4, 0.8, 0, 360) })
 		//.call(function(){ d3.select(this[0][0]['node']['childNodes'][0]).transition().attr('opacity', '0.3').duration(90) })
 		.call(function(){ d3.select(this[0][0]['node']['childNodes'][1]).transition().attr('fill', '#3c3c3c').style('font-size', '9px').duration(170) })
 	d3.selectAll('.'+currentWord).transition()
@@ -1152,10 +1172,13 @@ var moveArticles = function(change){
 //////////////////////////////////////////////////////////////////////////////////////////////FUNCTION: add elements below each article
 var buildSupplemental = function(bottoms){
     ul = $('#underlist');
+    console.log(bottoms);
     offHeight = $('#mainArtSVG').outerHeight();
-    console.log(offHeight);
+    var offsetRel = 0;
     bottoms.forEach(function(d,i){
-        ul.append('<li class="underColumn" style="float: left; margin-top: '+(-offHeight+d+50)+'px; margin-left: '+((i*wordmap.w)+(i*spacing)+42)+'px;  width: '+wordmap.w+'px; "><p>Sentiment</p></li>');
+        
+        ul.append('<li class="underColumn" style="position: relative; top: '+(-offHeight+d+50)+'px; left: '+((i*wordmap.w)+(i*spacing)+42)+'px;  width: '+wordmap.w+'px; "><p>Sentiment</p></li>');
+        offsetRel = -offHeight+d+50;
     });
     //$('.underColumn').each(function(index){ console.log(dataArray[index]['Sentiment'].valueOf()); $(this).append('<p>'+dataArray[index]['Sentiment'].valueOf()+'</p>') });
    /*

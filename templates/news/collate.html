@@ -7,13 +7,19 @@
 {% endblock %}
 
 {% block header %}
+     <script type="text/javascript" src="/media/js/UI_story.js"></script>
     <script type="text/javascript" src="/media/js/getdata.js"></script>
+    <div id="toolbacker"></div>
     <div id="toolbar">
+        <div id="whitelogo"><img src="/media/images/inartlogo_white_small.png" alt="fix" title="pleased to meet you" width="97" height="24"/></div>
         <div id="heatbutton" class="button">map:freq</div>
         <div id="namedbutton" class="button">named:levels</div>
         <div id="familybutton" class="button">show:family</div>
         <div id="importantnet" class="button">show:terms</div>
-        
+        <div id="wordsearch">
+            <input type="text" value="search" name="search" id="searchtxt">
+            <a class="searchButton"><span>word</span></a>
+        </div>
         <!--
 <div id="my-slider" class="dragdealer">
         	<div id="speed" class="handle">x</div>
@@ -30,11 +36,12 @@
         {% if all_articles %}
         
             {%  with all_articles.0 as article %}
-                
+                <div id="headpad">
                 <h1 id="story_headline" style="border-bottom:2px solid #333; padding-bottom: 4px; margin-bottom: 20px;">
                     {{ article.headline|safe }}
                     <span style="float: right; margin-top: 26px; font-size: 11px">{{ article.date }}</span>
                 </h1>
+                </div>
             {% endwith %}
             
             <div id="SVGcontainer"></div>
@@ -42,6 +49,8 @@
             <div id="supplemental">
                 <ul id="underlist"></ul>
             </div>
+            
+             <div id="bottompad"><h1 style="border-bottom:2px solid #333; padding-bottom: 4px; margin-bottom: 20px;"></h1></div>
             
             <ul style="display: none;">
             {% for article in all_articles %}
