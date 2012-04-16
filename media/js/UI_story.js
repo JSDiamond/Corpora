@@ -1,14 +1,30 @@
 $(document).ready(function(){ 
+    var current_opac = 1;
     $(document).scroll(function(){ 
         scrollTop = $(document).scrollTop();
         if(scrollTop > 40){
-            //$('#toolbar').css({backgroundColor: 'rgba(0,0,0,0.7)'});
-            $('#toolbar').stop().animate({ 'opacity': '0.88', 'padding-top': '0px', 'padding-bottom': '0px'}, 100, 'linear', function() { });
-            //'background': '#222 url(/media/images/wgray_fab.png) repeat 0 0',
+            $('#toolbar').stop().animate({ 'opacity': '0.2', 'padding-top': '0px', 'padding-bottom': '0px'}, 80, 'linear', function() { current_opac = $('#toolbar').css('opacity'); });
+            //$('.button').stop().animate({ 'background': 'rgba(100,100,100,0.0) url() no-repeat 0 0' }, 100, 'linear', function() { });
         } else {
-            //$('#toolbar').css({backgroundColor: '#222'});
-            $('#toolbar').stop().animate({ 'opacity': '1', 'padding-top': '16px', 'padding-bottom': '16px'}, 220, 'easeOutCubic', function() { });
-            
+            $('#toolbar').stop().animate({ 'opacity': '1', 'padding-top': '16px', 'padding-bottom': '16px'}, 180, 'easeOutCubic', function() { current_opac = $('#toolbar').css('opacity'); });
+            //$('.button').stop().animate({ 'background': '#444 url() no-repeat 0 0' }, 100, 'linear', function() { });            
         }
+        
     });
+    $('#toolbar').hover( function () {
+                    $(this).stop().animate({ 'opacity': '1'}), 10, 'linear', function() {}
+                  }, 
+                  function () {
+                    $(this).stop().animate({ 'opacity': current_opac}), 10, 'linear', function() {}
+                  }
+    );
+    if(current_opac < 1){
+        $('.button').hover( function () {
+                        $(this).stop().animate({ 'font-size': '20px'}), 10, 'linear', function() {}
+                      }, 
+                      function () {
+                        //$('#toolbar').stop().animate({ 'opacity': current_opac}), 10, 'linear', function() {}
+                      }
+        );
+    }
 });

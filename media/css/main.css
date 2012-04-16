@@ -40,6 +40,7 @@
 
 
 
+/*
 @font-face {
 	font-family: MisoLight;
 	src: url('./media/css/miso-light.otf'):
@@ -52,6 +53,7 @@
 	font-family: MisoBold;
 	src: url('miso-bold.otf');
 }
+*/
 
 body {
     font-family: Oswald, Helvetica, 'sans serif';
@@ -59,7 +61,7 @@ body {
     min-width: 900px;   
 }
 #content {
-    padding: 20px;
+    padding: 26px;
 }
 a {
     text-decoration: none;
@@ -129,7 +131,7 @@ ul h3.latest_headlines {
     min-width: 900px; 
     margin-bottom: 20px;
     height: 24px;
-    padding: 16px;
+    padding: 16px 0px 16px 68px;
     background: #444 url(/media/images/wgray_85.png) repeat 0 0;
 }
 #toolbacker {
@@ -152,6 +154,33 @@ ul h3.latest_headlines {
     background-color: #222;
 }
 */
+#whitelogo {
+    float: left;
+    margin-top: 0px;
+    margin-right: 20px;
+}
+#wordsearch {
+    float: right;
+    margin: -3px 136px 0px;
+}
+#searchtxt {
+    padding: 4px 8px;
+    margin: 0px 10px 0px;
+    background-color: #888;
+    border: inset #444 2px;
+}
+#searchtxt span {
+    color: 
+}
+
+
+#story_headline {
+    padding-bottom: 4px; 
+    margin-bottom: 20px;
+}
+.borderbottom3 {
+    border-bottom: 3px solid #333;
+}
 div.clicked {
     background-color: #111;
 }
@@ -176,7 +205,7 @@ div.clicked {
 .button {
     padding: 4px 12px;
     margin-right: 10px;
-    background-color: #555;
+    background-color: #444;
     color: #fff;
     float: left;
     font-size: 11px;
@@ -286,17 +315,4 @@ text.shadow {
 }
 .pub_blocker {
     fill: url(/media/images/pape_fade.png) repeat 0 0;
-}
-#whitelogo {
-    float: left;
-    margin-top: 0px;
-    margin-right: 20px;
-}
-#wordsearch {
-    float: right;
-    margin: -3px 40px 0px;
-}
-#searchtxt {
-    padding: 4px 8px;
-    margin-right: 0px 12px 0px;
 }

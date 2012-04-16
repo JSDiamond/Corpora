@@ -469,7 +469,7 @@ var nodes = {}, pathlink, force, arclocs = [{}];
     
 var buildImportantNetwork = function(linkz) {
     console.log(allImportant);
-    $('#netowrkSVG').stop().animate({ 'height': levelHeight}, 400, 'easeOutQuart', function() { });
+    //$('#netowrkSVG').stop().animate({ 'height': levelHeight}, 400, 'easeOutQuart', function() { });
     // Compute the distinct nodes from the links.
     linkz.forEach(function(link, i) {
         arcoff = $('#tx_'+link.source).offset();
@@ -495,11 +495,11 @@ arclocs[i]['y1'] = transVal[1];
         arclocs[i]['x2'] = ntextVal[0];
         arclocs[i]['y2'] = ntextVal[1];
 */
-            //console.log(arclocs);           
+            //console.log(arclocs);           Math.sqrt((arcoff.left-50) * (arcoff.left-50) +  * dy);
         link.source = nodes[link.source] || (nodes[link.source] = {name: "", class: "link", x: (arcoff.left-50), y: (arcoff.top-162), charge: 0, fixed: true, color: arccolor, stroke: '#fff', radius: 6});
         //link.source = nodes[link.source] || (nodes[link.source] = {name: link.source, class: "link", x: (arclocs[i].x1-arclocs[i].x2), y: (arclocs[i].y1+arclocs[i].y2), charge: 0, fixed: true});
 
-        link.target = nodes[link.target] || (nodes[link.target] = {name: link.target, class: "link slink", x: wordtrack[link.target]*20, y: 510, charge: -2000, color: '#777', stroke: 'none', radius: 4}); //x: (w/2), y: levelHeight/2        
+        link.target = nodes[link.target] || (nodes[link.target] = {name: link.target, class: "link slink", x: wordtrack[link.target]*20, y: 510, charge: -2000, color: '#777', stroke: 'none', radius: 4, fixed: true}); //x: (w/2), y: levelHeight/2        
     });
     //$('#levelsSVG').find('g').find('.infoblock').hide();
       
@@ -514,7 +514,7 @@ arclocs[i]['y1'] = transVal[1];
         .gravity(10)
         .start();
     
-    netowrkSVG.append("defs").selectAll("marker")
+    levelsSVG.append("defs").selectAll("marker")
         .data(["loose", "direct", "inherited"])
       .enter().append("marker")
         .attr("id", String)
@@ -528,7 +528,7 @@ arclocs[i]['y1'] = transVal[1];
         .attr("d", "M0,-5L10,0L0,5");//SVG triangle
     
     
-    pathlink = netowrkSVG.append("g").selectAll("path")
+    pathlink = levelsSVG.append("g").selectAll("path")
         .data(force.links())
       .enter().append("path")
         .attr("class", function(d) { return "link " + d.type +" link_"+d.target.name; })
@@ -537,7 +537,7 @@ arclocs[i]['y1'] = transVal[1];
         .style('display', 'none');
         //.attr("marker-end", function(d) { return "url(#" + d.type + ")"; })
 
-    var circle = netowrkSVG.append("g").selectAll("circle")
+    var circle = levelsSVG.append("g").selectAll("circle")
         .data(force.nodes())
       .enter().append("circle")
         .attr("id", function(d) { return d.name; })
@@ -561,7 +561,7 @@ arclocs[i]['y1'] = transVal[1];
                                     }
                 				});
     
-    var text = netowrkSVG.append("g").selectAll("g")
+    var text = levelsSVG.append("g").selectAll("g")
         .data(force.nodes())
       .enter().append("g")
         .style("font-size", "10px")

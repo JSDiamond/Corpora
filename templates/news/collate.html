@@ -37,7 +37,7 @@
         
             {%  with all_articles.0 as article %}
                 <div id="headpad">
-                <h1 id="story_headline" style="border-bottom:2px solid #333; padding-bottom: 4px; margin-bottom: 20px;">
+                <h1 id="story_headline" class="borderbottom3">
                     {{ article.headline|safe }}
                     <span style="float: right; margin-top: 26px; font-size: 11px">{{ article.date }}</span>
                 </h1>
@@ -50,7 +50,7 @@
                 <ul id="underlist"></ul>
             </div>
             
-             <div id="bottompad"><h1 style="border-bottom:2px solid #333; padding-bottom: 4px; margin-bottom: 20px;"></h1></div>
+             <div id="bottompad"><h1 class="borderbottom3" style="padding-bottom: 4px; margin-bottom: 20px;"></h1></div>
             
             <ul style="display: none;">
             {% for article in all_articles %}
