@@ -7,7 +7,11 @@
 
 {% if latest_news %}
     {% with latest_news.0 as article %}
-        <h1 style="font-weight: 100; font-size: 36px;"> <span style="font-weight: 600; font-size: 38px;">inarticle :</span> {{ article.1.1.date }}</h1>
+        <h1 style="font-weight: 100; font-size: 36px;"> 
+            <span style="font-weight: 600; font-size: 38px;">InArticle : </span>
+            <span style="font-weight: 400; font-size: 38px;">NewsFeed : </span> 
+            <span style="font-weight: 200; font-size: 38px;">{{ article.1.1.date }}</span> 
+        </h1>
     {% endwith %}
     
     {% for story in latest_news.1 %}

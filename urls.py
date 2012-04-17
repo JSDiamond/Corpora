@@ -9,6 +9,7 @@ admin.autodiscover()
 
 urlpatterns = patterns('',
     # Examples:
+    url(r'^$', "Corpora.news.views.liststories", name="liststories"),
     url(r'^news/$', "Corpora.news.views.liststories", name="liststories"),
     url(r"^fun/$", "Corpora.news.views.special", name="special"),
     url(r"^story/(?P<storygroup>\d+)/$", "Corpora.news.views.collate", name="collate"),

@@ -2,6 +2,9 @@ $(document).ready(function(){
     var current_url = window.location.toString();
     story = window.location.pathname.substr(7);    
     geturl = "http://"+window.location.host+"/getdata/"+story;
+    
+    $('#SVGcontainer').html('<p style="text-align: center; padding-bottom: 16px;" id="loading">L O A D I N G . . .</p>');
+    
     $.get(geturl, function(data) {
       console.log(data);
       articleStorageArray = data;
@@ -44,7 +47,7 @@ $(document).ready(function(){
 
 //////////////////////////////////////////////////////////////////////////////////////////////FUNCTION: clean text for class or id selectors
 var CleanNJoinText = function(word){
-    word = String(word).replace(/[.'& ]/g, "");
+    word = String(word).replace(/[.'& \/]/g, "");
     word = String(word).replace(/[-]/g, "");
     return word;
 }
@@ -370,6 +373,7 @@ var initChart = function(article_data, column){
     
     compareCorpora(article_data, column); ///////////////////CALL: send the data for this article to concordance function
     if(column == totalstories-1){
+        $('#loading').remove();
         //////////////////////////////////////////////BIND FUNCTIONS: readingWindow make/remove and text scrolling with timers
         $('.wordrect').bind('mouseover', function() {
             event.stopPropagation();
@@ -400,7 +404,7 @@ var initChart = function(article_data, column){
 
 //////////////////////////////////////////////////////////////////////////////////////////////FUNCTION: go through each article and make concordances 
 var allEntities = {}, entitiesList = []; //this is used for Named Entities Concordance
-var allImportant = {}, wordtrack = {}, links = []; //this is used for Important Words Concordance
+var allImportant = {}, wordtrack = {}, targetcount = 0, links = []; //this is used for Important Words Concordance
 var compareCorpora = function(article_data, column){
     
     article_data["NamedEnts"].forEach(function(d) {
@@ -459,10 +463,14 @@ var compareCorpora = function(article_data, column){
         var word = CleanNJoinText(d[0]);
         allImportant[word].forEach(function(dd, i){
             links.push({source: word, target: dd, type: "direct", x: 0, y: 0})
-            wordtrack[dd] = wordtrack.length;
+            if(wordtrack[dd]){
+                //wordtrack[dd] = wordtrack.length;
+            } else {
+                targetcount++;
+                wordtrack[dd] = targetcount;
+            }
         });        
     });
-    
 }
  
 var nodes = {}, pathlink, force, arclocs = [{}];
@@ -471,38 +479,52 @@ var buildImportantNetwork = function(linkz) {
     console.log(allImportant);
     //$('#netowrkSVG').stop().animate({ 'height': levelHeight}, 400, 'easeOutQuart', function() { });
     // Compute the distinct nodes from the links.
+    levelHeight += 10;
+     $('#levelsSVG').stop().animate({ 'height': levelHeight}, 440, 'easeOutQuart', function() { });
     linkz.forEach(function(link, i) {
-        arcoff = $('#tx_'+link.source).offset();
-        arccolor = $('#rp_'+link.source).attr('fill');
+        source = CleanNJoinText(link.source);
+        arcoff = $('#tx_'+source).offset();//'#tx_'+source
+        txt = d3.select('#tx_'+source);
+        arccenter = txt[0][0].attributes[5].nodeValue.split(",");
+       // console.log(arccenter)
+        arccolor = $('#rp_'+source).attr('fill');
                 
-        /*
-arc = levelsSVG.selectAll('#'+link.source); //////////////get the translates for the arc and it's text
-        ntext = levelsSVG.selectAll('#'+link.source);
+      /*
+  arc = levelsSVG.selectAll('#'+link.source); //////////////get the translates for the arc and it's text
+        //ntext = levelsSVG.selectAll('#'+link.source);
             //console.log(link.source);
         trans = arc[0][0].attributes[4]['nodeValue'];
-        ntext = arc[0][0].childNodes[1].attributes[0]['nodeValue'];
+        //ntext = arc[0][0].childNodes[1].attributes[0]['nodeValue'];
             //console.log(ntext);
         transVal = trans.match(/translate\(([^}]+)\)rotate/);
         transVal = transVal[1].split(','); 
-        ntextVal = ntext.match(/translate\(([^}]+)\) rotate/);
+        //ntextVal = ntext.match(/translate\(([^}]+)\) rotate/);
             //console.log(ntextVal);
-        ntextVal = ntextVal[1].split(','); 
-        arclocs[i] = {x1: transVal[0], y1: transVal[1], x2: ntextVal[0], y2: ntextVal[0]};
+        //ntextVal = ntextVal[1].split(','); 
+        arclocs[i] = {x1: transVal[0], y1: transVal[1], x2: arccenter[0], y2: arccenter[1]};
+            //console.log(arclocs[i]);
+        //console.log( arclocs );
 */
-        //console.log(arclocs[i]);
-        /*
-arclocs[i]['y1'] = transVal[1];
-        arclocs[i]['x2'] = ntextVal[0];
-        arclocs[i]['y2'] = ntextVal[1];
-*/
-            //console.log(arclocs);           Math.sqrt((arcoff.left-50) * (arcoff.left-50) +  * dy);
-        link.source = nodes[link.source] || (nodes[link.source] = {name: "", class: "link", x: (arcoff.left-50), y: (arcoff.top-162), charge: 0, fixed: true, color: arccolor, stroke: '#fff', radius: 6});
+        
+        mainoff = $('#mainArtSVG').offset();
+        keyspace = 23-targetcount/10;
+        keyleft = (((w-50)*0.5)-((targetcount*keyspace)*0.5));
+        
+        link.source = nodes[link.source] || (nodes[link.source] = {name: link.source, class: "slink", x: (arcoff.left-52), y: (arcoff.top-168), charge: 0, fixed: true, color: arccolor, stroke: '#fff', radius: 6}); //x: (arcoff.left-50), y: ((arcoff.top)-162)
         //link.source = nodes[link.source] || (nodes[link.source] = {name: link.source, class: "link", x: (arclocs[i].x1-arclocs[i].x2), y: (arclocs[i].y1+arclocs[i].y2), charge: 0, fixed: true});
 
-        link.target = nodes[link.target] || (nodes[link.target] = {name: link.target, class: "link slink", x: wordtrack[link.target]*20, y: 510, charge: -2000, color: '#777', stroke: 'none', radius: 4, fixed: true}); //x: (w/2), y: levelHeight/2        
+        link.target = nodes[link.target] || (nodes[link.target] = {name: link.target, class: "tlink", x: (wordtrack[link.target]*keyspace-(-(keyleft))), y: (mainoff.top)-170, charge: -2000, color: '#777', stroke: 'none', radius: 4, fixed: true}); //x: (w/2), y: levelHeight/2        
     });
-    //$('#levelsSVG').find('g').find('.infoblock').hide();
       
+      
+    levelsSVG.append("text")
+        .attr("x", keyleft-2)
+        .attr("y", (mainoff.top)-170)
+        .attr("dy", "14px")
+        .attr("text-anchor", "end")
+        .text("Key Terms:")
+        .style("font-size", "20px");
+            
     force = d3.layout.force()
         .nodes(d3.values(nodes))
         .links(links)
@@ -527,15 +549,6 @@ arclocs[i]['y1'] = transVal[1];
       .append("path")
         .attr("d", "M0,-5L10,0L0,5");//SVG triangle
     
-    
-    pathlink = levelsSVG.append("g").selectAll("path")
-        .data(force.links())
-      .enter().append("path")
-        .attr("class", function(d) { return "link " + d.type +" link_"+d.target.name; })
-        .style("stroke-width", 1)
-        .attr('opacity', 0.2)
-        .style('display', 'none');
-        //.attr("marker-end", function(d) { return "url(#" + d.type + ")"; })
 
     var circle = levelsSVG.append("g").selectAll("circle")
         .data(force.nodes())
@@ -551,15 +564,23 @@ arclocs[i]['y1'] = transVal[1];
         //            return "translate(" + d.x + "," + d.y + ")";
         //          })
         .on('mouseover',function(){
-                                    if(this.id != ""){
+                                    //if($(this).hasClass('slink')){
                                         $('.link_'+this.id).show();
-                                    }
+                                    //}
                 				})
         .on('mouseout',function(){
-                                    if(this.id != ""){
+                                    //if(this.class == "slink"){
                                         $('.link_'+this.id).hide();
-                                    }
+                                    //}
                 				});
+                				
+    pathlink = levelsSVG.append("g").selectAll("path")
+        .data(force.links())
+      .enter().append("path")
+        .attr("class", function(d) { return "link " + d.type +" link_"+d.target.name +" link_"+d.source.name; })
+        .attr('opacity', 0.6)
+        .style('display', 'none');
+        //.attr("marker-end", function(d) { return "url(#" + d.type + ")"; });
     
     var text = levelsSVG.append("g").selectAll("g")
         .data(force.nodes())
@@ -573,33 +594,23 @@ arclocs[i]['y1'] = transVal[1];
         .attr("x", 8)
         .attr("y", ".31em")
         .attr("class", "shadow")
-        .text(function(d) { return d.name; })
-        .attr('transform', 'rotate(-45)');
+        .text(function(d) { if(d.class == "tlink") { return d.name }; })
+        .attr('transform', 'rotate(45)');
     
     text.append("text")
         .attr("x", 8)
         .attr("y", ".31em")
         .style("fill", "#222")
         //.style("display", "none")
-        .text(function(d) { return d.name; })
-        .attr('transform', 'rotate(-45)'); 
-        
-    var slinks = $('.slink').length;
-    var termPlace = d3.scale.linear()
-            .domain([0, slinks])
-            .range([0, w]); 
+        .text(function(d) { if(d.class == "tlink") { return d.name }; })
+        .attr('transform', 'rotate(45)'); 
     
-/*
-    d3.selectAll('.slink').transition()
-            
-			.attr("transform", function(d,i){ console.log("fuck you"); return "translate("+i*10+",510)"; })
-			.duration(200)
-			.ease("linear",1,1); 
-*/
+        
     /*
-$('.slink').each(function(index){
-        console.log(this);
-    })
+var tlinks = $('.tlink').length;
+    var termPlace = d3.scale.linear()
+            .domain([0, tlinks])
+            .range([0, w]); 
 */
     
     function tick() {
@@ -609,7 +620,7 @@ $('.slink').each(function(index){
             dy = d.target.y - d.source.y,
             dr = Math.sqrt(dx * dx + dy * dy); //Math.sqrt(dx * dx + dy * dy)
         return "M" + d.source.x + "," + d.source.y + "A" + (-dr*2) + "," + dr*2 + " 0 0,1 " + d.target.x + "," + d.target.y;
-      }).style("stroke-width", 1);
+      });
     
       circle.attr("transform", function(d, i) {
         return "translate(" + d.x + "," + d.y + ")";
@@ -623,6 +634,7 @@ $('.slink').each(function(index){
 
 }
 
+/*
 var tick = function() {
 // Use elliptical arc path segments to doubly-encode directionality.
   pathlink.attr("d", function(d) {
@@ -633,8 +645,7 @@ var tick = function() {
     return "M" + d.source.x + "," + d.source.y + "A" + (-dr*2) + "," + dr*2 + " 0 0,1 " + d.target.x + "," + d.target.y;
   }).style("stroke-width", 1);
 
-  //slinks = d3.selectAll('.slink');
-  //console.log(slinks);
+
   circle.attr("transform", function(d) {
     return "translate(" + d.x + "," + d.y + ")";
   });
@@ -643,6 +654,7 @@ var tick = function() {
     return "translate(" + d.x + "," + d.y + ")";
   });
 }
+*/
 
 
 //////////////////////////////////////////////////////////////////////////////////////////////FUNCTION: Put ink on paper
@@ -756,9 +768,8 @@ artid.append("rect")
     
     
     bottoms_sort = bottoms_sort.sort(sortfunc);
-    function sortfunc(a,b) { return b - a; }
     lowest = bottoms_sort[0];
-    $('#mainArtSVG').stop().animate({ 'height': lowest+60}, 300, 'easeOutQuart', function() { buildSupplemental(bottoms) });
+    $('#mainArtSVG').stop().animate({ 'height': lowest+60}, 300, 'easeOutQuart', function() { buildSupplemental(bottoms, bottoms_sort) });
     
       
     /*
@@ -770,6 +781,7 @@ $('.wordrect').bind('mousedown', function() {
     });
 */  
 }
+var sortfunc = function(a,b) { return b - a; }
 var timer1 = "", timer2 = "";
 var killReader = function(){
     $(".readWindow").stop()
@@ -834,7 +846,7 @@ var makeWordBox = function(obj){
             thisword = thisword.join("");
             $('.sentlist').append("<li id='"+idArray[i]+"_"+thisword+"' class='innerText'>"+d+"</li>");
         });
-        $('#removeme'+thisId).css({ "top": (mainOff_top-(-objectY+68))+"px", "left": (transx-(-32))+"px", "text-align":"left", "width": (wordmap.w-(-20))+"px", "max-height": "20px" });
+        $('#removeme'+thisId).css({ "top": (mainOff_top-(-objectY+68))+"px", "left": (transx-(-38))+"px", "text-align":"left", "width": (wordmap.w-(-20))+"px", "max-height": "20px" });
         $('#innerText'+thisId).css({ "top": "0px", "left": woffset+"px" });
         //sentwidth = $('.innerText').forEach(function(d,i){d.});
         $('.innerText').each(function(index) {
@@ -1032,6 +1044,7 @@ var namedLevels = function(level, change){
         .attr("id", function(d, i) { if(nodeWords[i]=="NULL") { return "NULL" }else{ return 'tx_'+CleanNJoinText($('.'+nodeWords[i]).attr('word')); } })
         .attr("class", "namedent")
         .attr("fill", "#3c3c3c")
+        .attr("center", function(d){ return arc.centroid(d); })
         .style('cursor', 'pointer')
         .style('stroke', 'none')
         .style("font-size", "9px")
@@ -1170,29 +1183,18 @@ var moveArticles = function(change){
 
 
 //////////////////////////////////////////////////////////////////////////////////////////////FUNCTION: add elements below each article
-var buildSupplemental = function(bottoms){
+var buildSupplemental = function(bottoms, bottoms_sort){
     ul = $('#underlist');
-    console.log(bottoms);
     offHeight = $('#mainArtSVG').outerHeight();
-    var offsetRel = 0;
     bottoms.forEach(function(d,i){
-        
-        ul.append('<li class="underColumn" style="position: relative; top: '+(-offHeight+d+50)+'px; left: '+((i*wordmap.w)+(i*spacing)+42)+'px;  width: '+wordmap.w+'px; "><p>Sentiment</p></li>');
-        offsetRel = -offHeight+d+50;
+        ul.append('<li class="underColumn'+i+'" style="position: absolute; top: '+(-offHeight+d+50)+'px; left: '+((i*wordmap.w)+(i*spacing)+42)+'px;  width: '+wordmap.w+'px; "><p>Sentiment</p></li>');
+        if(d == bottoms_sort[0]){ $('.underColumn'+i).addClass('longestColumn') }
     });
-    //$('.underColumn').each(function(index){ console.log(dataArray[index]['Sentiment'].valueOf()); $(this).append('<p>'+dataArray[index]['Sentiment'].valueOf()+'</p>') });
-   /*
- $('#SVGoverlay')
-            .append("<div id='removeme"+thisId+"' class='readWindow'> <ul class='sentlist'></ul></div>"); //transy-(-objectY-70)
-        sentenceArray.forEach(function(d,i){
-            thisword = d.split(" ");
-            thisword = thisword.join("");
-            $('.sentlist').append("<li id='"+idArray[i]+"_"+thisword+"' class='innerText'>"+d+"</li>");
-        });
-        $('#removeme'+thisId).css({ "top": (mainOff_top-(-objectY+80))+"px", "left": (transx-(-32))+"px", "text-align":"left", "width": (wordmap.w-(-20))+"px", "max-height": "20px" });
-*/
-    
+    var heights = $('.longestColumn').outerHeight()
+    console.log(heights);
+    $('#bottompad').css({ 'margin-top': heights+20+'px' });
 }
+
 
 //////////////////////////////////////////////////////////////////////////////////////////////FUNCTION: transition for all wordrects
 var dat = [1];

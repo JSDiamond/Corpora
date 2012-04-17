@@ -249,8 +249,8 @@ div.clicked {
 
 .link {
     fill: none;
-    stroke: #AAAAD0;
-    stroke-width: 1.5px;
+    stroke: #666;
+    stroke-width: 1px;
 }
 #my-slider {
     float: right;
@@ -315,4 +315,7 @@ text.shadow {
 }
 .pub_blocker {
     fill: url(/media/images/pape_fade.png) repeat 0 0;
+}
+.underlist{
+    overflow: visible;
 }
