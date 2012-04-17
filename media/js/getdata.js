@@ -513,7 +513,7 @@ var buildImportantNetwork = function(linkz) {
         link.source = nodes[link.source] || (nodes[link.source] = {name: link.source, class: "slink", x: (arcoff.left-52), y: (arcoff.top-168), charge: 0, fixed: true, color: arccolor, stroke: '#fff', radius: 6}); //x: (arcoff.left-50), y: ((arcoff.top)-162)
         //link.source = nodes[link.source] || (nodes[link.source] = {name: link.source, class: "link", x: (arclocs[i].x1-arclocs[i].x2), y: (arclocs[i].y1+arclocs[i].y2), charge: 0, fixed: true});
 
-        link.target = nodes[link.target] || (nodes[link.target] = {name: link.target, class: "tlink", x: (wordtrack[link.target]*keyspace-(-(keyleft))), y: (mainoff.top)-170, charge: -2000, color: '#777', stroke: 'none', radius: 4, fixed: true}); //x: (w/2), y: levelHeight/2        
+        link.target = nodes[link.target] || (nodes[link.target] = {name: link.target, class: "tlink", x: (wordtrack[link.target]*keyspace-(-(keyleft))), y: (mainoff.top)-170, charge: -2000, color: '#777', stroke: 'none', radius: 6, fixed: true}); //x: (w/2), y: levelHeight/2        
     });
       
       
@@ -549,6 +549,15 @@ var buildImportantNetwork = function(linkz) {
       .append("path")
         .attr("d", "M0,-5L10,0L0,5");//SVG triangle
     
+    pathlink = levelsSVG.append("g").selectAll("path")
+        .data(force.links())
+      .enter().append("path")
+        .attr("class", function(d) { return "link " + d.type +" link_"+d.target.name +" link_"+d.source.name; })
+        .attr('opacity', 0.6)
+        .style('display', 'none');
+        //.attr("marker-end", function(d) { return "url(#" + d.type + ")"; });
+
+    
 
     var circle = levelsSVG.append("g").selectAll("circle")
         .data(force.nodes())
@@ -573,15 +582,7 @@ var buildImportantNetwork = function(linkz) {
                                         $('.link_'+this.id).hide();
                                     //}
                 				});
-                				
-    pathlink = levelsSVG.append("g").selectAll("path")
-        .data(force.links())
-      .enter().append("path")
-        .attr("class", function(d) { return "link " + d.type +" link_"+d.target.name +" link_"+d.source.name; })
-        .attr('opacity', 0.6)
-        .style('display', 'none');
-        //.attr("marker-end", function(d) { return "url(#" + d.type + ")"; });
-    
+                				    
     var text = levelsSVG.append("g").selectAll("g")
         .data(force.nodes())
       .enter().append("g")
@@ -592,14 +593,14 @@ var buildImportantNetwork = function(linkz) {
     // A copy of the text with a thick white stroke for legibility.
     text.append("text")
         .attr("x", 8)
-        .attr("y", ".31em")
+        .attr("y", "4px")
         .attr("class", "shadow")
         .text(function(d) { if(d.class == "tlink") { return d.name }; })
         .attr('transform', 'rotate(45)');
     
     text.append("text")
         .attr("x", 8)
-        .attr("y", ".31em")
+        .attr("y", "4px")
         .style("fill", "#222")
         //.style("display", "none")
         .text(function(d) { if(d.class == "tlink") { return d.name }; })
@@ -612,15 +613,26 @@ var tlinks = $('.tlink').length;
             .domain([0, tlinks])
             .range([0, w]); 
 */
-    
+    var curve = d3.svg.line().interpolate("bundle").tension(.85);
+    var cords = [], dr = 0;
     function tick() {
     // Use elliptical arc path segments to doubly-encode directionality.
-      pathlink.attr("d", function(d, i) {
+        pathlink.attr("d", function(d, i) { 
+                dr = Math.sqrt(d.source.x * d.source.x + d.source.y * d.source.y); //Math.sqrt(dx * dx + dy * dy)
+                cords[0] = [d.source.x, d.source.y]; 
+                cords[1] = [d.source.x+20, d.source.y+80];
+                cords[2] = [d.target.x-20, d.target.y-80];
+                cords[3] = [d.target.x, d.target.y];
+                return curve(cords); 
+            });  
+      /*
+pathlink.attr("d", function(d, i) {
         var dx = d.target.x - d.source.x,
             dy = d.target.y - d.source.y,
             dr = Math.sqrt(dx * dx + dy * dy); //Math.sqrt(dx * dx + dy * dy)
         return "M" + d.source.x + "," + d.source.y + "A" + (-dr*2) + "," + dr*2 + " 0 0,1 " + d.target.x + "," + d.target.y;
       });
+*/
     
       circle.attr("transform", function(d, i) {
         return "translate(" + d.x + "," + d.y + ")";
