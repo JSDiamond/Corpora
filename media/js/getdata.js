@@ -591,40 +591,34 @@ var buildImportantNetwork = function(linkz) {
         .style("font-weight", "600");
     
     // A copy of the text with a thick white stroke for legibility.
-    text.append("text")
+    /*
+text.append("text")
         .attr("x", 8)
         .attr("y", "4px")
         .attr("class", "shadow")
         .text(function(d) { if(d.class == "tlink") { return d.name }; })
         .attr('transform', 'rotate(45)');
+*/
     
     text.append("text")
         .attr("x", 8)
         .attr("y", "4px")
         .style("fill", "#222")
-        //.style("display", "none")
         .text(function(d) { if(d.class == "tlink") { return d.name }; })
         .attr('transform', 'rotate(45)'); 
     
-        
-    /*
-var tlinks = $('.tlink').length;
-    var termPlace = d3.scale.linear()
-            .domain([0, tlinks])
-            .range([0, w]); 
-*/
     var curve = d3.svg.line().interpolate("bundle").tension(.85);
     var cords = [], dr = 0;
     function tick() {
-    // Use elliptical arc path segments to doubly-encode directionality.
+    
         pathlink.attr("d", function(d, i) { 
-                dr = Math.sqrt(d.source.x * d.source.x + d.source.y * d.source.y); //Math.sqrt(dx * dx + dy * dy)
-                cords[0] = [d.source.x, d.source.y]; 
-                cords[1] = [d.source.x+20, d.source.y+80];
-                cords[2] = [d.target.x-20, d.target.y-80];
-                cords[3] = [d.target.x, d.target.y];
-                return curve(cords); 
-            });  
+            dr = Math.sqrt(d.source.x * d.source.x + d.source.y * d.source.y); //Math.sqrt(dx * dx + dy * dy)
+            cords[0] = [d.source.x, d.source.y]; 
+            cords[1] = [d.source.x+0, d.source.y+60];
+            cords[2] = [d.target.x-0, d.target.y-60];
+            cords[3] = [d.target.x, d.target.y];
+            return curve(cords); 
+        });  
       /*
 pathlink.attr("d", function(d, i) {
         var dx = d.target.x - d.source.x,
@@ -645,28 +639,6 @@ pathlink.attr("d", function(d, i) {
 
 
 }
-
-/*
-var tick = function() {
-// Use elliptical arc path segments to doubly-encode directionality.
-  pathlink.attr("d", function(d) {
-    var dx = d.target.x - d.source.x,
-        dy = d.target.y - d.source.y,
-        dr = Math.sqrt(dx * dx + dy * dy); //Math.sqrt(dx * dx + dy * dy)
-        //console.log(d.source.name +" : "+ dr);
-    return "M" + d.source.x + "," + d.source.y + "A" + (-dr*2) + "," + dr*2 + " 0 0,1 " + d.target.x + "," + d.target.y;
-  }).style("stroke-width", 1);
-
-
-  circle.attr("transform", function(d) {
-    return "translate(" + d.x + "," + d.y + ")";
-  });
-
-  text.attr("transform", function(d) {
-    return "translate(" + d.x + "," + d.y + ")";
-  });
-}
-*/
 
 
 //////////////////////////////////////////////////////////////////////////////////////////////FUNCTION: Put ink on paper
@@ -905,9 +877,6 @@ var moveTextflow = function(obj){
                 .animate({ left: woffset}, 400, 'easeOutSine', function() {});
         }
 }
-
-
-
 
 
 
@@ -1199,11 +1168,20 @@ var buildSupplemental = function(bottoms, bottoms_sort){
     ul = $('#underlist');
     offHeight = $('#mainArtSVG').outerHeight();
     bottoms.forEach(function(d,i){
-        ul.append('<li class="underColumn'+i+'" style="position: absolute; top: '+(-offHeight+d+50)+'px; left: '+((i*wordmap.w)+(i*spacing)+42)+'px;  width: '+wordmap.w+'px; "><p>Sentiment</p></li>');
+        ul.append('<li class="uc underColumn'+i+'" style="position: absolute; top: '+(-offHeight+d+50)+'px; left: '+((i*wordmap.w)+(i*spacing)+42)+'px;  width: '+wordmap.w+'px;"><p>Sentiment</p></li>');
         if(d == bottoms_sort[0]){ $('.underColumn'+i).addClass('longestColumn') }
+        console.log(dataArray[i].Sentiment[0].neg);
+        sentimentBlock = d3.select('.underColumn'+i).append("svg:svg") //SVG that holds all individual charts
+                            .attr("id", "sentimentBlock")
+                            .attr("width", wordmap.w)
+                            .attr("height", 80) //will need to be appended based on the data
+                            .attr("viewBox","0 0 0 0")
+                            .style("margin-top", '10px')
+                          .append("g")
+                            .attr("width", w)
+                            .attr("transform", "translate(22,2)");
     });
     var heights = $('.longestColumn').outerHeight()
-    console.log(heights);
     $('#bottompad').css({ 'margin-top': heights+20+'px' });
 }
 

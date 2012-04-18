@@ -4,6 +4,8 @@ $(document).ready(function(){
         scrollTop = $(document).scrollTop();
         if(scrollTop > 40){
             $('#toolbar').stop().animate({ 'opacity': '0.2', 'padding-top': '0px', 'padding-bottom': '0px'}, 80, 'linear', function() { current_opac = $('#toolbar').css('opacity'); });
+            $('.button').stop().animate({ 'height': '32px' }, 80, 'linear', function() { });
+            $('#whitelogo').stop().animate({ 'height': '10px' }, 80, 'linear', function() { });
             //$('.button').stop().animate({ 'background': 'rgba(100,100,100,0.0) url() no-repeat 0 0' }, 100, 'linear', function() { });
         } else {
             $('#toolbar').stop().animate({ 'opacity': '1', 'padding-top': '16px', 'padding-bottom': '16px'}, 180, 'easeOutCubic', function() { current_opac = $('#toolbar').css('opacity'); });

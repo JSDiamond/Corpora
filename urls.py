@@ -12,13 +12,13 @@ urlpatterns = patterns('',
     url(r'^$', "Corpora.news.views.liststories", name="liststories"),
     url(r'^news/$', "Corpora.news.views.liststories", name="liststories"),
     url(r"^fun/$", "Corpora.news.views.special", name="special"),
+    url(r"^gather/$", "Corpora.news.views.gather", name="gather"),
+    url(r"^gather_form/$", "Corpora.news.views.gather_form", name="gather_form"),
     url(r"^story/(?P<storygroup>\d+)/$", "Corpora.news.views.collate", name="collate"),
     url(r"^getdata/(?P<storygroup>\d+)/$", "Corpora.news.views.getdata", name="getdata"),
-    url(r"^poetry/(?P<storygroup>\d+)/$", "Corpora.news.views.poetry", name="poetry"),
+    url(r"^poetronix/(?P<storygroup>\d+)/$", "Corpora.news.views.poetronix", name="poetronix"),
     # Uncomment the admin/doc line below to enable admin documentation:
     # url(r'^admin/doc/', include('django.contrib.admindocs.urls')),
-
-    # Uncomment the next line to enable the admin:
     url(r'^admin/', include(admin.site.urls)),
 )
 

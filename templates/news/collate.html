@@ -11,14 +11,14 @@
     <script type="text/javascript" src="/media/js/getdata.js"></script>
     <div id="toolbacker"></div>
     <div id="toolbar">
-        <div id="whitelogo"><img src="/media/images/inartlogo_white_small.png" alt="fix" title="pleased to meet you" width="97" height="24" style="opacity: 0.6;"/></div>
+        <div id="whitelogo"><img src="/media/images/inartlogo_light.png" alt="fix" title="pleased to meet you" width="97" height="24" style="opacity: 0.6;"/></div>
         <div id="heatbutton" class="button">map:freq</div>
         <div id="namedbutton" class="button">named:levels</div>
         <div id="familybutton" class="button">show:family</div>
         <div id="importantnet" class="button">show:terms</div>
         <div id="wordsearch">
             <input type="text" value="search" name="search" id="searchtxt">
-            <a class="searchButton"><span>word</span></a>
+            <a class="searchButton"><span>terms</span></a>
         </div>
         <!--
 <div id="my-slider" class="dragdealer">
@@ -61,7 +61,8 @@
         {% else %}
             <p>Sorry, no articles available.</p>
         {% endif %}
-            
+        
+        {% comment %}    
         <div id="important" style="margin: 20px;">
             <ul></ul>
         </div>
@@ -71,7 +72,7 @@
         <div id="trigrams" style="margin: 20px;">
             <ul></ul>
         </div>
-
+        {% endcomment %} 
 {% endblock %}
 
 

@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+
+{% block title %}{{ "g a t h e r " }}{% endblock %}
+
+{% block content %}
+    <div id="gatherPage">
+        <h1 style="font-weight: 400; font-size: 42px; margin-bottom: 0px;"> 
+            Article Gather:  
+        </h1>
+        <h3 style="font-weight: 100;"> 
+            Submit 2(min) — 6(max) links for articles you would like to compare.  
+        </h3>
+        
+        {%comment%}{{ current_path }}{% endcomment%}
+        
+        <form action="/gather/" method="post">
+            {% csrf_token %}
+            
+                {% if form.headline.errors %} <span class="form_error">{{ form.headline.errors }}</span> {% endif %}
+            <p style="border-bottom: 1px solid #333; padding-bottom: 14px; margin-bottom: 16px"><label for="id_headline" >Headline:</label>
+                <input id="id_headline" class="form_headline" type="text" name="headline" value="{{ form.headline.value }}" maxlength="100" />
+                <span>*(required)</span>
+            </p>
+                
+                {% if form.article_url_1.errors %} <span class="form_error">{{ form.article_url_1.errors }}</span> {% endif %}
+            <p><label for="id_article_url_1">Article Link 1:</label>
+                <input id="id_article_url_1" class="article_url" type="text" name="article_url_1" value="{% if form.article_url_1.value != 'None' %}{{ form.article_url_1.value }} {% endif %}" maxlength="255" />
+                <span>*(required)</span>
+            </p>
+            
+                {% if form.article_url_2.errors %} <span class="form_error">{{ form.article_url_2.errors }}</span> {% endif %}
+            <p><label for="id_article_url_2">Article Link 2:</label>
+                <input id="id_article_url_2" class="article_url" type="text" name="article_url_2" value="{{ form.article_url_2.value }}" maxlength="255" />
+                <span>*(required)</span>
+            </p>
+            
+                {% if form.article_url_3.errors %} <span class="form_error">{{ form.article_url_3.errors }}</span> {% endif %}
+            <p><label for="id_article_url_3">Article Link 3:</label>
+                <input id="id_article_url_3" class="article_url" type="text" name="article_url_3" value="{{ form.article_url_3.value }}" maxlength="255" />
+            </p>
+                
+                {% if form.article_url_4.errors %} <span class="form_error">{{ form.article_url_4.errors }}</span> {% endif %}
+            <p><label for="id_article_url_4">Article Link 4:</label>
+                <input id="id_article_url_4" class="article_url" type="text" name="article_url_4" value="{{ form.article_url_4.value }}" maxlength="255" />
+            </p>
+            
+                {% if form.article_url_5.errors %} <span class="form_error">{{ form.article_url_5.errors }}</span> {% endif %}
+            <p><label for="id_article_url_5">Article Link 5:</label>
+                <input id="id_article_url_5" class="article_url" type="text" name="article_url_5" value="{{ form.article_url_5.value }}" maxlength="255" />
+            </p>
+                
+                {% if form.article_url_6.errors %} <span class="form_error">{{ form.article_url_6.errors }}</span> {% endif %}
+            <p><label for="id_article_url_6">Article Link 6:</label>
+                <input id="id_article_url_6" class="article_url" type="text" name="article_url_6" value="{{ form.article_url_6.value }}" maxlength="255" />
+            </p>
+            <input type="submit" value="Submit" />
+        </form>
+    </div>
+{% endblock %}
+
+
+

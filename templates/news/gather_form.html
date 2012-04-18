@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+
+{% block title %}{{ "g a t h e r _ f o r m" }}{% endblock %}
+
+{% block content %}
+        <h1 style="font-weight: 400; font-size: 42px; margin-bottom: 0px;"> 
+            Article Gather:  
+        </h1>
+        <h3 style="font-weight: 100;"> 
+            Submit 2(min) - 6(max) links for articles you would like to compare.  
+        </h3>
+        
+        <form action="/gather_form/" method="post">
+            {% csrf_token %}
+            <p><label for="id_headline" >Headline:</label>
+                <input id="id_headline" class="form_headline" type="text" name="headline" maxlength="100" />
+                <span>*(required)</span>
+            </p>
+            <p><label for="id_article_link_1">Article Link 1:</label>
+                <input id="id_article_link_1" class="article_link" type="text" name="article_link_1" maxlength="255" />
+                <span>*(required)</span>
+            </p>
+            <p><label for="id_article_link_2">Article Link 2:</label>
+                <input id="id_article_link_2" class="article_link" type="text" name="article_link_2" maxlength="255" />
+                <span>*(required)</span>
+            </p>
+            <p><label for="id_article_link_3">Article Link 3:</label>
+                <input id="id_article_link_3" class="article_link" type="text" name="article_link_3" maxlength="255" />
+            </p>
+            <p><label for="id_article_link_4">Article Link 4:</label>
+                <input id="id_article_link_4" class="article_link" type="text" name="article_link_4" maxlength="255" />
+            </p>
+            <p><label for="id_article_link_5">Article Link 5:</label>
+                <input id="id_article_link_5" class="article_link" type="text" name="article_link_5" maxlength="255" />
+            </p>
+            <p><label for="id_article_link_6">Article Link 6:</label>
+                <input id="id_article_link_6" class="article_link" type="text" name="article_link_6" maxlength="255" />
+            </p>
+            <input type="submit" value="Submit" />
+        </form>
+        
+{% endblock %}
+
+
+

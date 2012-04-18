@@ -3,21 +3,6 @@
     margin: 0px;
 }
 
-/*
-@font-face {
-	font-family: OswaldLight;
-	src: url('Oswald-Light.otf'):
-}
-@font-face {
-	font-family: OswaldRegular;
-	src: url('Oswald-Regular.otf');
-}
-@font-face {
-	font-family: OswaldBold;
-	src: url('Oswald-Bold.otf');
-}
-*/
-
 
 @font-face {
     font-family: 'Oswald';
@@ -39,25 +24,47 @@
 }
 
 
+@font-face {
+    font-family: 'Titillium';
+    src: url('TitilliumText22L001.otf') format('opentype');
+    font-weight: 100;
+    font-style: normal;
+}
+@font-face {
+    font-family: 'Titillium';
+    src: url('TitilliumText22L002.otf') format('opentype');
+    font-weight: 200;
+    font-style: normal;
+}
+@font-face {
+    font-family: 'Titillium';
+    src: url('TitilliumText22L003.otf') format('opentype');
+    font-weight: 300;
+    font-style: normal;
+}
+@font-face {
+    font-family: 'Titillium';
+    src: url('TitilliumText22L004.otf') format('opentype');
+    font-weight: 400;
+    font-style: normal;
+}
+@font-face {
+    font-family: 'Titillium';
+    src: url('TitilliumText22L005.otf') format('opentype');
+    font-weight: 500;
+    font-style: normal;
+}
+@font-face {
+    font-family: 'Titillium';
+    src: url('TitilliumText22L006.otf') format('opentype');
+    font-weight: 600;
+    font-style: normal;
+}
 
-/*
-@font-face {
-	font-family: MisoLight;
-	src: url('./media/css/miso-light.otf'):
-}
-@font-face {
-	font-family: MisoReg;
-	src: url('miso.otf');
-}
-@font-face {
-	font-family: MisoBold;
-	src: url('miso-bold.otf');
-}
-*/
 
 body {
     font-family: Oswald, Helvetica, 'sans serif';
-    background: rgb(250,240,242) url(/media/images/pape_light.png) repeat 0 0;
+    background: rgb(250,240,242) url(/media/images/pape_light.gif) repeat 0 0;
     min-width: 900px;   
 }
 #content {
@@ -132,7 +139,7 @@ ul h3.latest_headlines {
     margin-bottom: 20px;
     height: 24px;
     padding: 16px 0px 16px 68px;
-    background: #444 url(/media/images/wgray_85.png) repeat 0 0;
+    background: #242222 url(/media/images/88_wgray.gif) repeat 0 0; /*  */
 }
 #toolbacker {
     position: relative;
@@ -156,21 +163,29 @@ ul h3.latest_headlines {
 */
 #whitelogo {
     float: left;
-    margin-top: 0px;
-    margin-right: 20px;
+    margin-top: -17px;
+    padding: 17px 36px 21px 0px;
+    height: 20px;
+    border-right: #E0DDDD solid 1px; 
 }
 #wordsearch {
     float: right;
-    margin: -3px 136px 0px;
+    padding: 14px 14px 0px; 
+    margin: -16px 136px 0px;
+    height: 42px;
+    background: url(/media/images/88_wgray.gif) repeat 0 0; /* #444 */
 }
 #searchtxt {
     padding: 4px 8px;
-    margin: 0px 10px 0px;
-    background-color: #888;
-    border: inset #444 2px;
+    margin: 0px 4px 0px;
+    background-color: #6D6666;
+    border: inset #222 2px;
 }
-#searchtxt span {
-    color: 
+.searchButton span {
+    color: #ddd;
+    font-weight: 100;
+    letter-spacing: 1px;
+    margin-top: 4px;
 }
 
 
@@ -204,18 +219,24 @@ div.clicked {
 }
 .button {
     padding: 4px 12px;
-    margin-right: 10px;
-    background-color: #444;
+    margin-right: 0px;
+    border-right: #E0DDDD solid 1px;
+    margin-top: -16px;
+    /* background-color: #444; */
     color: #fff;
     float: left;
     font-size: 11px;
     letter-spacing: 1px;
+    line-height: 48px;
     font-weight: 100;
     cursor: pointer;
-    font-family: "Oswald"
+    font-family: "Oswald";
+    height: 48px;
+    background: url(/media/images/88_wgray.gif) repeat 0 0; /* #444 */
 }
 .button:hover {
-    background-color: #555;
+    background-color: #3F3333;
+    background-image: none;
     color: #eee;
 }
 #familybutton, #importantnet {
@@ -295,8 +316,9 @@ div.clicked {
     margin: 0px 3px;
     color: #666;
 }
-.underColumn {
+.uc {
     font-family: Oswald;
+    font-weight: 200;
     border-bottom: 1px #333 solid;
 }
 #supplemental {
@@ -319,3 +341,69 @@ text.shadow {
 .underlist{
     overflow: visible;
 }
+
+
+/*////////////////////////////////////////////////////////////////// FORM PAGE */
+#gatherPage {
+    position: absolute;
+    width: 572px;
+    left: -266px;
+    margin-left: 50%;
+}
+form {
+    margin-top: 14px;
+    padding: 24px 0px 20px;
+    border-top: 3px solid #333;
+    border-bottom: 3px solid #333;
+    display: inline-table;
+}
+form label {
+    margin-right: 10px;
+    margin-top: 10px;
+}
+form p {
+    margin-top: 10px;
+    clear: both;
+}
+form input[type="submit"] {
+    margin-top: 16px;
+    margin-left: 250px;
+    background-color: #333;
+    color: #ddd;
+    border: none;
+    padding: 10px 18px;
+    cursor: pointer;
+}
+form input[type="submit"]:hover {
+    background-color: #444;
+    color: #bbb;
+}
+form p span {
+    font-weight: 200;
+    font-size: 12px;
+    margin-left: 10px;
+}
+.form_headline {
+    width: 423px;
+    padding: 8px;
+    font-weight: 600;
+}
+
+.article_url {
+    width: 400px;
+    padding: 8px;
+}
+.form_error {
+    font-family: 'Titillium';
+    background-color: #992211;
+    color: #eee;
+    font-size: 13px;
+    font-weight: 300;
+    float: right;
+    padding: 4px 8px 2px;
+    margin: 12px 0px 2px;
+}
+
+
+
+

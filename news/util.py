@@ -1,5 +1,4 @@
 from BeautifulSoup import BeautifulSoup
-from urlparse import urlparse
 import re
 import urllib2
 import urllib
@@ -8,13 +7,14 @@ import codecs
 import json
 import nltk
 from nltk import FreqDist
-#from nltk.corpus import stopwords
 from nltk.collocations import *
 #from nltk.tokenize.punkt import PunktSentenceTokenizer
 
 
-def write_hello():
-    return "hello"
+def get_current_path(request):
+    return {
+       'current_path': request.get_full_path()
+     }
 
 #scrape Google News for stories and links
 def get_google():
