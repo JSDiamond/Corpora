@@ -62,24 +62,7 @@ def gather(request):
         None
         form = GatherForm() # An unbound form
     return render_to_response('news/gather.html', {'form': form,}, context_instance=RequestContext(request))
-
-
-def gather_form(request):
-    if request.method == 'POST': # If the form has been submitted...
-        form = GatherForm(request.POST) # A form bound to the POST data
-        if form.is_valid(): # All validation rules pass
-            headline = form.cleaned_data['headline']
-            article_url = form.cleaned_data['article_url']
-            headline = forms.CharField(max_length=100)
-            return HttpResponseRedirect('/news/') # Redirect after POST
-    else:
-        form = GatherForm() # An unbound form
-
-    return render_to_response('news/gather.html', {
-        'form': form,
-    })
-    #return render_to_response('news/gather.html', {})
-
+    
 
 
 def special(request):
