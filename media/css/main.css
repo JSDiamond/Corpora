@@ -350,6 +350,9 @@ text.shadow {
     left: -266px;
     margin-left: 50%;
 }
+input {
+    outline: 0 none;
+}
 form {
     margin-top: 14px;
     padding: 24px 0px 20px;
@@ -364,6 +367,10 @@ form label {
 form p {
     margin-top: 10px;
     clear: both;
+}
+form input[type="text"] {
+    color: #666;
+    font-weight: 200;
 }
 form input[type="submit"] {
     margin-top: 16px;

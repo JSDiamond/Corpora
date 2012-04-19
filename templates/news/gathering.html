@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% block title %}{{ "g a t h e r " }}{% endblock %}
+
+{% block content %}
+    <div id="gatherPage">
+        <h1 style="font-weight: 400; font-size: 42px; margin-bottom: 0px;"> 
+            Gathering Data:  
+        </h1>
+        <h3 style="font-weight: 100;"> 
+            This may take a few minutes, so please hold tight.  
+        </h3>
+        
+        
+        {% if form %}
+            <p>{{ form.headline.value }}</p>
+            <p>{{ form.article_url_1.value }}</p>
+            <p>{{ form.article_url_2.value }}</p>
+        {% endif %}
+        
+    </div>
+{% endblock %}
+
+
+

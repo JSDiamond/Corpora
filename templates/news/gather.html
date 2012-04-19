@@ -16,46 +16,123 @@
         <form action="/gather/" method="post">
             {% csrf_token %}
             
+            
+            
+            
                 {% if form.headline.errors %} <span class="form_error">{{ form.headline.errors }}</span> {% endif %}
-            <p style="border-bottom: 1px solid #333; padding-bottom: 14px; margin-bottom: 16px"><label for="id_headline" >Headline:</label>
-                <input id="id_headline" class="form_headline" type="text" name="headline" value="{% if form.headline.value != 'None' %}{{ form.headline.value }} {% endif %}" maxlength="100" />
-                <span>*(required)</span>
-            </p>
-                
+                <p style="border-bottom: 1px solid #333; padding-bottom: 14px; margin-bottom: 16px"><label for="id_headline" >Headline:</label>
+                    <input 
+                        id="id_headline" 
+                        class="form_headline" 
+                        type="text" 
+                        name="headline" 
+                        value="{% if form.headline.value %} {{ form.headline.value }} {% else %} {{""}} {% endif %}" maxlength="100" 
+                        style="font-family: Oswald; font-weight: 400;" />
+                    <span>*(required)</span>
+                </p>
+            
+            {%comment%}
+            {% for field in form %}
+                {% if field.name != "headline" %}
+                    {% if field.name.errors %} <span class="form_error">{{ form.article_url_1.errors }}</span> {% endif %}
+                    <p><label for="id_{{field.name}}">Article Link {{ forloop.counter}}:</label>
+                        <input 
+                            id="id_{{field.name}}" 
+                            class="article_url" 
+                            type="text" 
+                            name="{{field.name}}" 
+                            value="{% if form.field.name.value %}{{ form.field.name.value }} {% else %} {{ "Source " }}{{ forloop.counter}} {% endif %}" 
+                            maxlength="255" />
+                        <span>*(required)</span>
+                    </p>
+                {% endif %}
+            {% endfor %}
+            {% endcomment%}
+            
                 {% if form.article_url_1.errors %} <span class="form_error">{{ form.article_url_1.errors }}</span> {% endif %}
-            <p><label for="id_article_url_1">Article Link 1:</label>
-                <input id="id_article_url_1" class="article_url" type="text" name="article_url_1" value="{% if form.article_url_1.value != 'None' %}{{ form.article_url_6.value }} {% endif %}" maxlength="255" />
+            <p><label for="id_article_url_1">Article Link 2:</label>
+                <input 
+                    id="id_article_url_1" 
+                    class="article_url {% if form.article_url_1.errors %} {% else %} focused {% endif %}" 
+                    type="text" 
+                    name="article_url_1" 
+                    value="{% if form.article_url_1.value %}{{ form.article_url_1.value }} {% else %} {{""}} {% endif %}" 
+                    maxlength="255" />
                 <span>*(required)</span>
             </p>
             
+            
                 {% if form.article_url_2.errors %} <span class="form_error">{{ form.article_url_2.errors }}</span> {% endif %}
             <p><label for="id_article_url_2">Article Link 2:</label>
-                <input id="id_article_url_2" class="article_url" type="text" name="article_url_2" value="{% if form.article_url_2.value != 'None' %}{{ form.article_url_6.value }} {% endif %}" maxlength="255" />
+                <input 
+                    id="id_article_url_2" 
+                    class="article_url {% if form.article_url_2.errors %} {% else %} focused {% endif %}" 
+                    type="text" 
+                    name="article_url_2" 
+                    value="{% if form.article_url_2.value %}{{ form.article_url_2.value }} {% else %} {{""}} {% endif %}" 
+                    maxlength="255" />
                 <span>*(required)</span>
             </p>
             
                 {% if form.article_url_3.errors %} <span class="form_error">{{ form.article_url_3.errors }}</span> {% endif %}
             <p><label for="id_article_url_3">Article Link 3:</label>
-                <input id="id_article_url_3" class="article_url" type="text" name="article_url_3" value="{% if form.article_url_3.value != 'None' %}{{ form.article_url_6.value }} {% endif %}" maxlength="255" />
+                <input 
+                    id="id_article_url_3" 
+                    class="article_url {% if form.article_url_3.errors %} {% else %} focused {% endif %}"
+                    type="text" 
+                    name="article_url_3" 
+                    value="{% if form.article_url_3.value %}{{ form.article_url_3.value }} {% else %} {{""}} {% endif %}" 
+                    maxlength="255" />
             </p>
                 
                 {% if form.article_url_4.errors %} <span class="form_error">{{ form.article_url_4.errors }}</span> {% endif %}
             <p><label for="id_article_url_4">Article Link 4:</label>
-                <input id="id_article_url_4" class="article_url" type="text" name="article_url_4" value="{% if form.article_url_4.value != 'None' %}{{ form.article_url_6.value }} {% endif %}" maxlength="255" />
+                <input 
+                    id="id_article_url_4" 
+                    class="article_url {% if form.article_url_4.errors %} {% else %} focused {% endif %}" 
+                    type="text" 
+                    name="article_url_4" 
+                    value="{% if form.article_url_4.value %}{{ form.article_url_4.value }} {% else %} {{""}} {% endif %}" 
+                    maxlength="255" />
             </p>
             
                 {% if form.article_url_5.errors %} <span class="form_error">{{ form.article_url_5.errors }}</span> {% endif %}
             <p><label for="id_article_url_5">Article Link 5:</label>
-                <input id="id_article_url_5" class="article_url" type="text" name="article_url_5" value="{% if form.article_url_5.value != 'None' %}{{ form.article_url_6.value }} {% endif %}" maxlength="255" />
+                <input 
+                    id="id_article_url_5" 
+                    class="article_url {% if form.article_url_5.errors %} {% else %} focused {% endif %}" 
+                    type="text" 
+                    name="article_url_5" 
+                    value="{% if form.article_url_5.value %}{{ form.article_url_5.value }} {% else %} {{""}} {% endif %}" 
+                    maxlength="255" />
             </p>
                 
                 {% if form.article_url_6.errors %} <span class="form_error">{{ form.article_url_6.errors }}</span> {% endif %}
             <p><label for="id_article_url_6">Article Link 6:</label>
-                <input id="id_article_url_6" class="article_url" type="text" name="article_url_6" value="{% if form.article_url_6.value != 'None' %}{{ form.article_url_6.value }} {% endif %}" maxlength="255" />
+                <input 
+                    id="id_article_url_6" 
+                    class="article_url {% if form.article_url_6.errors %} {% else %} focused {% endif %}"  
+                    type="text" 
+                    name="article_url_6" 
+                    value="{% if form.article_url_6.value %}{{ form.article_url_6.value }} {% else %} {{""}} {% endif %}" 
+                    maxlength="255" />
             </p>
+            
+            
+            
             <input type="submit" value="Submit" />
         </form>
     </div>
+    <script type="text/javascript">
+        $(document).ready(function(){ 
+            $('input[type="text"]').click(function(){
+                if( $(this).hasClass('focused')) {} else {
+                    $(this).addClass('focused');
+                    $(this).attr('value', '');
+                }
+            });
+        });
+    </script>
 {% endblock %}
 
 

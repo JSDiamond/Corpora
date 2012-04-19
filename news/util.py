@@ -97,8 +97,11 @@ def get_sentiment(article):
     url = "http://text-processing.com/api/sentiment/"
     values = {'text' : article}
     data = urllib.urlencode(values)
-    response = urllib.urlopen(url, data)
-    sentiment = json.loads( response.read() )
+    try: 
+        response = urllib.urlopen(url, data)
+        sentiment = json.loads( response.read() )
+    except:
+        sentiment = { 'probability': 'Sentiment Unavailable' }
     return sentiment
 ############################################################################################   
 

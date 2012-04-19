@@ -57,12 +57,15 @@ def gather(request):
             headline = form.cleaned_data['headline']
             article_url = form.cleaned_data['article_url']
             headline = forms.CharField(max_length=100)
-            return HttpResponseRedirect('/news/') # Redirect after POST
+            return HttpResponseRedirect( '/gathering/', {'form': form} ) # Redirect after POST
     else:
         None
         form = GatherForm() # An unbound form
-    return render_to_response('news/gather.html', {'form': form,}, context_instance=RequestContext(request))
+    return render_to_response('news/gather.html', {'form': form}, context_instance=RequestContext(request))
     
+def gathering(request, form):
+    form = form
+    return render_to_response('news/gathering.html', {'form': form}, context_instance=RequestContext(request))
 
 
 def special(request):

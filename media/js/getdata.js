@@ -453,9 +453,11 @@ var compareCorpora = function(article_data, column){
             allImportant[word] = [];
             d[1].forEach(function(dd,i){
                 allImportant[word].push(dd);
+                importantLog[dd] = "in";
             })
-            //entitiesList.push(word);
         }
+        
+        jQuery.unique( allImportant[word] );
     });
     
     
@@ -463,17 +465,17 @@ var compareCorpora = function(article_data, column){
         var word = CleanNJoinText(d[0]);
         allImportant[word].forEach(function(dd, i){
             links.push({source: word, target: dd, type: "direct", x: 0, y: 0})
-            if(wordtrack[dd]){
+            if(wordtrack[dd]){ //conditional to help count the traget nodes for use in layout
                 //wordtrack[dd] = wordtrack.length;
             } else {
                 targetcount++;
                 wordtrack[dd] = targetcount;
             }
-        });        
+        }); 
     });
 }
  
-var nodes = {}, pathlink, force, arclocs = [{}];
+var nodes = {}, pathlink, force, arclocs = [{}], prevRadius = 0;
     
 var buildImportantNetwork = function(linkz) {
     console.log(allImportant);
@@ -508,12 +510,19 @@ var buildImportantNetwork = function(linkz) {
         
         mainoff = $('#mainArtSVG').offset();
         keyspace = 23-targetcount/10;
-        keyleft = (((w-50)*0.5)-((targetcount*keyspace)*0.5));
+        keyleft = (  (((w-30)*0.5)-((targetcount*keyspace)*0.5)) );
         
-        link.source = nodes[link.source] || (nodes[link.source] = {name: link.source, class: "slink", x: (arcoff.left-52), y: (arcoff.top-168), charge: 0, fixed: true, color: arccolor, stroke: '#fff', radius: 6}); //x: (arcoff.left-50), y: ((arcoff.top)-162)
+        //console.log(linkz[i].target);
+        term = CleanNJoinText(linkz[i].target)
+        radius = $('.'+term);
+        //console.log(radius.length);
+        
+        link.source = nodes[link.source] || (nodes[link.source] = {name: link.source, class: "slink", x: (arcoff.left-52), y: (arcoff.top-168), charge: 0, fixed: true, color: arccolor, stroke: '#fff', radius: 8}); //x: (arcoff.left-50), y: ((arcoff.top)-162)
         //link.source = nodes[link.source] || (nodes[link.source] = {name: link.source, class: "link", x: (arclocs[i].x1-arclocs[i].x2), y: (arclocs[i].y1+arclocs[i].y2), charge: 0, fixed: true});
 
-        link.target = nodes[link.target] || (nodes[link.target] = {name: link.target, class: "tlink", x: (wordtrack[link.target]*keyspace-(-(keyleft))), y: (mainoff.top)-170, charge: -2000, color: '#777', stroke: 'none', radius: 6, fixed: true}); //x: (w/2), y: levelHeight/2        
+        link.target = nodes[link.target] || (nodes[link.target] = {name: link.target, class: "tlink", x: (wordtrack[link.target]*keyspace-(-(keyleft))), y: (mainoff.top)-170, charge: -2000, color: '#777', stroke: 'none', radius: radius.length, fixed: true}); //x: (w/2), y: levelHeight/2 
+        
+        prevRadius = radius.length;
     });
       
       
@@ -531,7 +540,7 @@ var buildImportantNetwork = function(linkz) {
         .size([w, h])
         .linkDistance(10)
         .charge(function(d) { return d.charge; })
-        .on("tick", tick)
+        //.on("tick", tick)
         .friction(0.9)
         .gravity(10)
         .start();
@@ -559,19 +568,18 @@ var buildImportantNetwork = function(linkz) {
 
     
 
-    var circle = levelsSVG.append("g").selectAll("circle")
+    var circle = levelsSVG.append("g").selectAll("rect")
         .data(force.nodes())
-      .enter().append("circle")
+      .enter().append("rect")
         .attr("id", function(d) { return d.name; })
         .attr("class", function(d) { return d.class; })
-        .attr("r", function(d) { return d.radius; })
+        .attr("width", function(d) { return 8; })
+        .attr("height", function(d) { return d.radius; })
         .attr('opacity', 0.75)
+        .style("cursor", "default")
         .style("fill", function(d) { return d.color; })
         .style("stroke", function(d) { return d.stroke; })
         //.call(force.drag)
-        //.attr("transform", function(d, i) {
-        //            return "translate(" + d.x + "," + d.y + ")";
-        //          })
         .on('mouseover',function(){
                                     //if($(this).hasClass('slink')){
                                         $('.link_'+this.id).show();
@@ -601,22 +609,30 @@ text.append("text")
 */
     
     text.append("text")
+        .attr("id", function(d) { return "lable_"+d.name; })
         .attr("x", 8)
-        .attr("y", "4px")
+        .attr("y", "2px")
+        .style("cursor", "default")
         .style("fill", "#222")
         .text(function(d) { if(d.class == "tlink") { return d.name }; })
-        .attr('transform', 'rotate(45)'); 
+        .attr('transform', 'rotate(45)')
+        .on('mouseover',function(){
+                                    console.log();
+                                    $('.link_'+this.id.substr(6)).show();
+                				})
+        .on('mouseout',function(){
+                                    $('.link_'+this.id.substr(6)).hide();
+                				});
     
     var curve = d3.svg.line().interpolate("bundle").tension(.85);
     var cords = [], dr = 0;
     function tick() {
-    
         pathlink.attr("d", function(d, i) { 
-            dr = Math.sqrt(d.source.x * d.source.x + d.source.y * d.source.y); //Math.sqrt(dx * dx + dy * dy)
-            cords[0] = [d.source.x, d.source.y]; 
+            targ = $('#'+d.target.name);
+            cords[0] = [(d.source.x + 4), d.source.y]; 
             cords[1] = [d.source.x+0, d.source.y+60];
             cords[2] = [d.target.x-0, d.target.y-60];
-            cords[3] = [d.target.x, d.target.y];
+            cords[3] = [(d.target.x + 4), (d.target.y - targ[0].attributes[3].nodeValue)];
             return curve(cords); 
         });  
       /*
@@ -629,7 +645,7 @@ pathlink.attr("d", function(d, i) {
 */
     
       circle.attr("transform", function(d, i) {
-        return "translate(" + d.x + "," + d.y + ")";
+        return "translate(" + (d.x) + "," + (d.y - d.radius) + ") ";//rotate(-45)
       });
     
       text.attr("transform", function(d, i) {
@@ -637,7 +653,7 @@ pathlink.attr("d", function(d, i) {
       });
     }
 
-
+    tick();
 }
 
 
@@ -951,7 +967,8 @@ var namedLevels = function(level, change){
                     .attr('opacity', 0.6);
                 
         } else { //else make a partitioned arc for each entity
-        
+                
+                
                 arcs = nblk.selectAll("g.arc")
                     .data(donut)
                   .enter().append("g")
@@ -1005,7 +1022,23 @@ var namedLevels = function(level, change){
             arcs.transition()
                 .ease("cubic-out")
                 .duration(400)
-                .attr("transform", "translate(" + (w2-10) + "," + (-inner*27.5) + ") rotate(282)");
+                .attr("transform", "translate(" + (w2-10) + "," + (-inner*23) + ") rotate(282)");
+                
+            
+            lables = nblk.append("text")
+                .attr("x", 0)
+                .attr("y", -2)
+                .attr("dy", "-12px")
+                .attr("width", wordmap.w)
+                .style("fill", "#999")
+                .style("font-size", "10px")
+                .style("font-family", "Titillium")
+                .style("font-weight", "400")
+                .attr("fill", "#666")
+                .attr("text-anchor", "start")
+                .attr("dy", ".35em")
+                .attr("transform", "translate(" + (w2+(r*inner)) + "," + 4 + ")")
+                .text("in "+level+" of "+totalstories);
             
   		    arc.outerRadius(function(d,i){ return ((r*outer+8)-(r*inner+20))+(r*outer+4) });
     }
@@ -1047,7 +1080,7 @@ var namedLevels = function(level, change){
 	setTimeout(bindArcEvents, 600, arcs);
       
     } else if (level == 0){
-        //killLinks();
+        //console.log("last time");
     }
 }
 
@@ -1194,30 +1227,35 @@ var changeWordRects = function(count, conditional){
             artfile = mainArtSVG.select("#articlefile"+count);
             allwords = artfile.selectAll(".wordrect");
             dataArray[count]["Important"].forEach(function(d, ii){
-                artfile.selectAll("."+d[0]).transition()
-                    //.style("fill", "#000")
-                    .style("fill", function() { 
-                                    fq = d[1]
-                                    console.log(d[0]+" : "+fq);
-                                    color = d3.rgb("hsl("+0+","+(20+fq*10)+","+(90-(fq*2))+")");
-                                    return color; 
-                                })
-                    .duration(600)
-					.ease("linear",1,1); 
+                try{
+                    artfile.selectAll("."+d[0]).transition()
+                        //.style("fill", "#000")
+                        .style("fill", function() { 
+                                        fq = d[1]
+                                        //console.log(d[0]+" : "+fq);
+                                        color = d3.rgb("hsl("+0+","+(20+fq*10)+","+(90-(fq*2))+")");
+                                        return color; 
+                                    })
+                        .duration(600)
+    					.ease("linear",1,1);
+                }
+                catch(err){}
             });
             dataArray[count]["NamedEnts"].forEach(function(d, ii){
-                //fq = $("#articlefile"+count+" ."+d[1]).each(function(this){ return $(this).attr('freq');});
-                var word = CleanNJoinText(d[1]);
-                console.log(word);
-                artfile.selectAll("."+word).transition()
-                     //.style("fill", "#000")
-                    .style("fill", function() { 
-                                    fq = $("#"+this.id).attr('freq');
-                                    color = d3.rgb("hsl("+0+","+(20+fq*10)+","+(90-(fq*2))+")");
-                                    return color; 
-                                })
-                    .duration(600)
-					.ease("linear",1,1); 
+                try{
+                    var word = CleanNJoinText(d[1]);
+                    //console.log(word);
+                    artfile.selectAll("."+word).transition()
+                         //.style("fill", "#000")
+                        .style("fill", function() { 
+                                        fq = $("#"+this.id).attr('freq');
+                                        color = d3.rgb("hsl("+0+","+(20+fq*10)+","+(90-(fq*2))+")");
+                                        return color; 
+                                    })
+                        .duration(600)
+    					.ease("linear",1,1); 
+                }
+                catch(err){}
             });
         });
         if(counter < totalstories-1){
