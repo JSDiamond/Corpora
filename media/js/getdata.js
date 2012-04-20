@@ -39,8 +39,6 @@ $(document).ready(function(){
             namedLevels(level,(r/5)+(30-totalstories*2.4));  //70+(40-totalstories*6)-(totalstories)
             level--;
         }
-        $('#familybutton').show();
-        $('#importantnet').show();
     });
     
 });
@@ -82,7 +80,7 @@ var setupSVG = function(){
     
     levelsSVG = d3.select("#SVGcontainer").append("svg:svg") //SVG that holds all individual charts
         .attr("id", "levelsSVG")
-        .attr("width", w)
+        .attr("width", w+40)
         .attr("height", 0)
         .attr("viewBox","0 0 0 0")
       .append("g")
@@ -90,7 +88,7 @@ var setupSVG = function(){
     
     netowrkSVG = d3.select("#SVGcontainer").append("svg:svg") //SVG that holds all individual charts
         .attr("id", "netowrkSVG")
-        .attr("width", w)
+        .attr("width", w+40)
         .attr("height", 0)
         .attr("viewBox","0 0 0 0")
       .append("g")
@@ -509,8 +507,8 @@ var buildImportantNetwork = function(linkz) {
 */
         
         mainoff = $('#mainArtSVG').offset();
-        keyspace = 23-targetcount/10;
-        keyleft = (  (((w-30)*0.5)-((targetcount*keyspace)*0.5)) );
+        keyspace = 22-targetcount/10;
+        keyleft = (  (((w-30)*0.5)-((targetcount*keyspace)*0.5))-20 );
         
         //console.log(linkz[i].target);
         term = CleanNJoinText(linkz[i].target)
@@ -526,13 +524,33 @@ var buildImportantNetwork = function(linkz) {
     });
       
       
-    levelsSVG.append("text")
+        levelsWidth = d3.select('#levelsSVG')[0][0].attributes[1].nodeValue;
+        levelsSVG.append("text")
+                .attr("x", 0)
+                .attr("y", 0)
+                .attr("class", "label")
+                .attr("fill", "#AAA")
+                .attr("text-anchor", "center")
+                .attr("transform", function(){ return "translate(" + (-22) + "," + ((mainoff.top)-146) + ") rotate(270)" })
+                .text("KEY TERMS");
+        levelsSVG.append("rect")
+                .attr("x", -17)
+                .attr("y", (mainoff.top)-210)
+                .attr("width", levelsWidth-52)
+                .attr("height", 90)
+                .style("stroke", "#AAA")
+                .style("stroke-width", "1px")
+                .style("fill", "rgba(255,255,255,0.5)");
+      
+    /*
+levelsSVG.append("text")
         .attr("x", keyleft-2)
         .attr("y", (mainoff.top)-170)
         .attr("dy", "14px")
         .attr("text-anchor", "end")
         .text("Key Terms:")
         .style("font-size", "20px");
+*/
             
     force = d3.layout.force()
         .nodes(d3.values(nodes))
@@ -571,7 +589,7 @@ var buildImportantNetwork = function(linkz) {
     var circle = levelsSVG.append("g").selectAll("rect")
         .data(force.nodes())
       .enter().append("rect")
-        .attr("id", function(d) { return d.name; })
+        .attr("id", function(d) { term = CleanNJoinText(d.name); return term; })
         .attr("class", function(d) { return d.class; })
         .attr("width", function(d) { return 8; })
         .attr("height", function(d) { return d.radius; })
@@ -609,7 +627,7 @@ text.append("text")
 */
     
     text.append("text")
-        .attr("id", function(d) { return "lable_"+d.name; })
+        .attr("id", function(d) { term = CleanNJoinText(d.name); return "terms_"+term; })
         .attr("x", 8)
         .attr("y", "2px")
         .style("cursor", "default")
@@ -628,7 +646,7 @@ text.append("text")
     var cords = [], dr = 0;
     function tick() {
         pathlink.attr("d", function(d, i) { 
-            targ = $('#'+d.target.name);
+            targ = $('#'+CleanNJoinText(d.target.name));
             cords[0] = [(d.source.x + 4), d.source.y]; 
             cords[1] = [d.source.x+0, d.source.y+60];
             cords[2] = [d.target.x-0, d.target.y-60];
@@ -654,12 +672,44 @@ pathlink.attr("d", function(d, i) {
     }
 
     tick();
+    
+        /*
+levelsSVG.append("line")
+                .attr("x1", -17)
+                .attr("y1", (mainoff.top)-210)
+                .attr("x2", -17)
+                .attr("y2", (mainoff.top)-120)
+                .style("stroke", "#AAA")
+                .style("stroke-width", "1px");
+        levelsSVG.append("line")
+                .attr("x1", levelsWidth-40)
+                .attr("y1", (mainoff.top)-210)
+                .attr("x2", levelsWidth-40)
+                .attr("y2", (mainoff.top)-120)
+                .style("stroke", "#AAA")
+                .style("stroke-width", "1px");
+        levelsSVG.append("line")
+                .attr("x1", -17)
+                .attr("y1", (mainoff.top)-210)
+                .attr("x2", levelsWidth-40)
+                .attr("y2", (mainoff.top)-210)
+                .style("stroke", "#AAA")
+                .style("stroke-width", "1px");
+        levelsSVG.append("line")
+                .attr("x1", -17)
+                .attr("y1", (mainoff.top)-120)
+                .attr("x2", levelsWidth-40)
+                .attr("y2", (mainoff.top)-120)
+                .style("stroke", "#AAA")
+                .style("stroke-width", "1px");
+*/
+    
 }
 
 
 //////////////////////////////////////////////////////////////////////////////////////////////FUNCTION: Put ink on paper
 var artcolor = d3.interpolate('#596128', '#612848' );
-var publishers = [], bottoms = [], bottoms_sort = [], artid;
+var publishers = [], bottoms = [], bottoms_sort = [], artid, lowest;
 var writeFactsToScreen = function(){
     ///////////////////////////////////////MAKE A GRADIENT///////////
     var gradient = mainArtSVG.append("svg:svg")
@@ -686,7 +736,7 @@ var writeFactsToScreen = function(){
         .attr("offset", "40%")
         .attr("stop-color", "#fff")
         .attr("stop-opacity", 0);
-    ///////////////////////////////////////MAKE A GRADIENT///////////
+    ///////////////////////////////////////MADE A GRADIENT///////////
 
     
     $('.publinks').each(function(index){ publishers.push($(this).html())});
@@ -907,18 +957,30 @@ var r = Math.min(w, h) *0.5,
     donut = d3.layout.pie().startAngle( 6 ).endAngle( 3 ).sort(null);
 //////////////////////////////////////////////////////////////////////////////////////////////FUNCTION: Named Entity display
 var namedLevels = function(level, change){
-    if (firsttime) {
-        change += 30;
-        firsttime = false;
-    }
         
     r = (w*0.6)*((10-totalstories)*0.12);//Math.min(w, h)*((10-totalstories)*0.12);
     inner += 0.21//0.7-(level*0.08);
     outer = inner+0.1;
     var arc = d3.svg.arc().innerRadius(r*inner+20).outerRadius(r*outer+8);
     var arcs, paths;
-    levelHeight = (r*outer)+80;    
+    levelHeight = (r*outer)+100;    
     
+    
+    if (firsttime) {
+        change += 30;
+        firsttime = false;
+        levelsSVG.append("text")
+                .attr("x", 0)
+                .attr("y", -2)
+                .attr("dy", "-12px")
+                .attr("class", "label")
+                .attr("fill", "#999")
+                .attr("text-anchor", "start")
+                .attr("dy", ".35em")
+                .attr("transform", "translate(" + (w2+(r*inner)-120) + "," + 4 + ")")
+                .text("Named Entities that appeared in:");
+    }
+        
     if (level > 0){
         //moveArticles(change);
         $('#levelsSVG').stop().animate({ 'height': levelHeight}, 400, 'easeOutQuart', function() { });
@@ -1017,35 +1079,30 @@ var namedLevels = function(level, change){
                 .attr('fill', function(d,i) { return namedColors[nodePOS[i]] })
                 .attr("d", d3.svg.arc().innerRadius(r*inner+20).outerRadius(function(d,i){ return r*outer+2+(nodeArray[i]*1.4); }))//r*outer+8
                 .attr('opacity', 0.4);
-            
-
-            arcs.transition()
-                .ease("cubic-out")
-                .duration(400)
-                .attr("transform", "translate(" + (w2-10) + "," + (-inner*23) + ") rotate(282)");
-                
+                            
             
             lables = nblk.append("text")
                 .attr("x", 0)
                 .attr("y", -2)
                 .attr("dy", "-12px")
-                .attr("width", wordmap.w)
-                .style("fill", "#999")
-                .style("font-size", "10px")
-                .style("font-family", "Titillium")
+                .style("fill", "#777")
+                .style("font-size", "11px")
+                .style("font-family", "Miso")//Titillium
                 .style("font-weight", "400")
-                .attr("fill", "#666")
+                .attr("fill", "#999")
                 .attr("text-anchor", "start")
                 .attr("dy", ".35em")
-                .attr("transform", "translate(" + (w2+(r*inner)) + "," + 4 + ")")
-                .text("in "+level+" of "+totalstories);
+                .attr("transform", "translate(" + (w2+(r*inner)+6) + "," + 4 + ")")
+                .text("[ "+level+" of "+totalstories+" ]");
             
   		    arc.outerRadius(function(d,i){ return ((r*outer+8)-(r*inner+20))+(r*outer+4) });
     }
     
+    arcs.transition()
+                .ease("cubic-out")
+                .duration(400)
+                .attr("transform", "translate(" + (w2-10) + "," + ((-inner*22)-(-10)) + ") rotate(282)");
     
-    
-        
     textbits = arcs.append("text")
         .attr("transform", function(d,i) { 
                                         var a = (d.startAngle/2-d.endAngle/2)+d.endAngle;
@@ -1080,8 +1137,54 @@ var namedLevels = function(level, change){
 	setTimeout(bindArcEvents, 600, arcs);
       
     } else if (level == 0){
-        //console.log("last time");
+                levelsSVG.append("text")
+                .attr("x", 0)
+                .attr("y", -2)
+                .attr("dy", "-12px")
+                .attr("class", "label")
+                .attr("fill", "#999")
+                .attr("text-anchor", "start")
+                .attr("dy", ".35em")
+                .attr("transform", "translate(" + (w-112) + "," + 4 + ")")
+                .text(":of the articles");
+                
+        $('#familybutton').show();
+        $('#importantnet').show();
+        
     }
+    
+    if (level == 1){
+        levelsSVG.append("text")
+                .attr("x", 0)
+                .attr("y", 0)
+                .attr("class", "label")
+                .attr("fill", "#AAA")
+                .attr("text-anchor", "center")
+                .attr("transform", function(){ return "translate(" + (-22) + "," + (levelHeight*0.5) + ") rotate(270)" })
+                .text("NAMED ENTITES");
+        levelsSVG.append("line")
+                .attr("x1", -17)
+                .attr("y1", 0)
+                .attr("x2", -17)
+                .attr("y2", levelHeight)
+                .style("stroke", "#AAA")
+                .style("stroke-width", "1px");
+        levelsSVG.append("line")
+                .attr("x1", -17)
+                .attr("y1", 0)
+                .attr("x2", -12)
+                .attr("y2", 0)
+                .style("stroke", "#AAA")
+                .style("stroke-width", "1px");
+        levelsSVG.append("line")
+                .attr("x1", -17)
+                .attr("y1", levelHeight)
+                .attr("x2", -12)
+                .attr("y2", levelHeight)
+                .style("stroke", "#AAA")
+                .style("stroke-width", "1px");
+    }
+    
 }
 
 var bindArcEvents = function(arcs){
@@ -1197,7 +1300,8 @@ var moveArticles = function(change){
 
 
 //////////////////////////////////////////////////////////////////////////////////////////////FUNCTION: add elements below each article
-var buildSupplemental = function(bottoms, bottoms_sort){
+var buildSupplemental = function(bottoms, bottoms_sort) {    
+    
     ul = $('#underlist');
     offHeight = $('#mainArtSVG').outerHeight();
     bottoms.forEach(function(d,i){
@@ -1216,6 +1320,39 @@ var buildSupplemental = function(bottoms, bottoms_sort){
     });
     var heights = $('.longestColumn').outerHeight()
     $('#bottompad').css({ 'margin-top': heights+20+'px' });
+    
+    pub_to_bottom = bottoms_sort[0]+50;
+    mainArtSVG.append("text")
+            .attr("x", 0)
+            .attr("y", -2)
+            //.attr("dy", "-12px")
+            .attr("class", "label")
+            .attr("fill", "#AAA")
+            .attr("text-anchor", "center")
+            .attr("transform", function(){ return "translate(" + 0 + "," + ((bottoms_sort[0]*0.5)+25) + ") rotate(270)" })
+            .text("ARTICLE MAPS");
+    mainArtSVG.append("line")
+                .attr("x1", 1)
+                .attr("y1", 0)
+                .attr("x2", 1)
+                .attr("y2", pub_to_bottom)
+                .style("stroke", "#AAA")
+                .style("stroke-width", "1px");
+    mainArtSVG.append("line")
+                .attr("x1", 1)
+                .attr("y1", 0)
+                .attr("x2", 5)
+                .attr("y2", 0)
+                .style("stroke", "#AAA")
+                .style("stroke-width", "1px");
+    mainArtSVG.append("line")
+                .attr("x1", 1)
+                .attr("y1", pub_to_bottom)
+                .attr("x2", 5)
+                .attr("y2", pub_to_bottom)
+                .style("stroke", "#AAA")
+                .style("stroke-width", "1px"); 
+    
 }
 
 
