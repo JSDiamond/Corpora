@@ -26,15 +26,8 @@ $(document).ready(function(){
                     //$(this).stop().animate({ 'opacity': current_opac}), 10, 'linear', function() {}
                   }
     );
-    /*
-if(current_opac < 1){
-        $('.button').hover( function () {
-                        //$(this).stop().animate({ 'font-size': '20px'}), 10, 'linear', function() {}
-                      }, 
-                      function () {
-                        //$('#toolbar').stop().animate({ 'opacity': current_opac}), 10, 'linear', function() {}
-                      }
-        );
-    }
-*/
+    $('#toolbar').bind( 'mouseover',  function () {
+                    $(this).css({ 'opacity': '1'});
+    });
+
 });

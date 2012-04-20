@@ -16,16 +16,38 @@ $(document).ready(function(){
  $('#lengthbutton').click(function(){
         changeWordRects(counter, "length");           
     });
-*/ 
+*/  
+
+    $('#sentimentbutton').click(function(){
+        if(!sentimentshowing){
+            $('.uc').css({ 'border-bottom': '1px #333 solid'})
+            $('.uc').stop().animate({ 'height': wordmap.w*0.8 }, 400, 'easeOutQuart', function() { });
+            $('#bottompad').stop().animate({ 'margin-top': (wordmap.w*0.94)+'px' }, 550, 'easeOutQuart', function() { });
+            sentimentshowing =! sentimentshowing;
+        } else if (sentimentshowing) {
+            $('.uc').stop().animate({ 'height': 0 }, 400, 'easeOutQuart', function() { $(this).css({ 'border-bottom': 'none'}) });
+            $('#bottompad').stop().animate({ 'margin-top': (0)+'px' }, 550, 'easeOutQuart', function() { });
+            sentimentshowing =! sentimentshowing;
+        }
+    });
+
     $('#familybutton').click(function(){
         showFam =! showFam;
         $(this).toggleClass('clicked');
     });
     
     $('#importantnet').click(function(){
-        if(!buildone){
-            buildImportantNetwork(links);
-            buildone = true;
+        if(!importantshowing){
+            if(!buildone){
+                buildImportantNetwork(links);
+                buildone = true;
+            }
+            $('#levelsSVG').stop().animate({ 'height': levelHeight+70}, 440, 'easeOutQuart', function() { $('.impclass').show(); });
+            importantshowing =! importantshowing;
+        } else if(importantshowing) {
+            $('.impclass').hide();
+            $('#levelsSVG').stop().animate({ 'height': levelHeight-70}, 440, 'easeOutQuart', function() { });
+            importantshowing =! importantshowing;
         }
     });
     
@@ -34,14 +56,31 @@ $(document).ready(function(){
     });  
     
     $('#namedbutton').click(function(){
-        namedOnScreen = true;
-        if (level == totalstories){
-            namedLevels(level,(r/5)+(30-totalstories*2.4));  //70+(40-totalstories*6)-(totalstories)
-            level--;
+        if(!namedOnScreen){
+            $('#levelsSVG').stop().animate({ 'height': lH}, 800, 'easeOutCubic', function() { 
+                setTimeout( showButtons, 200);
+            });
+            if (level == totalstories){
+                namedLevels(level,(r/5)+(30-totalstories*2.4));  //70+(40-totalstories*6)-(totalstories)
+                level--;
+            }
+            namedOnScreen =! namedOnScreen;
+        } else if(namedOnScreen){
+            lH = $('#levelsSVG').height();
+            $('#levelsSVG').stop().animate({ 'height': 0}, 800, 'easeOutCubic', function() { });
+            $('#familybutton').hide();
+            $('#importantnet').hide();
+            namedOnScreen =! namedOnScreen;
         }
     });
     
 });
+var sentimentshowing = false, importantshowing = false, buildone = false, namedOnScreen = false, lH = 0;
+
+var showButtons = function(){
+        $('#familybutton').show();
+        $('#importantnet').show();
+}
 
 //////////////////////////////////////////////////////////////////////////////////////////////FUNCTION: clean text for class or id selectors
 var CleanNJoinText = function(word){
@@ -56,7 +95,7 @@ var articlePubs = [], dataArray = []; //use this to store the data objects for e
 var w = window.innerWidth-120, h = window.innerHeight-0, w2 = w*0.5, h2 = h*0.5;
 var articleStorageArray, totalstories, mainArtSVG, levelsSVG, netowrkSVG, langmap, articlefile, simInfo;
 var wordmap = { w: 0, h: 0, boxH: 6},  spacing  = 34, wordCount = 0;
-var namedOnScreen = false, dat = [1], buildone = false;
+var dat = [1];
 var entitiesString = ['PERSON', 'ORGANIZATION', 'LOCATION', 'DATE', 'TIME', 'MONEY', 'PERCENT', 'FACILITY', 'GSP'];
 /* var namedColors = {'PERSON': 'AC6A51', 'ORGANIZATION': '537EA3', 'LOCATION': '569677', 'DATE': 'D5D964', 'TIME': '773D99', 'MONEY': 'C8CB6D', 'PERCENT': 'A6984B', 'FACILITY': 'BF9D54', 'GSP': 'AABA56'}; */
 /* var namedColors = {'PERSON': '987162', 'ORGANIZATION': '666884', 'LOCATION': '59826E', 'DATE': 'D5D964', 'TIME': '773D99', 'MONEY': 'B0B177', 'PERCENT': 'A6984B', 'FACILITY': 'A08A64', 'GSP': 'AABA56'}; */
@@ -479,8 +518,6 @@ var buildImportantNetwork = function(linkz) {
     console.log(allImportant);
     //$('#netowrkSVG').stop().animate({ 'height': levelHeight}, 400, 'easeOutQuart', function() { });
     // Compute the distinct nodes from the links.
-    levelHeight += 10;
-     $('#levelsSVG').stop().animate({ 'height': levelHeight+60}, 440, 'easeOutQuart', function() { });
     linkz.forEach(function(link, i) {
         source = CleanNJoinText(link.source);
         arcoff = $('#tx_'+source).offset();//'#tx_'+source
@@ -528,13 +565,14 @@ var buildImportantNetwork = function(linkz) {
         levelsSVG.append("text")
                 .attr("x", 0)
                 .attr("y", 0)
-                .attr("class", "label")
+                .attr("class", "label impclass")
                 .attr("fill", "#AAA")
                 .attr("text-anchor", "center")
                 .attr("transform", function(){ return "translate(" + (-22) + "," + ((mainoff.top)-114) + ") rotate(270)" })
                 .text("KEY TERMS");
         levelsSVG.append("rect")
                 .attr("x", -17)
+                .attr("class", "impclass")
                 .attr("y", (mainoff.top)-178)
                 .attr("width", levelsWidth-42)
                 .attr("height", 98)
@@ -579,7 +617,7 @@ levelsSVG.append("text")
     pathlink = levelsSVG.append("g").selectAll("path")
         .data(force.links())
       .enter().append("path")
-        .attr("class", function(d) { return "link " + d.type +" link_"+d.target.name +" link_"+d.source.name; })
+        .attr("class", function(d) { return "link impclass" + d.type +" link_"+d.target.name +" link_"+d.source.name; })
         .attr('opacity', 0.6)
         .style('display', 'none');
         //.attr("marker-end", function(d) { return "url(#" + d.type + ")"; });
@@ -590,7 +628,7 @@ levelsSVG.append("text")
         .data(force.nodes())
       .enter().append("rect")
         .attr("id", function(d) { term = CleanNJoinText(d.name); return term; })
-        .attr("class", function(d) { return d.class; })
+        .attr("class", function(d) { return d.class+" impclass"; })
         .attr("width", function(d) { return 8; })
         .attr("height", function(d) { return d.radius; })
         .attr('opacity', 0.75)
@@ -612,6 +650,7 @@ levelsSVG.append("text")
     var text = levelsSVG.append("g").selectAll("g")
         .data(force.nodes())
       .enter().append("g")
+        .attr("class", "impclass")
         .style("font-size", "10px")
         .style("font-family", "Oswald")
         .style("font-weight", "600");
@@ -1300,19 +1339,20 @@ var moveArticles = function(change){
 
 
 //////////////////////////////////////////////////////////////////////////////////////////////FUNCTION: add elements below each article
-var sentimentBlock;
+var sentimentBlock, underHeight;
 var buildSupplemental = function(bottoms, bottoms_sort) {    
     
     ul = $('#underlist');
     offHeight = $('#mainArtSVG').outerHeight();
     bottoms.forEach(function(d,i){
-        ul.append('<li class="uc underColumn'+i+'" style="position: absolute; top: '+(-offHeight+d+50)+'px; left: '+((i*wordmap.w)+(i*spacing)+42)+'px;  width: '+wordmap.w+'px;"><p>Sentiment</p></li>');
+        ul.append('<li class="uc underColumn'+i+'" style="position: absolute; top: '+(-offHeight+d+50)+'px; left: '+((i*wordmap.w)+(i*spacing)+42)+'px;  width: '+wordmap.w+'px;"><p class="supp">Sentiment</p></li>');
         if(d == bottoms_sort[0]){ $('.underColumn'+i).addClass('longestColumn') }
         //console.log(dataArray[i].Sentiment[0].neg);
         data = [dataArray[i].Sentiment[0].pos, dataArray[i].Sentiment[0].neg]
         sentimentBlock = d3.select('.underColumn'+i).append("svg:svg") //SVG that holds all individual charts
                             .data([data])
                             .attr("id", "sentimentBlock"+i)
+                            .attr("id", "sentBlock")
                             .attr("width", wordmap.w)
                             .attr("height", wordmap.w*0.7) //will need to be appended based on the data
                             .attr("viewBox","0 0 0 0")
@@ -1332,6 +1372,8 @@ sentimentBlock.append("rect")
 */
                 
         buildSentiment(dataArray[i].Sentiment[0]);
+        underHeight = $('.underColumn0').height();
+        $('.uc').height(0);
     });
     var heights = $('.longestColumn').outerHeight()
     $('#bottompad').css({ 'margin-top': heights+20+'px' });
@@ -1431,7 +1473,7 @@ var buildSentiment = function(SentAnalysis){
             
     var neutralRound = String(SentAnalysis.neutral).substr(0, 4);    
     sentimentBlock.append("text")
-            .attr("x", 16)
+            .attr("x", (wordmap.w*0.075)+4)
             .attr("y", (wordmap.w*0.5)+15)
             .attr("dy", "0")
             .attr("fill", "#777")

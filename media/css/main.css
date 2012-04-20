@@ -215,7 +215,7 @@ ul h3.latest_headlines {
     border-bottom: 3px solid #333;
 }
 div.clicked {
-    background-color: #111;
+    background: #5D5555 url(/media/images/88_red.gif) repeat 0 0;;
 }
 .articleClass {
     color: #222;
@@ -337,7 +337,8 @@ div.clicked {
 .uc {
     font-family: Oswald;
     font-weight: 200;
-    border-bottom: 1px #333 solid;
+    /* border-bottom: 1px #333 solid; */
+    overflow: hidden;
 }
 #supplemental {
     position: relative;
