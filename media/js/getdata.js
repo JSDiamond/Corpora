@@ -480,7 +480,7 @@ var buildImportantNetwork = function(linkz) {
     //$('#netowrkSVG').stop().animate({ 'height': levelHeight}, 400, 'easeOutQuart', function() { });
     // Compute the distinct nodes from the links.
     levelHeight += 10;
-     $('#levelsSVG').stop().animate({ 'height': levelHeight}, 440, 'easeOutQuart', function() { });
+     $('#levelsSVG').stop().animate({ 'height': levelHeight+60}, 440, 'easeOutQuart', function() { });
     linkz.forEach(function(link, i) {
         source = CleanNJoinText(link.source);
         arcoff = $('#tx_'+source).offset();//'#tx_'+source
@@ -518,7 +518,7 @@ var buildImportantNetwork = function(linkz) {
         link.source = nodes[link.source] || (nodes[link.source] = {name: link.source, class: "slink", x: (arcoff.left-52), y: (arcoff.top-168), charge: 0, fixed: true, color: arccolor, stroke: '#fff', radius: 8}); //x: (arcoff.left-50), y: ((arcoff.top)-162)
         //link.source = nodes[link.source] || (nodes[link.source] = {name: link.source, class: "link", x: (arclocs[i].x1-arclocs[i].x2), y: (arclocs[i].y1+arclocs[i].y2), charge: 0, fixed: true});
 
-        link.target = nodes[link.target] || (nodes[link.target] = {name: link.target, class: "tlink", x: (wordtrack[link.target]*keyspace-(-(keyleft))), y: (mainoff.top)-170, charge: -2000, color: '#777', stroke: 'none', radius: radius.length, fixed: true}); //x: (w/2), y: levelHeight/2 
+        link.target = nodes[link.target] || (nodes[link.target] = {name: link.target, class: "tlink", x: (wordtrack[link.target]*keyspace-(-(keyleft))), y: (mainoff.top)-126, charge: -2000, color: '#777', stroke: 'none', radius: radius.length, fixed: true}); //x: (w/2), y: levelHeight/2 
         
         prevRadius = radius.length;
     });
@@ -531,13 +531,13 @@ var buildImportantNetwork = function(linkz) {
                 .attr("class", "label")
                 .attr("fill", "#AAA")
                 .attr("text-anchor", "center")
-                .attr("transform", function(){ return "translate(" + (-22) + "," + ((mainoff.top)-146) + ") rotate(270)" })
+                .attr("transform", function(){ return "translate(" + (-22) + "," + ((mainoff.top)-114) + ") rotate(270)" })
                 .text("KEY TERMS");
         levelsSVG.append("rect")
                 .attr("x", -17)
-                .attr("y", (mainoff.top)-210)
-                .attr("width", levelsWidth-52)
-                .attr("height", 90)
+                .attr("y", (mainoff.top)-178)
+                .attr("width", levelsWidth-42)
+                .attr("height", 98)
                 .style("stroke", "#AAA")
                 .style("stroke-width", "1px")
                 .style("fill", "rgba(255,255,255,0.5)");
@@ -1145,7 +1145,7 @@ var namedLevels = function(level, change){
                 .attr("fill", "#999")
                 .attr("text-anchor", "start")
                 .attr("dy", ".35em")
-                .attr("transform", "translate(" + (w-112) + "," + 4 + ")")
+                .attr("transform", "translate(" + (w-100) + "," + 4 + ")")
                 .text(":of the articles");
                 
         $('#familybutton').show();
