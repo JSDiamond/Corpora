@@ -685,13 +685,14 @@ text.append("text")
     var cords = [], dr = 0;
     function tick() {
         pathlink.attr("d", function(d, i) { 
+        try{
             targ = $('#'+CleanNJoinText(d.target.name));
-            console.log(CleanNJoinText(d.target.name));
             cords[0] = [(d.source.x + 4), d.source.y]; 
             cords[1] = [d.source.x+0, d.source.y+60];
             cords[2] = [d.target.x-0, d.target.y-60];
             cords[3] = [(d.target.x + 4), (d.target.y - targ[0].attributes[3].nodeValue)];
             return curve(cords); 
+        } catch(err) {}
         });  
       /*
 pathlink.attr("d", function(d, i) {
