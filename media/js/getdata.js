@@ -686,6 +686,7 @@ text.append("text")
     function tick() {
         pathlink.attr("d", function(d, i) { 
             targ = $('#'+CleanNJoinText(d.target.name));
+            console.log(CleanNJoinText(d.target.name));
             cords[0] = [(d.source.x + 4), d.source.y]; 
             cords[1] = [d.source.x+0, d.source.y+60];
             cords[2] = [d.target.x-0, d.target.y-60];
