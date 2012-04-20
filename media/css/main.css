@@ -383,12 +383,19 @@ form label {
     margin-top: 10px;
 }
 form p {
-    margin-top: 10px;
+    margin-top: 12px;
     clear: both;
+}
+form p span {
+    font-weight: 200;
+    font-size: 12px;
+    margin-left: 10px;
 }
 form input[type="text"] {
     color: #666;
-    font-weight: 200;
+    font-size: 13px;
+    font-weight: 300;
+    font-family: 'Titillium';
 }
 form input[type="submit"] {
     margin-top: 16px;
@@ -403,11 +410,6 @@ form input[type="submit"]:hover {
     background-color: #444;
     color: #bbb;
 }
-form p span {
-    font-weight: 200;
-    font-size: 12px;
-    margin-left: 10px;
-}
 .form_headline {
     width: 423px;
     padding: 8px;
@@ -416,7 +418,7 @@ form p span {
 
 .article_url {
     width: 400px;
-    padding: 8px;
+    padding: 8px 8px 7px;
 }
 .form_error {
     font-family: 'Titillium';

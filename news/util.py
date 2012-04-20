@@ -16,6 +16,20 @@ def get_current_path(request):
        'current_path': request.get_full_path()
      }
 
+def scrape_pub_from_url(link):
+    netloca = urlparse(link)
+    if "hostednews/ap/"in link:
+        pubName = "associatedpress"
+    elif "hostednews/afp/"in link:
+        pubName = "afp"
+    else:
+        if "www" in netloca.netloc:
+            pubName = netloca.netloc[4:]
+        else:
+            pubName = netloca.netloc
+    return pubName
+
+
 #scrape Google News for stories and links
 def get_google():
     url = "http://news.google.com/news?output=rss"

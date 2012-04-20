@@ -18,19 +18,23 @@ $(document).ready(function(){
         
     });
     $('#toolbar').hover( function () {
-                    $(this).stop().animate({ 'opacity': '1'}), 10, 'linear', function() {}
+                    $(this).css({ 'opacity': '1'});
+                    //$(this).stop().animate({ 'opacity': '1'}), 10, 'linear', function() {}
                   }, 
                   function () {
-                    $(this).stop().animate({ 'opacity': current_opac}), 10, 'linear', function() {}
+                    $(this).css({ 'opacity': current_opac});
+                    //$(this).stop().animate({ 'opacity': current_opac}), 10, 'linear', function() {}
                   }
     );
-    if(current_opac < 1){
+    /*
+if(current_opac < 1){
         $('.button').hover( function () {
-                        $(this).stop().animate({ 'font-size': '20px'}), 10, 'linear', function() {}
+                        //$(this).stop().animate({ 'font-size': '20px'}), 10, 'linear', function() {}
                       }, 
                       function () {
                         //$('#toolbar').stop().animate({ 'opacity': current_opac}), 10, 'linear', function() {}
                       }
         );
     }
+*/
 });

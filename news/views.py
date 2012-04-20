@@ -12,7 +12,7 @@ import json
 from nltk import FreqDist
 import datetime
 
-from Corpora.news.util import get_google, get_article, get_sentiment, findTriGrams, tokenize_text_and_tag_named_entities, SetWordDictionary, Find_Important_Words, MarkovGenerator
+from Corpora.news.util import get_google, get_article, get_sentiment, findTriGrams, tokenize_text_and_tag_named_entities, SetWordDictionary, Find_Important_Words, MarkovGenerator, scrape_pub_from_url
 from Corpora.news.models import Article, Publisher, StoryGroup
 from forms import GatherForm
 
@@ -54,9 +54,27 @@ def gather(request):
     if request.method == 'POST': # If the form has been submitted...
         form = GatherForm(request.POST) # A form bound to the POST data
         if form.is_valid(): # All validation rules pass
-            headline = form.cleaned_data['headline']
-            article_url = form.cleaned_data['article_url']
-            headline = forms.CharField(max_length=100)
+            headliner = form.cleaned_data['headline']
+            article_url_1 = form.cleaned_data['article_url_1']
+            article_url_2 = form.cleaned_data['article_url_2']
+            article_url_3 = form.cleaned_data['article_url_3']
+            article_url_4 = form.cleaned_data['article_url_4']
+            article_url_5 = form.cleaned_data['article_url_5']
+            article_url_6 = form.cleaned_data['article_url_6']
+            
+            try:
+                ###################check the db for the masterlink associated with the main article 
+                article_exists = Article.objects.filter(headline=headliner)
+                if not article_exists.count():
+                    ###################if not in db, make an Article, a StoryGroup w/ date, and check for each Publisher to see if it needs to be entered
+                    slug = slugify(story[0])
+                    existing_storygroup = StoryGroup.objects.filter(slugline=slug)
+                    if not existing_storygroup.count():
+                        new_storygroup = StoryGroup.objects.create(date=datetime.datetime.now(), slugline=slug)
+                    else:
+                        None
+            except Article.DoesNotExist:
+                None
             return HttpResponseRedirect( '/gathering/', {'form': form} ) # Redirect after POST
     else:
         None
@@ -64,8 +82,8 @@ def gather(request):
     return render_to_response('news/gather.html', {'form': form}, context_instance=RequestContext(request))
     
 def gathering(request, form):
-    form = form
-    return render_to_response('news/gathering.html', {'form': form}, context_instance=RequestContext(request))
+    formpass = form
+    return render_to_response('news/gathering.html', {'form': formpass}, context_instance=RequestContext(request))
 
 
 def special(request):

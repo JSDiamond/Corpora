@@ -34,14 +34,14 @@
             {%comment%}
             {% for field in form %}
                 {% if field.name != "headline" %}
-                    {% if field.name.errors %} <span class="form_error">{{ form.article_url_1.errors }}</span> {% endif %}
+                    {% if field.name.errors %} <span class="form_error">{{ field.errors }}</span> {% endif %}
                     <p><label for="id_{{field.name}}">Article Link {{ forloop.counter}}:</label>
                         <input 
                             id="id_{{field.name}}" 
                             class="article_url" 
                             type="text" 
                             name="{{field.name}}" 
-                            value="{% if form.field.name.value %}{{ form.field.name.value }} {% else %} {{ "Source " }}{{ forloop.counter}} {% endif %}" 
+                            value="{% if form.field.name.value %}{{ form.field.name.value }} {% else %} {{ forloop.counter}} {% endif %}" 
                             maxlength="255" />
                         <span>*(required)</span>
                     </p>
@@ -125,11 +125,18 @@
     </div>
     <script type="text/javascript">
         $(document).ready(function(){ 
+            $('input[type="text"]').each(function(){
+                    val = $(this).attr('value');
+                    val = jQuery.trim( val );
+                    $(this).attr('value', val);
+            });
             $('input[type="text"]').click(function(){
-                if( $(this).hasClass('focused')) {} else {
-                    $(this).addClass('focused');
-                    $(this).attr('value', '');
-                }
+                //if( $(this).attr('value') == "xmpty"){
+                    //$(this).css({'color': '#666'});
+                    val = $(this).attr('value');
+                    val = jQuery.trim( val );
+                    $(this).attr('value', val);
+                //}
             });
         });
     </script>

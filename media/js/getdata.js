@@ -1101,7 +1101,7 @@ var namedLevels = function(level, change){
     arcs.transition()
                 .ease("cubic-out")
                 .duration(400)
-                .attr("transform", "translate(" + (w2-10) + "," + ((-inner*22)-(-10)) + ") rotate(282)");
+                .attr("transform", "translate(" + (w2-10) + "," + ((-inner*22)-(-(40-level*5))) + ") rotate(282)");
     
     textbits = arcs.append("text")
         .attr("transform", function(d,i) { 
@@ -1300,6 +1300,7 @@ var moveArticles = function(change){
 
 
 //////////////////////////////////////////////////////////////////////////////////////////////FUNCTION: add elements below each article
+var sentimentBlock;
 var buildSupplemental = function(bottoms, bottoms_sort) {    
     
     ul = $('#underlist');
@@ -1307,20 +1308,35 @@ var buildSupplemental = function(bottoms, bottoms_sort) {
     bottoms.forEach(function(d,i){
         ul.append('<li class="uc underColumn'+i+'" style="position: absolute; top: '+(-offHeight+d+50)+'px; left: '+((i*wordmap.w)+(i*spacing)+42)+'px;  width: '+wordmap.w+'px;"><p>Sentiment</p></li>');
         if(d == bottoms_sort[0]){ $('.underColumn'+i).addClass('longestColumn') }
-        console.log(dataArray[i].Sentiment[0].neg);
+        //console.log(dataArray[i].Sentiment[0].neg);
+        data = [dataArray[i].Sentiment[0].pos, dataArray[i].Sentiment[0].neg]
         sentimentBlock = d3.select('.underColumn'+i).append("svg:svg") //SVG that holds all individual charts
-                            .attr("id", "sentimentBlock")
+                            .data([data])
+                            .attr("id", "sentimentBlock"+i)
                             .attr("width", wordmap.w)
-                            .attr("height", 80) //will need to be appended based on the data
+                            .attr("height", wordmap.w*0.7) //will need to be appended based on the data
                             .attr("viewBox","0 0 0 0")
-                            .style("margin-top", '10px')
+                            .style("margin-top", '0px')
                           .append("g")
                             .attr("width", w)
-                            .attr("transform", "translate(22,2)");
+                            .attr("transform", "translate(0,0)");
+        /*
+sentimentBlock.append("rect")
+                .attr("x", 0)
+                .attr("y", 0)
+                .attr("width", wordmap.w)
+                .attr("height", wordmap.w*0.75)
+                .style("stroke", "#AAA")
+                .style("stroke-width", "1px")
+                .style("fill", "rgba(255,255,255,0.4)");
+*/
+                
+        buildSentiment(dataArray[i].Sentiment[0]);
     });
     var heights = $('.longestColumn').outerHeight()
     $('#bottompad').css({ 'margin-top': heights+20+'px' });
     
+    //||||||||||||||||||||||||||||||||||||||||||||||Article Maps: lable 
     pub_to_bottom = bottoms_sort[0]+50;
     mainArtSVG.append("text")
             .attr("x", 0)
@@ -1329,7 +1345,7 @@ var buildSupplemental = function(bottoms, bottoms_sort) {
             .attr("class", "label")
             .attr("fill", "#AAA")
             .attr("text-anchor", "center")
-            .attr("transform", function(){ return "translate(" + 0 + "," + ((bottoms_sort[0]*0.5)+25) + ") rotate(270)" })
+            .attr("transform", function(){ return "translate(" + 0 + "," + ((bottoms_sort[0]*0.5)+40) + ") rotate(270)" })
             .text("ARTICLE MAPS");
     mainArtSVG.append("line")
                 .attr("x1", 1)
@@ -1352,9 +1368,96 @@ var buildSupplemental = function(bottoms, bottoms_sort) {
                 .attr("y2", pub_to_bottom)
                 .style("stroke", "#AAA")
                 .style("stroke-width", "1px"); 
-    
+    //||||||||||||||||||||||||||||||||||||||||||||||Article Maps: lable  
 }
 
+
+//////////////////////////////////////////////////////////////////////////////////////////////FUNCTION: build sentiment visualization
+var buildSentiment = function(SentAnalysis){
+    r = wordmap.w,
+    color = d3.scale.category20(),
+    donut = d3.layout.pie().startAngle( 2.93 ).endAngle( 6.07 ).sort(null),
+    arc = d3.svg.arc().innerRadius(0).outerRadius(r*0.425),
+    senttcolor = d3.interpolate('#B9C5D0', '#D0C5B9' ); //('#8090A0', '#A09080' );
+    
+    var sent_arcs = sentimentBlock.selectAll("g.arc")
+        .data(donut)
+      .enter().append("g")
+        .attr("class", "arc")
+        .style("stroke", "#666")
+        .style("stroke-width", "1px")
+        .attr("transform", "translate(" + wordmap.w*0.5 + "," + (wordmap.w*0.5) + ") rotate(102.2)");
+        
+    sent_arcs.append("path")
+        .attr("fill", function(d, i) { return senttcolor(i); })
+        .attr("opacity", 0.9)
+        .attr("d", d3.svg.arc().innerRadius(0).outerRadius(r*0.425));
+        
+    sent_arcs.append("text")
+        .attr("transform", function(d) { 
+                                        var angle = (((d.endAngle*180) / 10 * Math.PI)+270);
+                                        //console.log(angle); 
+                                        if(angle<90){ angle+=180; }
+                                        return "translate(" + arc.centroid(d) + ") rotate("+ 260 +")"; 
+                                    })
+        .attr("dy", ".35em")
+        .attr("fill", "#666")
+        .style("stroke", "none")
+        .style("font-size", "12px")
+        .attr("text-anchor", "middle")
+        .attr("display", function(d) { return d.value > .05 ? null : "none"; }) //if null than "none"
+        .text(function(d, i) { return d.value.toFixed(2); });
+    
+    var x = d3.scale.linear() //this is like map() in Processing
+        .domain([0, 1]) //map the max amount to the width of the sketch
+        .range([0, (wordmap.w*0.85)-1]);    
+        
+    sentimentBlock.append("rect")
+            .attr("x", wordmap.w*0.075)
+            .attr("y", wordmap.w*0.5)
+            .attr("width", wordmap.w*0.85)
+            .attr("height", 20)
+            .style("stroke", "#666")
+            .style("stroke-width", "1px")
+            .style("fill", "#CBCCCC")
+    sentimentBlock.append("rect")
+            .attr("x", wordmap.w*0.075)
+            .attr("y", (wordmap.w*0.5)+1)
+            .attr("width", function(d){ return x(SentAnalysis.neutral)-1; })
+            .attr("height", 18)
+            .style("stroke", "none")
+            //.style("stroke-width", "1px")
+            .style("fill", "#FDFFFF"); 
+            
+    var neutralRound = String(SentAnalysis.neutral).substr(0, 4);    
+    sentimentBlock.append("text")
+            .attr("x", 16)
+            .attr("y", (wordmap.w*0.5)+15)
+            .attr("dy", "0")
+            .attr("fill", "#777")
+            .style("stroke", "none")
+            .style("font-size", "11px")
+            .attr("text-anchor", "start")  
+            .text('NEUTRAL: '+neutralRound)    
+    sentimentBlock.append("text")
+            .attr("x", 6)
+            .attr("y", 26)
+            .attr("dy", "0")
+            .attr("fill", "#999")
+            .style("stroke", "none")
+            .style("font-size", "11px")
+            .attr("text-anchor", "start")  
+            .text('POS:')      
+    sentimentBlock.append("text")
+            .attr("x", wordmap.w-6)
+            .attr("y", 26)
+            .attr("dy", "0")
+            .attr("fill", "#999")
+            .style("stroke", "none")
+            .style("font-size", "11px")
+            .attr("text-anchor", "end")  
+            .text(':NEG') 
+}
 
 //////////////////////////////////////////////////////////////////////////////////////////////FUNCTION: transition for all wordrects
 var dat = [1];
