@@ -1,0 +1,35 @@
+# clauses
+#S -> NP VP N Vbd Pers Org 
+#S -> NP NNS N 
+#NP -> N Adj
+#NP -> N NNS And Md
+#NP -> Adj N CC Loc
+#VP -> Vbd COND # transitive verbs have direct objects
+#VP -> Vintr Vbd   # intransitive verbs have no direct object
+#COND -> TO Interj 
+
+S -> NP VP N Vbd Pers Org 
+S -> NP NNS N 
+NP -> N
+NP -> N NNS
+NP -> N Adj
+VP -> Vbd To # transitive verbs have direct objects
+VP -> Vintr Vbd   # intransitive verbs have no direct object
+
+
+# terminals
+Interj -> IN
+Det -> DT
+N -> NN
+Adj -> JJ
+Vtrans -> VBZ
+Vintr -> VBN
+Vbd -> VBD
+Pers -> PERSON
+Org -> ORGANIZATION
+Loc -> LOCATION
+Md -> MD
+To -> TO
+Rb -> RB
+Cc -> CC
+Comma -> ,

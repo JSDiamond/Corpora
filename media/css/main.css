@@ -194,16 +194,20 @@ ul h3.latest_headlines {
     background: url(/media/images/88_wgray.gif) repeat 0 0; /* #444 */
 }
 #searchtxt {
-    padding: 4px 8px;
+    padding: 4px 4px;
     margin: 0px 4px 0px;
     background-color: #6D6666;
     border: inset #222 2px;
+    width: 20px;
+    cursor: text;
 }
-.searchButton span {
+#searchButton {
     color: #ddd;
     font-weight: 100;
     letter-spacing: 1px;
     margin-top: 4px;
+}
+.searchtab {
 }
 
 

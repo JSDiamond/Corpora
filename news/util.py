@@ -133,7 +133,6 @@ def findTriGrams(text):
     
 
 
-#Based on code by http://gavinmhackeling.com/blog ########## FIND ENTITIES
 def tokenize_text_and_tag_named_entities(text):
     sentenceBlock = []
     sentLengths = list() 
@@ -150,8 +149,11 @@ def tokenize_text_and_tag_named_entities(text):
         #senttokens = nltk.word_tokenize(sentence)
         sentLengths.append(sentence)
         for chunk in nltk.ne_chunk(nltk.pos_tag(nltk.word_tokenize(sentence))):
+            
             if hasattr(chunk,  'node'):
-                if chunk.node != 'GPE':
+                if len(chunk.leaves()) == 1 and chunk.leaves()[0][0] == 'Mr.':
+                            tmp_group = ((chunk.leaves()[0][1], chunk.leaves()[0][0])) 
+                elif chunk.node != 'GPE':
                     tmp_group = (chunk.node,  [c[0] for c in chunk.leaves()])
                     uniqueNmdEnt.add((chunk.node, (' '.join(c[0] for c in chunk.leaves()))));
                 else:
@@ -250,30 +252,6 @@ def Find_Important_Words(subdict, text, dist, entString):
 
 
 
-
-#NEWSCAST is a class that will create poetic output from the articles stored in the NewsCorpora database
-#Possible functions will be:the amount of articles, a time period, a specific publisher, stylistic poetic form options
-# class Newscast(object):
-# 
-# 	def __init__(self):
-# 		self.news = dict()
-#     
-#     def most_common_words(self, num):
-# 		pairs = self.reverse_sorted_pairs()
-# 		return [p[0] for p in pairs[:num]]
-
-
-
-# if __name__ == '__main__': #If called in the Terminal, do all below
-# 
-# 	import sys
-# 	newscast = Newscast()
-
-
-############################################################################################
-
-
-
 class MarkovGenerator(object):
 
   def __init__(self, n, max):
@@ -283,7 +261,7 @@ class MarkovGenerator(object):
     self.beginnings = list() # beginning ngram of every line
 
   def tokenize(self, text):
-    return text.split(" ")
+    return str(text).split(" ")
 
   def feed(self, text):
 
@@ -314,7 +292,7 @@ class MarkovGenerator(object):
     return " ".join(source)
 
   # generate a text from the information in self.ngrams
-  def generate(self):
+  def generate(self, startWord):
 
     from random import choice
 
@@ -326,6 +304,7 @@ class MarkovGenerator(object):
       if current in self.ngrams:
         possible_next = self.ngrams[current]
         next = choice(possible_next)
+        next = re.sub(r"[.,!\"\'?:;]", "", str(next))
         output.append(next)
         # get the last N entries of the output; we'll use this to look up
         # an ngram in the next iteration of the loop
@@ -335,24 +314,195 @@ class MarkovGenerator(object):
 
     output_str = self.concatenate(output)
     return output_str
+
+
+
+############################################################################################
+
+
+
+class MarkovDictionary(object):
+
+  def __init__(self, n, max):
+    self.n = n # order (length) of ngrams
+    self.max = max # maximum number of elements to generate
+    self.ngrams = dict() # ngrams as keys; next elements as values
+
+  def tokenize(self, text):
+    import nltk
+    import re
+    tokens = list()
+    tok = nltk.word_tokenize(text)
+    tok_clean = list()
+    for w in tok:
+        if len(w) > 3:
+            clean = re.sub(r"[.,!\"\'?:;]", "", str(w))
+        elif "'" in w and len(w) < 4:
+            clean = ""
+        else:
+            clean = w
+        tok_clean.append(clean)
+        
     
+    for chunk in nltk.ne_chunk(nltk.pos_tag(tok_clean)):
+            if hasattr(chunk,  'node'):
+                if chunk.node != 'GPE':
+                    tmp_group = ( (' '.join(c[0] for c in chunk.leaves())), chunk.node )
+                    #uniqueNmdEnt.add((chunk.node, [(' '.join(c[0] for c in chunk.leaves()))]));
+                else:
+                    tmp_group = ( (' '.join(c[0] for c in chunk.leaves())), 'LOCATION' ) #[(' '.join(c[0] for c in chunk.leaves()))]
+                    #uniqueNmdEnt.add(('LOCATION', (' '.join(c[0] for c in chunk.leaves()))));
+                tokens.append(tmp_group)
+            else:
+                tokens.append((chunk[0], chunk[1]))
+    return tokens
 
-# if __name__ == '__main__':
-# 
-#   import sys
-# 
-#   generator = MarkovGenerator(n=3, max=500)
-#   for line in sys.stdin:
-#     line = line.strip()
-#     generator.feed(line)
-# 
-#   for i in range(14):
-#     print generator.generate()
+  def feed(self, text):
+    import nltk
+    tokens = self.tokenize(str(text))
+
+    # discard this line if it's too short
+    if len(tokens) < self.n:
+      return
+
+    for i in range(len(tokens) - self.n):
+
+      gram = tuple(tokens[i:i+self.n])
+      next = tokens[i+self.n] # get the element after the gram
+
+      # if we've already seen this ngram, append; otherwise, set the
+      # value for this key as a new list
+      if gram[0][0] in self.ngrams:
+        tagged = next
+        self.ngrams[gram[0][0]].append(tagged)
+      else:
+        tagged = next
+        self.ngrams[gram[0][0]] = [tagged]
+    return self.ngrams
+    
+############################################################################################
 
 
+class ContextFree(object):
+    
+  def __init__(self):
+    self.rules = dict()
+    self.expansion = list()
+    self.prev_word = ""
+    self.prev_start = ""
+    self.ART_DICT = {}
+    self.entities = {}
+
+  # rules are stored in self.rules, a dictionary; the rules themselves are
+  # lists of expansions (which themselves are lists)
+  def add_rule(self, rule, expansion): 
+    if rule in self.rules:
+      self.rules[rule].append(expansion)
+    else:
+      self.rules[rule] = [expansion]
+
+  def expand(self, start):
+
+    import random
+
+    # if the starting rule was in our set of rules, then we can expand it 
+    if start in self.rules:
+      possible_expansions = self.rules[start]
+      # grab one possible expansion
+      random_expansion = random.choice(possible_expansions)
+      # call this method again with the current element of the expansion
+      for elem in random_expansion:
+        self.expand(elem)
+    else:
+      # if the rule wasn't found, then it's a terminal: simply append the
+      # string to the expansion
+      fword = self.find_a_word(start, self.prev_word)
+      self.expansion.append(fword)
+                                                                                #if len(self.expansion)>3:
+      #self.expansion.append(prev_word)
+
+  # utility method to run the expand method and return the results
+  def get_expansion(self, axiom, ARTDICT, lastword, entities):
+    del self.expansion[:]
+    clean = re.sub(r"[.,!\"\'?:;]", "", str(lastword))
+    self.prev_word = clean
+    self.ART_DICT = ARTDICT
+    self.entities = entities
+    self.expand(axiom)
+    return self.expansion
+    
+  def find_a_word(self, start, prev):
+    import random
+    aesop_quotes = [ 'found great difficulty in this', 'but some of them thought this', 'so they determined', 'and soon found', 'on his way home to', 'was so tickled by', 'and singing to their heart\'s content', 'and continued its toil', 'by an unlucky chance' ] 
+    word = ""
+    wordcollection = list()
+    choices = list()
+    if start == "AESOP_END":
+        word = random.choice(aesop_ends)
+        self.prev_word = ""
+        self.prev_start = start
+        return word
+    elif start == "AESOP_MID":
+        word = random.choice(aesop_quotes)
+        self.prev_word = ""
+        self.prev_start = start
+        return word
+    elif start == "ENT":
+        word = random.choice( [self.entities[2][0],  self.entities[2][0]] )
+        self.prev_word = word
+        self.prev_start = start
+        return word
+    else:
+        try: 
+            keytest = self.ART_DICT[prev]
+        except:
+            for key in self.ART_DICT:
+                for tup in self.ART_DICT[key]:
+                    if tup[1] == random.choice(['LOCATION','VBD', 'N', 'NNS']):
+                        wordcollection.append(tup[0])
+            if len(wordcollection)>0:
+                word = random.choice(wordcollection)
+                self.prev_word = word
+                self.prev_start = start
+                return word 
+        for tup in self.ART_DICT[prev]:
+            if tup[1] == start:
+                choices.append(tup[0])
+    
+        if len(choices) > 0:
+            word = random.choice(choices)
+        else:
+            for key in self.ART_DICT:
+                for tup in self.ART_DICT[key]:
+                    if tup[1] == start:
+                        wordcollection.append(tup[0])
+            if len(wordcollection)>0:
+                word = random.choice(wordcollection)   
+        if start == 'LOCATION': 
+            word = 'in '+word
+        self.prev_word = word
+        self.prev_start = start
+    return word
+############################################################################################
 
 
-
+def add_rules_from_file(cfree, file_obj):
+  # rules are stored in the given file in the following format:
+  # Rule -> a | a b c | b c d
+  # ... which will be translated to:
+  # self.add_rule('Rule', ['a'])
+  # self.add_rule('Rule', ['a', 'b', 'c'])
+  # self.add_rule('Rule', ['b', 'c', 'd'])
+  for line in file_obj:
+    line = re.sub(r"#.*$", "", line) # get rid of comments
+    line = line.strip() # strip any remaining white space
+    match_obj = re.search(r"(\w+) *-> *(.*)", line)
+    if match_obj:
+      rule = match_obj.group(1)
+      expansions = re.split(r"\s*\|\s*", match_obj.group(2))
+      for expansion in expansions:
+        expansion_list = expansion.split(" ")
+        cfree.add_rule(rule, expansion_list)
 
 
 

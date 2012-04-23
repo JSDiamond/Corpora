@@ -27,7 +27,56 @@ $(document).ready(function(){
                   }
     );
     $('#toolbar').bind( 'mouseover',  function () {
-                    $(this).css({ 'opacity': '1'});
+            $(this).css({ 'opacity': '1'});
     });
-
+    
+    $('#searchtxt').bind( 'click',  function () {
+            event.stopPropagation();
+            $(this).stop().animate({ 'width': '100px' }, 260, 'swing', function() { });
+    });
+    $('#searchtxt').bind( 'focus',  function () {
+            event.stopPropagation();
+            $(this).stop().animate({ 'width': '100px' }, 260, 'swing', function() { });
+    });
+    $('#searchtxt').bind( 'blur',  function () {
+            $(this).stop().animate({ 'width': '20px' }, 260, 'swing', function() { });
+    });
+    
+    /*
+$('#searchbutton').bind( 'click',  function () {
+            event.stopPropagation();
+            searchFucntion();
+    });
+*/
+    
+    $('#searchbutton').bind( 'keypress',  function (e) {
+        if ((e.keyCode || e.which) == 13) { //keycode 'Enter'
+            searchFucntion();
+            $('#searchtxt').stop().animate({ 'width': '20px' }, 260, 'swing', function() { });
+        }
+    });
+    
+    var searchterm = "witness";
+    var searchFucntion = function() {
+        //if(searchterm != ""){
+            d3.selectAll('.'+searchterm).transition().style('stroke', 'none').duration(70);
+            d3.selectAll('#rp_'+searchterm).transition().style('stroke', 'none').duration(70);
+            searchterm = CleanNJoinText( $('#searchtxt').attr('value') );
+            console.log(searchterm); 
+            d3.selectAll('.'+searchterm).transition().style('stroke', '#222').duration(70);
+            d3.selectAll('#rp_'+searchterm).transition().style('stroke', '#222').duration(70);
+            //prevterm = searchterm;
+        //}
+    }
+    
+    var CleanNJoinText = function(word){
+        word = String(word).replace(/[.'?"!—~!@#$%^&*()_+& \/]/g, "");
+        word = String(word).replace(/[-]/g, "");
+        return word;
+    }
+    
 });
+
+
+
+

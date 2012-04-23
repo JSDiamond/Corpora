@@ -88,6 +88,7 @@ var CleanNJoinText = function(word){
     word = String(word).replace(/[-]/g, "");
     return word;
 }
+var sortfunc = function(a,b) { return b - a; }
 
 //////////////////////////////////////////////////////////////////////////////////////////////VARIABLES: starter globals
 var filesArray; //use this to store the svg objects for each article (set by selectAll class)
@@ -275,6 +276,7 @@ var parseArticleData = function (articleJSON, callback, column){
     dataArray.push(articleData);
     setTimeout(callback, 1000, articleData, column);///////////CALLBACK (initChart): wait 1s for load
      
+/*
     $('#important ul').append('<li>'+column+'</li>');
     articleData['Important'].forEach(function(d,i){
         var quote = d;
@@ -294,6 +296,7 @@ var parseArticleData = function (articleJSON, callback, column){
         var quote = d;
         $('#quotes ul').append('<li><p>"'+d+'"</p></li>');
     });
+*/
     
 }
 
@@ -436,7 +439,13 @@ var initChart = function(article_data, column){
     }
     
 }
-
+var timer1 = "", timer2 = "";
+var killReader = function(){
+    $(".readWindow").stop()
+                .animate({ opacity: 0}, 160, 'linear', function() { $('.readWindow').remove(); });
+    readingObj = "null";
+}
+var mousedraging = false;
 
 
 //////////////////////////////////////////////////////////////////////////////////////////////FUNCTION: go through each article and make concordances 
@@ -618,7 +627,7 @@ levelsSVG.append("text")
         .data(force.links())
       .enter().append("path")
         .attr("class", function(d) { return "link impclass" + d.type +" link_"+d.target.name +" link_"+d.source.name; })
-        .attr('opacity', 0.6)
+        .attr('opacity', 0.375)
         .style('display', 'none');
         //.attr("marker-end", function(d) { return "url(#" + d.type + ")"; });
 
@@ -639,11 +648,13 @@ levelsSVG.append("text")
         .on('mouseover',function(){
                                     //if($(this).hasClass('slink')){
                                         $('.link_'+this.id).show();
+                                        d3.selectAll('.'+this.id).transition().style('stroke', '#222').duration(70);
                                     //}
                 				})
         .on('mouseout',function(){
                                     //if(this.class == "slink"){
                                         $('.link_'+this.id).hide();
+                                        d3.selectAll('.'+this.id).transition().style('stroke', 'none').duration(70);
                                     //}
                 				});
                 				    
@@ -674,11 +685,12 @@ text.append("text")
         .text(function(d) { if(d.class == "tlink") { return d.name }; })
         .attr('transform', 'rotate(45)')
         .on('mouseover',function(){
-                                    console.log();
                                     $('.link_'+this.id.substr(6)).show();
+                                    d3.selectAll('.'+this.id.substr(6)).transition().style('stroke', '#222').duration(70);
                 				})
         .on('mouseout',function(){
                                     $('.link_'+this.id.substr(6)).hide();
+                                    d3.selectAll('.'+this.id.substr(6)).transition().style('stroke', 'none').duration(70);
                 				});
     
     var curve = d3.svg.line().interpolate("bundle").tension(.85);
@@ -688,8 +700,8 @@ text.append("text")
         try{
             targ = $('#'+CleanNJoinText(d.target.name));
             cords[0] = [(d.source.x + 4), d.source.y]; 
-            cords[1] = [d.source.x+0, d.source.y+60];
-            cords[2] = [d.target.x-0, d.target.y-60];
+            cords[1] = [d.source.x+0, d.source.y+50];
+            cords[2] = [d.target.x-0, d.target.y-50];
             cords[3] = [(d.target.x + 4), (d.target.y - targ[0].attributes[3].nodeValue)];
             return curve(cords); 
         } catch(err) {}
@@ -872,14 +884,7 @@ $('.wordrect').bind('mousedown', function() {
     });
 */  
 }
-var sortfunc = function(a,b) { return b - a; }
-var timer1 = "", timer2 = "";
-var killReader = function(){
-    $(".readWindow").stop()
-                .animate({ opacity: 0}, 160, 'linear', function() { $('.readWindow').remove(); });
-    readingObj = "null";
-}
-var mousedraging = false;
+
 
 
 //////////////////////////////////////////////////////////////////////////////////////////////FUNCTION: make individual reading windows for text
@@ -1325,16 +1330,6 @@ var moveArticles = function(change){
                 .attr("transform", "translate("+(artfileLocs[i].x)+","+(artfileLocs[i].y)+")")
                 .duration(500)
                 .ease("exp-out",1,1);
-        if(namedOnScreen){
-          /*
-  links = mainArtSVG.selectAll('.namelink')
-                .transition()
-                    .attr("y2", (artfileLocs[i].y-32))
-                    .attr("opacity", 0.35)
-                    .duration(500)
-                    .ease("exp-out",1,1);
-*/
-        }
     });
 }
 
@@ -1362,16 +1357,6 @@ var buildSupplemental = function(bottoms, bottoms_sort) {
                           .append("g")
                             .attr("width", w)
                             .attr("transform", "translate(0,0)");
-        /*
-sentimentBlock.append("rect")
-                .attr("x", 0)
-                .attr("y", 0)
-                .attr("width", wordmap.w)
-                .attr("height", wordmap.w*0.75)
-                .style("stroke", "#AAA")
-                .style("stroke-width", "1px")
-                .style("fill", "rgba(255,255,255,0.4)");
-*/
                 
         buildSentiment(dataArray[i].Sentiment[0]);
         underHeight = $('.underColumn0').height();
@@ -1537,7 +1522,7 @@ var changeWordRects = function(count, conditional){
                                         return color; 
                                     })
                         .duration(600)
-    					.ease("linear",1,1); 
+    					.ease("lineasr",1,1); 
                 }
                 catch(err){}
             });
