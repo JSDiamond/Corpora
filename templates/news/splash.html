@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+
+{% block title %}
+        {{inArticle}}  
+{% endblock %}
+
+{% block content %}
+    <a id="splashimage" href="http://www.inarticle.org/news">
+        	<img src="/media/images/splash_900.jpg" alt="inArticle" width="900" height="698"/>
+    </a>
+    
+    <script type="text/javascript">
+        $(document).ready(function(){ 
+            what = $('#splashimage');
+            center = function (whatitis) {
+                    //whatitis.css("top", (($(window).height() - whatitis.outerHeight()) / 2) + $(window).scrollTop() + "px");
+                    whatitis.css("left", (($(window).width() - whatitis.outerWidth()) / 2) + $(window).scrollLeft() + "px");
+            }
+            
+            center(what);
+            $(window).resize(function() {
+              center(what);
+            });
+        });
+    </script>
+    
+{% endblock %}
+
+
+

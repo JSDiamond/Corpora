@@ -6,13 +6,13 @@ $(document).ready(function(){
             $('#toolbar').stop().animate({ 'opacity': '0.2', 'padding-top': '0px', 'padding-bottom': '0px'}, 80, 'linear', function() { current_opac = $('#toolbar').css('opacity'); });
             $('.button').stop().animate({ 'height': '32px' }, 80, 'linear', function() { });
             $('#whitelogo').stop().animate({ 'height': '10px' }, 80, 'linear', function() { });
-            $('#wordsearch').stop().animate({ 'margin-top': '-7px', 'padding-top': '4px', 'height': '27px' }, 80, 'linear', function() { });
+            //$('#wordsearch').stop().animate({ 'margin-top': '-7px', 'padding-top': '4px', 'height': '27px' }, 80, 'linear', function() { });
             //$('.button').stop().animate({ 'background': 'rgba(100,100,100,0.0) url() no-repeat 0 0' }, 100, 'linear', function() { });
         } else {
             $('#toolbar').stop().animate({ 'opacity': '1', 'padding-top': '16px', 'padding-bottom': '16px'}, 180, 'easeOutCubic', function() { current_opac = $('#toolbar').css('opacity'); });
             $('.button').stop().animate({ 'height': '48px' }, 146, 'linear', function() { });
             $('#whitelogo').stop().animate({ 'height': '20px' }, 180, 'linear', function() { });
-            $('#wordsearch').stop().animate({ 'margin-top': '-16px', 'padding-top': '14px', 'height': '42px' }, 180, 'linear', function() { });
+            //$('#wordsearch').stop().animate({ 'margin-top': '-16px', 'padding-top': '14px', 'height': '42px' }, 180, 'linear', function() { });
             //$('.button').stop().animate({ 'background': '#444 url() no-repeat 0 0' }, 100, 'linear', function() { });            
         }
         
@@ -32,14 +32,21 @@ $(document).ready(function(){
     
     $('#searchtxt').bind( 'click',  function () {
             event.stopPropagation();
-            $(this).stop().animate({ 'width': '100px' }, 260, 'swing', function() { });
+            $(this).stop().animate({ 'width': '120px' }, 260, 'swing', function() { });
     });
     $('#searchtxt').bind( 'focus',  function () {
             event.stopPropagation();
-            $(this).stop().animate({ 'width': '100px' }, 260, 'swing', function() { });
+            if( $('#searchtxt').attr('value') == "Search"){
+                 $('#searchtxt').attr('value', '');
+            }
+            $(this).stop().animate({ 'width': '120px' }, 260, 'swing', function() { });
     });
     $('#searchtxt').bind( 'blur',  function () {
-            $(this).stop().animate({ 'width': '20px' }, 260, 'swing', function() { });
+            $(this).stop().animate({ 'width': '36px' }, 260, 'swing', function() { });
+            if( $('#searchtxt').attr('value') == ""){
+                 $('#searchtxt').attr('value', 'Search');
+            }
+
     });
     
     /*
@@ -52,21 +59,18 @@ $('#searchbutton').bind( 'click',  function () {
     $('#searchbutton').bind( 'keypress',  function (e) {
         if ((e.keyCode || e.which) == 13) { //keycode 'Enter'
             searchFucntion();
-            $('#searchtxt').stop().animate({ 'width': '20px' }, 260, 'swing', function() { });
+            $('#searchtxt').stop().animate({ 'width': '36px' }, 260, 'swing', function() { });
         }
     });
     
-    var searchterm = "witness";
+    var searchterm = "xxyyzz123";
     var searchFucntion = function() {
-        //if(searchterm != ""){
             d3.selectAll('.'+searchterm).transition().style('stroke', 'none').duration(70);
             d3.selectAll('#rp_'+searchterm).transition().style('stroke', 'none').duration(70);
             searchterm = CleanNJoinText( $('#searchtxt').attr('value') );
-            console.log(searchterm); 
             d3.selectAll('.'+searchterm).transition().style('stroke', '#222').duration(70);
             d3.selectAll('#rp_'+searchterm).transition().style('stroke', '#222').duration(70);
             //prevterm = searchterm;
-        //}
     }
     
     var CleanNJoinText = function(word){

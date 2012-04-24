@@ -146,6 +146,9 @@ ul h3.latest_headlines {
     display: inline-table;
 }
 
+#splashimage {
+    position: absolute;
+}
 
 /*////////////////////////////////////////////////////////////////// STORY PAGE */
 #toolbar {
@@ -194,20 +197,21 @@ ul h3.latest_headlines {
     background: url(/media/images/88_wgray.gif) repeat 0 0; /* #444 */
 }
 #searchtxt {
-    padding: 4px 4px;
+    padding: 6px 6px 3px;
     margin: 0px 4px 0px;
-    background-color: #6D6666;
+    color: #fff;
+    background-color: #5D5555;
     border: inset #222 2px;
-    width: 20px;
+    width: 36px;
     cursor: text;
+    font-weight: 100;
+    font-family: "Titillium";
 }
 #searchButton {
     color: #ddd;
     font-weight: 100;
     letter-spacing: 1px;
     margin-top: 4px;
-}
-.searchtab {
 }
 
 
@@ -240,11 +244,11 @@ div.clicked {
     font-weight: 600;
 }
 .button {
-    padding: 4px 12px;
+    padding: 5px 12px 3px;
     margin-right: 0px;
     border-right: #E0DDDD solid 1px;
     margin-top: -16px;
-    /* background-color: #444; */
+    background-color: none;
     color: #fff;
     float: left;
     font-size: 11px;
@@ -252,9 +256,9 @@ div.clicked {
     line-height: 48px;
     font-weight: 100;
     cursor: pointer;
-    font-family: "Oswald";
+    font-family: "Titillium";
     height: 48px;
-    background: url(/media/images/88_wgray.gif) repeat 0 0; /* #444 */
+    /* background: url(/media/images/88_wgray.gif) repeat 0 0; */ /* #444 */
 }
 .button:hover {
     background-color: #3F3333;

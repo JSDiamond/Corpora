@@ -17,6 +17,12 @@ from Corpora.news.models import Article, Publisher, StoryGroup
 from forms import GatherForm
 
 
+
+def splash(request):
+    return render_to_response('news/splash.html', {})
+    
+
+
 def liststories(request):
     grouped_news = list()
     latest_news = list()
