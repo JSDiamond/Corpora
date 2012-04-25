@@ -483,7 +483,7 @@ class MarkovDictionary(object):
     tok_clean = list()
     for w in tok:
         if len(w) > 3:
-            clean = re.sub(r"[.,!\"\'?:;]", "", str(w))
+            clean = re.sub(r"[.,!\"\'?():;]", "", str(w))
         elif "'" in w and len(w) < 4:
             clean = ""
         else:
@@ -563,6 +563,7 @@ class ContextFree(object):
     else:
       # if the rule wasn't found, then it's a terminal: simply append the
       # string to the expansion
+      #print start + " : " + self.prev_word
       fword = self.find_a_word(start, self.prev_word)
       self.expansion.append(fword)
                                                                                 #if len(self.expansion)>3:
@@ -571,64 +572,49 @@ class ContextFree(object):
   # utility method to run the expand method and return the results
   def get_expansion(self, axiom, ARTDICT, lastword, entities):
     del self.expansion[:]
-    clean = re.sub(r"[.,!\"\'?:;]", "", str(lastword))
+    clean = re.sub(r"[.,!\"\'?():;]", "", str(lastword))
     self.prev_word = clean
     self.ART_DICT = ARTDICT
     self.entities = entities
     self.expand(axiom)
     return self.expansion
     
-  def find_a_word(self, start, prev):
+  def find_a_word(self, pos, prev):
     import random
-    aesop_quotes = [ 'found great difficulty in this', 'but some of them thought this', 'so they determined', 'and soon found', 'on his way home to', 'was so tickled by', 'and singing to their heart\'s content', 'and continued its toil', 'by an unlucky chance' ] 
     word = ""
     wordcollection = list()
     choices = list()
-    if start == "AESOP_END":
-        word = random.choice(aesop_ends)
-        self.prev_word = ""
-        self.prev_start = start
-        return word
-    elif start == "AESOP_MID":
-        word = random.choice(aesop_quotes)
-        self.prev_word = ""
-        self.prev_start = start
-        return word
-    elif start == "ENT":
-        word = random.choice( [self.entities[2][0],  self.entities[2][0]] )
-        self.prev_word = word
-        self.prev_start = start
-        return word
-    else:
-        try: 
-            keytest = self.ART_DICT[prev]
-        except:
-            for key in self.ART_DICT:
-                for tup in self.ART_DICT[key]:
-                    if tup[1] == random.choice(['LOCATION','VBD', 'N', 'NNS']):
-                        wordcollection.append(tup[0])
-            if len(wordcollection)>0:
-                word = random.choice(wordcollection)
-                self.prev_word = word
-                self.prev_start = start
-                return word 
-        for tup in self.ART_DICT[prev]:
-            if tup[1] == start:
-                choices.append(tup[0])
+    print " "
+    print " "
+    #print "The previous word was = \""+prev+"\". The next word should be p.o.s "+start
     
+    if pos == "IS":
+        word = "is"
+    elif pos == "CC":
+        word = random.choice(['and', 'but', 'although', 'though', 'and'])
+    else:
+        try:
+            for tup in self.ART_DICT[prev]:
+                if tup[1] == pos:
+                    choices.append(tup[0])
+            #print "MarkovDictionary choices are:"
+            #print choices
+        except:
+            None
+            
         if len(choices) > 0:
             word = random.choice(choices)
         else:
             for key in self.ART_DICT:
                 for tup in self.ART_DICT[key]:
-                    if tup[1] == start:
+                    if tup[1] == pos:
                         wordcollection.append(tup[0])
-            if len(wordcollection)>0:
-                word = random.choice(wordcollection)   
-        if start == 'LOCATION': 
-            word = 'in '+word
-        self.prev_word = word
-        self.prev_start = start
+            #if len(wordcollection)>0:
+            word = random.choice(wordcollection)
+        #if word == "":
+            #self.find_a_word(start, self.prev_word)
+    self.prev_word = word
+    self.prev_start = pos
     return word
 ############################################################################################
 

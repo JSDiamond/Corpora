@@ -8,10 +8,7 @@
     <div id="gatherPage">
     {% if all_articles %}
         
-        <h1 style="margin-bottom: 2px; border-bottom: 3px solid #333;">{{lastword}}</h1>
-        {% with all_articles.0 as article %}
-            <h6 style="margin-bottom: 16px">{{article.date}}</h6>
-        {% endwith %}
+        <h1 style="margin-top: 16px; margin-bottom: 16px; border-bottom: 3px solid #333; font-size: 44px;">{{lastword}}</h1>
         
         {%comment%}
         {% for art in all_articles%}
@@ -23,7 +20,7 @@
         <ul style="padding-bottom: 12px; margin-bottom: 0px;">
         
         {% for text in poem %}
-            <li style="margin-bottom: 6px; font-size: 18px"> {{ text }} </li>
+            <li style="margin-bottom: 6px; font-size: 16px"> {{ text }} </li>
         {% endfor %}
         
         </ul>
@@ -35,6 +32,8 @@
              <div id="peom_NA" class="button" group="{{ article }}">Next Article</div>
         </div>
         {% endwith %}
+        
+        <p style="text-align: center; margin-bottom: 20px;"><a href="{{link}}" style="font-family: Titillium; font-weight: 100; font-size: 11px; color: #888;" target=_blank >source article</a></p>
         
     {% else %}
         <p style="margin-top: 40px; font-weight: 200;">Sorry, No POETRONIX available.</p>

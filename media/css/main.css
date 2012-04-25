@@ -452,7 +452,7 @@ form input[type="submit"]:hover {
     width: 572px;
     height: 56px;
     /* border-bottom: 3px solid #333; */
-    margin-bottom: 20px;
+    margin-bottom: 10px;
 }
 #peom_NA{
     float: right;
@@ -461,7 +461,7 @@ form input[type="submit"]:hover {
     border-right: none;
 }
 #peom_A{
-    margin-left: 140px;
+    margin-left: 135px;
     border-left: #E0DDDD solid 1px;
     margin-top: 0px;
 }

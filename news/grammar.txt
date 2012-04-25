@@ -1,10 +1,26 @@
 # clauses
-S -> N VP NP 
-S -> NP VP
-#S -> VP
-S -> Det N Vintr Det N CC VP
-#S -> N Vbg
-S -> VP Comma Rb Md Vb Det N
+#S -> N VP NP 
+#S -> NP VP
+
+0 -> N Vbg 
+1 -> NNS Md Vb Det N
+2 -> N Prepo Det Adj N Is Rb Adj
+3 -> Det N Vintr Det N Comma Vbg Adj NNS
+4 -> CC Comma Wp Vtrans Det N
+
+#1 -> Rb Vtrans N
+
+
+
+#0 -> Adj N Md Vb Prepo Adj
+#1 -> Det N Vintr Det N CC Vintr Adj NNS
+#2 -> Rb NNS Vbd Det Adj N Prepo Det Adj N 
+#3 -> Wp Vtrans Det N Comma Vtrans Adj Prepo NNS
+
+
+#S -> VP Comma Rb Md Vb Det N
+
+
 NP -> Det N 
 NP -> N Vbg NNS
 NP -> Adj N
@@ -13,12 +29,11 @@ VP -> Vintr Adj NP
 VP -> COND Rb Vtrans NP
 VP -> Vintr NNS
 VP -> Rb Vtrans N
-COND -> To
 COND -> CC 
 COND -> Interj 
 Title -> Vbg Det N
 
-
+#Rb Vbg
 
 # terminals
 Aesop_End -> AESOP_END
@@ -26,11 +41,14 @@ AESOP_Mid -> AESOP_MID
 Interj -> IN
 Adj -> JJ
 Rb -> RB
+Rbr -> RBR
 Wp -> WP
 Ex -> EX
 Ent -> ENT
 Det -> DT
 N -> NN
+Is -> IS
+Prepo -> IN
 Adj -> JJ
 Vtrans -> VBZ
 Vintr -> VBN
@@ -45,3 +63,5 @@ To -> TO
 Rb -> RB
 Cc -> CC
 Comma -> ,
+Period -> .
+Quest -> ?

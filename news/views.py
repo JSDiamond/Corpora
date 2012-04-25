@@ -59,6 +59,7 @@ def getdata(request, storygroup):
 def gather(request):
     if request.method == 'POST': # If the form has been submitted...
         form = GatherForm(request.POST) # A form bound to the POST data
+        
         if form.is_valid(): # All validation rules pass
             headliner = form.cleaned_data['headline']
             slug = slugify(headliner)
@@ -77,10 +78,14 @@ def gather(request):
             article_url_5 = form.cleaned_data['article_url_5']
             article_url_6 = form.cleaned_data['article_url_6']
             
+            #Call the GET_FROMFORM() function and send the new url back to the page
+            
             return HttpResponseRedirect( '/gathering/', {'form': form} ) # Redirect after POST
     else:
         form = GatherForm() # An unbound form
     return render_to_response('news/gather.html', {'form': form}, context_instance=RequestContext(request))
+    
+    
     
 def gathering(request, form):
     formpass = form
@@ -113,6 +118,8 @@ def poetronix(request, storygroup):
     opening = ""
     storylines = list()
     ARTDICT = {}
+    link = ""
+    lineSetting = 5
     materials = list()
     MarkDiction = MarkovDictionary(n=1, max=7)
     MarkGen = MarkovGenerator(n=1, max=4)
@@ -121,17 +128,22 @@ def poetronix(request, storygroup):
         ranje = int(storygroup)   
              
         for idx in range(1):
-            all_articles1 = Article.objects.filter(group = ranje) #[:3] #datetime.date(2012, 04, 19)
+            all_articles1 = Article.objects.filter(group = ranje)[:6] #datetime.date(2012, 04, 19)
+            link = all_articles1[0].url
+            print all_articles1
+            print all_articles1[0]
+            print all_articles1[0].url
             ranje = ranje-1
             #{'date_time_field__range': (datetime.datetime.combine(date, datetime.time.min),datetime.datetime.combine(date, datetime.time.max))} 
             materials.append(storygroup)
             for art in all_articles1:
                 raw_text += art.raw_text
-                breaks = nltk.sent_tokenize(art.raw_text)
-                for line in breaks:
-                    MarkGen.feed(line)
-                allText += str(art.raw_text) 
-            
+                #breaks = nltk.sent_tokenize(art.raw_text)
+                #for line in breaks:
+                    #MarkGen.feed(line)
+                allText += str(art.raw_text)
+                 
+        allText = re.sub(r"[!\"?()\[\]\\\/:;]", "", str(allText))  
         allText = nltk.sent_tokenize(str(allText))
         ARTDICT = MarkDiction.feed(allText)
         
@@ -149,7 +161,7 @@ def poetronix(request, storygroup):
         
         
         cfree = ContextFree()
-        add_rules_from_file(cfree, open("news/test.grammar"))
+        add_rules_from_file(cfree, open("news/grammar.txt")) #test.grammar
         #opening = random.choice(aesops_starters) + " " + random.choice([ entities[1][0], entities[2][0] ])
         
         title = cfree.get_expansion('Title', ARTDICT, '', entities)
@@ -157,11 +169,12 @@ def poetronix(request, storygroup):
         title[2] = str(title[2][0].upper()) + str(title[2][1:])
         title = ' '.join(title)
         
-        for idx in range(14):                
+        for idx in range(lineSetting*3):                
             
             #beginning = MarkGen.generate( "NN" )
             #lastword = beginning.split(" ")
-            expansion = cfree.get_expansion('S', ARTDICT, '', entities) #'the' lastword[:-1]
+            breakdown = idx % lineSetting
+            expansion = cfree.get_expansion( str(breakdown), ARTDICT, '', entities) #'the' lastword[:-1]
             #sentence = beginning +" "+ ' '.join(expansion)
             sentence =  ' '.join(expansion)
             if opening != "":
@@ -172,12 +185,14 @@ def poetronix(request, storygroup):
                 sentence = re.sub(r"[!\"?()\[\]:;]", "", str(sentence))
                 sentence = sentence.lower()
                 up = str(sentence[0].upper())
-                sentence = up + str(sentence[1:]) + "."
+                sentence = up + str(sentence[1:])
             #if r"[Tt]hey" in sentence:
-            #sentence = re.sub(r"\b[Ww]as", "were", str(sentence))
+            sentence = re.sub(r"\b[Ww]as", "were", str(sentence))
             #sentence = re.sub(r"\b[Hh]as", "have", str(sentence))
+            up = str(sentence[0].upper())
+            sentence = up + str(sentence[1:]) + "."
             storylines.append(sentence)
-            if idx % 6 == 3:
+            if idx % lineSetting == lineSetting-1:
                 storylines.append("-----")
         #storylines[-1] = str(storylines[-1][:-1])+", "+random.choice(aesop_ends)
         #storylines.append(random.choice(aesop_morals))
@@ -186,7 +201,7 @@ def poetronix(request, storygroup):
 
     except Article.DoesNotExist:
         raise Http404
-    return render_to_response('news/poetronix.html', { 'all_articles': materials, 'poem': storylines, 'raw_text': storylines[-1], 'lastword': title })
+    return render_to_response('news/poetronix.html', { 'all_articles': materials, 'poem': storylines, 'raw_text': storylines[-1], 'lastword': title, 'link': link })
     
     
     
