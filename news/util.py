@@ -483,7 +483,7 @@ class MarkovDictionary(object):
     tok_clean = list()
     for w in tok:
         if len(w) > 3:
-            clean = re.sub(r"[.,!\"?():;]", "", str(w))
+            clean = re.sub(r"[.,!\"\'?():;]", "", str(w))
         elif "'" in w and len(w) < 4:
             clean = ""
         else:
