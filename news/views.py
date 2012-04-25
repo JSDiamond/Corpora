@@ -146,25 +146,12 @@ def poetronix(request, storygroup):
         allText = re.sub(r"[!\"?()\[\]\\\/:;]", "", str(allText))  
         allText = nltk.sent_tokenize(str(allText))
         ARTDICT = MarkDiction.feed(allText)
-        
-        ####### Make title #######
-        entities = { 1: random.choice(['PERSON','ORGANIZATION']), 2: random.choice(['PERSON','ORGANIZATION']) }
-       #  for ent in entities:
-#             collection = list()
-#             for key in ARTDICT:
-#                     for tup in ARTDICT[key]:
-#                         if tup[1] == entities[ent]:
-#                             collection.append(tup[0])
-#             entities[ent] =  (random.choice(collection), entities[ent])
-#             
-#         title = "The "+entities[1][0]+" and the "+entities[2][0]
-        
-        
+                
         cfree = ContextFree()
         add_rules_from_file(cfree, open("news/grammar.txt")) #test.grammar
-        #opening = random.choice(aesops_starters) + " " + random.choice([ entities[1][0], entities[2][0] ])
         
-        title = cfree.get_expansion('Title', ARTDICT, '', entities)
+         ####### Make title #######
+        title = cfree.get_expansion('Title', ARTDICT, '')
         title[0] = str(title[0][0].upper()) + str(title[0][1:])
         title[2] = str(title[2][0].upper()) + str(title[2][1:])
         title = ' '.join(title)
@@ -174,12 +161,11 @@ def poetronix(request, storygroup):
             #beginning = MarkGen.generate( "NN" )
             #lastword = beginning.split(" ")
             breakdown = idx % lineSetting
-            expansion = cfree.get_expansion( str(breakdown), ARTDICT, '', entities) #'the' lastword[:-1]
+            expansion = cfree.get_expansion( str(breakdown), ARTDICT, '') #'the' lastword[:-1]
             #sentence = beginning +" "+ ' '.join(expansion)
             sentence =  ' '.join(expansion)
             if opening != "":
                 sentence = opening+" "+sentence+"."
-                #opening = random.choice([ entities[1][0], entities[2][0], 'They' ])+" "
                 opening = ""
             else: 
                 sentence = re.sub(r"[!\"?()\[\]:;]", "", str(sentence))

@@ -483,7 +483,7 @@ class MarkovDictionary(object):
     tok_clean = list()
     for w in tok:
         if len(w) > 3:
-            clean = re.sub(r"[.,!\"\'?():;]", "", str(w))
+            clean = re.sub(r"[.,!\"?():;]", "", str(w))
         elif "'" in w and len(w) < 4:
             clean = ""
         else:
@@ -538,7 +538,6 @@ class ContextFree(object):
     self.prev_word = ""
     self.prev_start = ""
     self.ART_DICT = {}
-    self.entities = {}
 
   # rules are stored in self.rules, a dictionary; the rules themselves are
   # lists of expansions (which themselves are lists)
@@ -570,12 +569,11 @@ class ContextFree(object):
       #self.expansion.append(prev_word)
 
   # utility method to run the expand method and return the results
-  def get_expansion(self, axiom, ARTDICT, lastword, entities):
+  def get_expansion(self, axiom, ARTDICT, lastword):
     del self.expansion[:]
-    clean = re.sub(r"[.,!\"\'?():;]", "", str(lastword))
+    clean = re.sub(r"[.,!\"?():;]", "", str(lastword))
     self.prev_word = clean
     self.ART_DICT = ARTDICT
-    self.entities = entities
     self.expand(axiom)
     return self.expansion
     
