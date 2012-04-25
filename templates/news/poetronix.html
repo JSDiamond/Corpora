@@ -5,25 +5,68 @@
 {% endblock %}
 
 {% block content %}
-<script type="text/javascript" src="/media/js/getdata.js"></script>
-
-{% if all_articles %}
-    <h2 style="margin-bottom: 2px">{{lastword}} {{article.date}}</h2>
-    {% with all_articles.0 as article %}
-        <h6 style="margin-bottom: 16px">{{article.date}}</h6>
-    {% endwith %}
-    
-    <ul>
-    
-    {% for text in poem %}
-        <li style="margin-bottom: 6px; font-size: 18px"> {{ text }} </li>
-    {% endfor %}
-    </ul>
+    <div id="gatherPage">
+    {% if all_articles %}
         
-{% else %}
-    <p style="margin-top: 40px; font-weight: 200;">No stories available.</p>
-{% endif %}
-
+        <h1 style="margin-bottom: 2px; border-bottom: 3px solid #333;">{{lastword}}</h1>
+        {% with all_articles.0 as article %}
+            <h6 style="margin-bottom: 16px">{{article.date}}</h6>
+        {% endwith %}
+        
+        {%comment%}
+        {% for art in all_articles%}
+            <img src="{{art}}" alt="image missing" width="320px"/>
+        {% endfor %} 
+        {%endcomment%}
+        
+    
+        <ul style="padding-bottom: 12px; margin-bottom: 0px;">
+        
+        {% for text in poem %}
+            <li style="margin-bottom: 6px; font-size: 18px"> {{ text }} </li>
+        {% endfor %}
+        
+        </ul>
+        
+        {% with all_articles.0 as article %}
+        <div id="poetools">
+             <div id="peom_PA" class="button" group="{{ article }}">Previous Article</div>
+             <div id="peom_A" class="button" group="{{ article }}">Another</div>
+             <div id="peom_NA" class="button" group="{{ article }}">Next Article</div>
+        </div>
+        {% endwith %}
+        
+    {% else %}
+        <p style="margin-top: 40px; font-weight: 200;">Sorry, No POETRONIX available.</p>
+    {% endif %}
+    
+    <script type="text/javascript">
+        $(document).ready(function(){ 
+        
+            $('#peom_PA').click(function(){
+                groupNum = $(this).attr('group');
+                groupNum = String( parseInt(groupNum)-1 );
+                $(this).attr('href', 'http://'+loc+'/poetronix/'+groupNum);
+                window.location.href = $(this).attr('href');
+            });
+            
+            $('#peom_A').click(function(){
+               groupNum = $(this).attr('group');
+                $(this).attr('href', 'http://'+loc+'/poetronix/'+groupNum);
+                window.location.href = $(this).attr('href');
+            });
+            
+            $('#peom_NA').click(function(){
+               groupNum = $(this).attr('group');
+               groupNum = String( parseInt(groupNum)+1 );
+                $(this).attr('href', 'http://'+loc+'/poetronix/'+groupNum);
+                window.location.href = $(this).attr('href');
+            });
+            
+            var loc = window.location.host;
+            
+        });
+    </script>
 
 {% endblock %}
 

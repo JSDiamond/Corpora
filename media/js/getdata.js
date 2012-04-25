@@ -998,12 +998,12 @@ var moveTextflow = function(obj){
 //////////////////////////////////////////////////////////////////////////////////////////////VARIABLES: Named Entity display
 var shift = 0, level = 0, firsttime = true, currentWord = "", currentColor = "";
 var r = Math.min(w, h) *0.5,
-    inner = 0, outer = 0, levelHeight = 0;
+    inner = 0, outer = 0, levelHeight = 0,
     color = d3.scale.category10(),
-    donut = d3.layout.pie().startAngle( 6 ).endAngle( 3 ).sort(null);
+    donut = d3.layout.pie().startAngle( 6.07 ).endAngle( 2.93 ).sort(null)
 //////////////////////////////////////////////////////////////////////////////////////////////FUNCTION: Named Entity display
 var namedLevels = function(level, change){
-        
+
     r = (w*0.6)*((10-totalstories)*0.12);//Math.min(w, h)*((10-totalstories)*0.12);
     inner += 0.21//0.7-(level*0.08);
     outer = inner+0.1;
@@ -1405,12 +1405,12 @@ var buildSupplemental = function(bottoms, bottoms_sort) {
 var buildSentiment = function(SentAnalysis){
     r = wordmap.w,
     color = d3.scale.category20(),
-    donut = d3.layout.pie().startAngle( 2.93 ).endAngle( 6.07 ).sort(null),
+    donut2 = d3.layout.pie().startAngle( 2.93 ).endAngle( 6.07 ).sort(null),
     arc = d3.svg.arc().innerRadius(0).outerRadius(r*0.425),
     senttcolor = d3.interpolate('#B9C5D0', '#D0C5B9' ); //('#8090A0', '#A09080' );
     
     var sent_arcs = sentimentBlock.selectAll("g.arc")
-        .data(donut)
+        .data(donut2)
       .enter().append("g")
         .attr("class", "arc")
         .style("stroke", "#666")

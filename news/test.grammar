@@ -1,24 +1,34 @@
 # clauses
-S -> N Vbz NP
-S -> NP NNS N 
+S -> N VP NP 
+S -> NP VP
+S -> VP
+S -> N Vbg
 NP -> Det N 
-NP -> N Ent
+NP -> N Vbg NNS
+#NP -> N Vbg Comma Vbg Comma Vbg
 NP -> Adj N
-VP -> Vbd COND NP Vintr
-VP -> Vintr COND NP 
-VP -> Vtrans COND NP Vintr
+VP -> COND Jj Vbd Ex
+VP -> Jj Vintr NP 
+VP -> COND Vtrans NP
+VP -> Vtrans NNS
+VP -> Rb Vtrans N
 COND -> To
 COND -> CC 
-COND -> Md 
-COND -> Interj  
+#COND -> Md 
+COND -> Interj 
+Title -> Vbg Det N
 AesopMid -> AESOP_Mid
 
-#Aesop_End
+
 
 # terminals
 Aesop_End -> AESOP_END
 AESOP_Mid -> AESOP_MID
 Interj -> IN
+Jj -> JJ
+Rb -> RB
+Wp -> WP
+Ex -> EX
 Ent -> ENT
 Det -> DT
 N -> NN
@@ -26,6 +36,8 @@ Adj -> JJ
 Vtrans -> VBZ
 Vintr -> VBN
 Vbd -> VBD
+Vbg -> VBG
+Vb -> VB
 Pers -> PERSON
 Org -> ORGANIZATION
 Loc -> LOCATION
@@ -34,7 +46,7 @@ To -> TO
 Rb -> RB
 Cc -> CC
 Comma -> ,
-
+#Aesop_End
 
 #USE THIS GRAMMAR WITH MARKOV
 #S -> N Vbd Pers Org 

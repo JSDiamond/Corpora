@@ -8,6 +8,9 @@ import json
 import nltk
 from nltk import FreqDist
 from nltk.collocations import *
+from Corpora.news.models import Article, Publisher, StoryGroup
+from django.template.defaultfilters import slugify
+import datetime
 #from nltk.tokenize.punkt import PunktSentenceTokenizer
 
 
@@ -83,6 +86,45 @@ def get_google():
 
 
 
+#form function formating the headline and links to be passed into makeObjects_fromText()
+# def get_fromForm():
+#     groupedData = list()
+#     masterLinks = list()  
+#     
+#     for idx, itm in enumerate(items):
+#         paird = list();
+#         masterlink = #the first link from the form
+#         masterLinks.append(masterlink[0])
+#         urlSrch = #the link
+#         for link in urlSrch:
+#             netloca = urlparse(link)
+#             if "hostednews/ap/"in link:
+#                 pubName = "associatedpress"
+#             elif "hostednews/afp/"in link:
+#                 pubName = "afp"
+#             else:
+#                 if "www" in netloca.netloc:
+#                     pubName = netloca.netloc[4:]
+#                 else:
+#                     pubName = netloca.netloc
+#             paird.append((pubName, link))
+#         trimTitle = str(titles[idx])
+#         trimTitle = trimTitle[7:-8]
+#         #get rid of Publisher name after the dash
+#         cutPub = re.findall(r"\s-\s+.{3}", trimTitle)
+#         if len(cutPub) > 0:
+#             cropmark = trimTitle.find(cutPub[len(cutPub)-1]);
+#             trimTitle = trimTitle[:cropmark]
+#         groupedData.append((trimTitle, paird))
+#         
+#         
+#     formData = {"Masters": masterLinks, "Stories": groupedData}        
+#     #JSON_output = json.dumps( GScrapeData )#this does not work for parsing in Views 
+#     return formData
+############################################################################################
+
+
+
 #use DiffBot API to get article content
 def get_article(link):
     baseurl = "http://www.diffbot.com/api/article?token=721bf45a809f0f2d913973a977bdf550&url="
@@ -104,6 +146,111 @@ def get_article(link):
         image = "None"
     return { 'rawtext': rawtext, 'image': image }
 ############################################################################################
+
+
+
+def makeObjects_fromText(givenObject):
+
+    #///////////////////////GLOBAL VARS FOR ANALYSIS///////////////////
+    #//////////////////////////////////////////////////////////////////
+    dict_to_json = {}
+    dict_to_json['Corpus'] = list() 
+    stops = ['Why', 'all', 'Who', 'just', 'being', 'over', 'both', 'Had', 'What', 'Same', 'Yours', 'Does', 'through', 'yourselves', 'Has', 'its', 'before', 'Be', 'We', 'His', 'with', 'had', ',', 'Here', 'should', 'Don', 'to', 'only', 'under', 'Not', 'ours', 'has', 'By', 'Nor', 'do', 'them', 'his', 'They', 'very', 'Of', 'While', 'She', 'they', 'not', 'during', 'now', 'Where', 'him', 'nor', 'Once', 'Because', 'like', 'Just', 'Their', 'did', 'Over', 'Yourself', 'these', 'Both', 't', 'each', 'Further', 'He', 'where', 'Ourselves', 'Before', 'Again', 'because', 'says', 'For', 'doing', 'theirs', 'some', 'About', 'Been', 'Should', 'Whom', 'Only', 'are', 'Which', 'Between', 'our', 'ourselves', 'Were', 'out', 'Down', 'what', 'said', 'for', 'That', 'Very', 'below', 'Until', 'does', 'On', 'above', 'between', 'During', 'Than', '?', 'she', 'Me', 'be', 'we', 'after', 'And', 'This', 'Its', 'Up', 'here', 'S', 'Himself', 'Against', 'Each', 'hers', 'My', 'by', 'on', 'about', 'Ours', 'Being', 'of', 'against', 'Any', 'Doing', 's', 'Itself', 'Through', 'or', 'Then', 'own', 'Her', 'No', 'into', 'There', 'When', 'yourself', 'down', 'Few', 'Too', 'From', 'Was', 'your', '"', 'from', 'her', 'whom', 'Did', 'there', 'Says', 'been', '.', 'few', 'too', 'Such', 'themselves', ':', 'was', 'until', 'Those', 'more', 'himself', 'that', 'These', 'Having', 'but', 'Most', 'Hers', 'So', 'Off', 'off', 'herself', 'than', 'those', 'he', 'me', 'myself', 'Now', 'To', 'this', 'Herself', 'Into', 'up', 'Him', 'will', 'while', 'Other', 'can', 'were', 'Our', 'my', 'Your', 'Out', 'and', 'Above', 'then', 'Some', 'is', 'in', 'am', 'it', 'an', 'How', 'as', 'itself', 'Below', 'at', 'have', 'further', 'Under', 'Themselves', 'An', 'their', 'Or', 'if', 'again', 'Them', 'no', 'Said', 'After', 'when', 'same', 'any', 'how', 'other', 'which', 'Theirs', 'Yourselves', 'you', 'More', 'With', 'Are', 'A', 'Myself', "'t", "'s", 'Like', 'Do', 'I', 'who', 'Can', 'Will', 'most', 'such', 'The', 'But', 'why', 'a', 'All', 'Own', 'don', "'", 'i', 'Is', 'Am', 'It', 'T', 'having', 'As', 'so', 'At', 'Have', 'In', 'the', 'If', 'yours', 'You', 'once', 'also', 'Also']
+
+    uniqueURLS = list()
+    masterBool = False
+    pubObj = {}
+    filler = list()
+    Named_in_Sent = dict()
+    entitiesString = 'PERSON ORGANIZATION LOCATION DATE TIME MONEY PERCENT FACILITY GSP'
+    #//////////////////////////////////////////////////////////////////
+    #//////////////////////////////////////////////////////////////////
+
+    
+    for idx, story in enumerate(givenObject["Stories"]):
+        filler.append(idx)
+        try:
+            ###################check the db for the masterlink associated with the main article 
+            article_exists = Article.objects.filter(headline=story[0])
+            if len(article_exists)<1:
+                filler.append("_NewArticle , ")
+                ###################if not in db, make an Article, a StoryGroup w/ date, and check for each Publisher to see if it needs to be entered
+                slug = slugify(story[0])
+                existing_storygroup = StoryGroup.objects.filter(slugline=slug)
+                if not existing_storygroup.count():
+                    new_storygroup = StoryGroup.objects.create(date=datetime.datetime.now(), slugline=slug)
+                else:
+                    continue
+                for link in story[1]:
+                    if link in uniqueURLS:
+                        None
+                    else:
+                        uniqueURLS.append(link) 
+                        if link == givenObject["Masters"][idx]: ####################test for main article
+                            masterBool = True
+                        else:
+                            masterBool = False
+                        try: ##################################################test for prexisting publisher
+                            pub_exists = Publisher.objects.get(name=link[0])
+                            pubObj = pub_exists
+                        except Publisher.DoesNotExist:
+                            new_publisher = Publisher.objects.create(name=link[0])
+                            pubObj = new_publisher
+                            
+                        ####################################### DiffBot API call for content
+                        diffobj = get_article(link[1])
+                        rawtext = diffobj['rawtext']
+                        imagelink = diffobj['image']
+                        ####################################### Tokenize
+                        TrueTextWords = nltk.word_tokenize(rawtext)
+                        #whitespace = nltk.WhitespaceTokenizer()
+                        #spaceTokens = whitespace.tokenize(rawtext)
+                        ####################################### Frequence Distribution
+                        fdist = FreqDist(TrueTextWords)
+                        ####################################### Sentiment Anaylsis
+                        sentiment = get_sentiment(rawtext)
+                        ####################################### Decent Quotation Finder
+                        quoteSrch = re.findall(r'"([^"]*)"', (rawtext)) 
+                        ####################################### Find TriGrams
+                        dict_to_json['TriGrams'] = findTriGrams(TrueTextWords)
+                        ####################################### Token break and Find Named Entities
+                        TTATNE = tokenize_text_and_tag_named_entities(rawtext)
+                        Sentities = TTATNE["SB"]
+                        ####################################### FILL DICT WITH DATA 
+                        annotate = SetWordDictionary(Sentities, fdist, entitiesString, stops)
+                        dict_to_json['Corpus'] = annotate['word_list']
+                        dict_to_json['Important'] = annotate['important_list']
+                        ####################################### IMPORTANT WORD INDEX FIND & PLACE
+                        all_important = Find_Important_Words(dict_to_json['Corpus'], TrueTextWords, fdist, entitiesString)
+                        Imporatnt_Named = list()
+                        NamedEnts = list(TTATNE["UNE"])
+                        Sentences = TTATNE["SL"]
+                        ######################################################## FIND IMPORTANT WORDS IN SENTENCES WITH NAMED ENTS
+                        for ent in NamedEnts: 
+                            wordset = set()
+                            for sent in Sentences:
+                                if ent[1] in sent:
+                                    for word in all_important:
+                                        if word in sent:
+                                            wordset.add(word)
+                            if len(wordset) > 0:
+                                Imporatnt_Named.append((ent[1], list(wordset)))
+                        ######################################################## WRITE DATA TO DICTIONARY
+                        dict_to_json['NamedEnts'] = list(TTATNE["UNE"])
+                        dict_to_json['Sentiment'] = sentiment['probability']
+                        dict_to_json['Imporatnt_Named'] = Imporatnt_Named
+                        #dict_to_json['SentLengths'] = TTATNE["SL"]
+                        #dict_to_json['Numbers'] = list(TTATNE["AN"])
+                        dict_to_json['Quotes'] = quoteSrch
+                        #dict_to_json['Raw_Text'] = rawtext
+                        JSON_output = json.dumps( dict_to_json )
+                        new_article = Article.objects.create(headline=story[0], url=link[1], date=datetime.datetime.now(), group=new_storygroup, raw_text=rawtext, image_link=imagelink, analyzed_text=JSON_output, master=masterBool, publisher=pubObj)
+        except Article.DoesNotExist:
+            filler.append(" Database error ")
+    return filler
+############################################################################################
+
+
 
 
 #GET SENTIMENT ANALYSIS
@@ -273,7 +420,7 @@ class MarkovGenerator(object):
 
     # store the first ngram of this line
     beginning = tuple(tokens[:self.n])
-    self.beginnings.append(beginning)
+    self.beginnings.append(beginning) #tuple(['The', 'was'])
 
     for i in range(len(tokens) - self.n):
 

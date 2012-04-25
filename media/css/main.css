@@ -447,4 +447,29 @@ form input[type="submit"]:hover {
 }
 
 
+#poetools {
+    background: #242222 url(/media/images/88_wgray.gif) repeat 0 0;
+    width: 572px;
+    height: 56px;
+    /* border-bottom: 3px solid #333; */
+    margin-bottom: 20px;
+}
+#peom_NA{
+    float: right;
+    margin-top: 0px;
+    border-left: #E0DDDD solid 1px;
+    border-right: none;
+}
+#peom_A{
+    margin-left: 140px;
+    border-left: #E0DDDD solid 1px;
+    margin-top: 0px;
+}
+#peom_PA{
+    border-right: #E0DDDD solid 1px;
+    border-left: none;
+    margin-top: 0px;
+}
+
+
 
