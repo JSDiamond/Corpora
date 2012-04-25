@@ -148,7 +148,7 @@ def poetronix(request, storygroup):
         ARTDICT = MarkDiction.feed(allText)
                 
         cfree = ContextFree()
-        add_rules_from_file(cfree, open("news/grammar.txt")) #test.grammar
+        add_rules_from_file(cfree, open("news/grammar.txt"))
         
          ####### Make title #######
         title = cfree.get_expansion('Title', ARTDICT, '')
