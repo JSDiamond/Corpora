@@ -582,8 +582,8 @@ class ContextFree(object):
     word = ""
     wordcollection = list()
     choices = list()
-    print " "
-    print " "
+    #print " "
+    #print " "
     #print "The previous word was = \""+prev+"\". The next word should be p.o.s "+start
     
     if pos == "IS":
