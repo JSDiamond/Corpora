@@ -7,11 +7,11 @@
 {% endblock %}
 
 {% block header %}
-     <script type="text/javascript" src="/media/js/UI_story.js"></script>
+    <script type="text/javascript" src="/media/js/UI_story.js"></script>
     <script type="text/javascript" src="/media/js/getdata.js"></script>
-    <div id="toolbacker"></div>
-    <div id="toolbar">
-        <div id="whitelogo"><img src="/media/images/inartlogo_light.png" alt="fix" title="pleased to meet you" width="97" height="24" style="opacity: 0.6;"/></div>
+{% endblock %}
+
+{% block toolbar %}
         <div id="sentimentbutton" class="button">Sentiment</div>
         <div id="heatbutton" class="button">Frequency</div>
         <div id="namedbutton" class="button">Entities</div>
@@ -20,24 +20,17 @@
         <div id="searchbutton" class="button">
             <input type="text" value="Search" name="search" id="searchtxt">
         </div>
-       <!--
- <div id="wordsearch">
-            <input type="text" value="search" name="search" id="searchtxt">
-            <a class="searchButton"><span>terms</span></a>
-        </div>
--->
         <!--
 <div id="my-slider" class="dragdealer">
         	<div id="speed" class="handle">x</div>
         </div>
 -->
-    </div>
-    <div id="SVGoverlay"></div>
 {% endblock %}
     
     
 {% block content %}
         
+        <div id="SVGoverlay"></div>
         
         {% if all_articles %}
         
@@ -79,8 +72,54 @@
             <ul></ul>
         </div>
         {% endcomment %} 
+        
 {% endblock %}
 
+{% block footer %}
+    
+    <section id="legendSection">
+        <div class="footTitle">LEGEND:</div>
+        <div class="footerline"></div>
+            <div class="keyholder"><span class="keyLable">Sentiment:</span>
+                <ul>
+                    <li>Positive: <area class="legendBlock" color="#9EB8D0"></area></li>
+                    <li>Negative: <area class="legendBlock" color="#D0A793"></area></li>
+                    <li>Neutral: <area class="legendBlock" color="#FDFFFF"></area></li>
+                </ul>
+            </div>
+            <div class="keyholder"><span class="keyLable">Named Entities:</span>
+                <ul>
+                    <li>Person: <area class="legendBlock" color="#B97D5F"></area></li>
+                    <li>Organization: <area class="legendBlock" color="#C6D27D"></area></li>
+                    <li>Location: <area class="legendBlock" color="#6CB2A8"></area></li>
+                    <li>Facility: <area class="legendBlock" color="#516482"></area></li>
+                    <li>Date: <area class="legendBlock" color="#D5D964"></area></li>
+                    <li>Time: <area class="legendBlock" color="#773D99"></area></li>
+                    <li>Money: <area class="legendBlock" color="#516482"></area></li>
+                    <li>Percent: <area class="legendBlock" color="#A6984B"></area></li>
+                </ul>
+            </div>
+        <div class="footerline"></div>
+    </section>
+    
+    <section id="explainToolsSection">
+        <div class="footTitle">TOOLS for EXPLORATION:</div>
+        <div class="footerline"></div>
+            <p><span class="explainLable">Sentiment:</span> This button toggles the sentiment analysis display for each article. 'NEUTRAL' is a standalone value. It is typically dominant, but if the value is under 0.5, then the text is either 'POS' or 'NEG'. This data is provided courtesy of the <a href="http://text-processing.com/docs/sentiment.html" target="_blank"> NLTK Sentiemnt API</a>.
+            </p>
+            <p><span class="explainLable">Frequency:</span> This changes the 'ARTICLE MAPS' into 'heat maps' for the frequency of important terms. The greater the (red) saturation, the more frequent the usage.
+            </p>
+            <p><span class="explainLable">Entities:</span> This toggles the 'NAMED ENTITIES' display. These concentric arcs represent the levels of connectivity between the people, places, organizations, etc., mentioned. The center arc has entities that appeared in all of the articles, while the outer, shows what was unique.
+            </p>
+            <p><span class="explainLable">Grouping:</span> Grouping is a sub-function of Entities. This toggles a hover action for the arcs that shows what other entities appeared along with the one you are currently over. At the outer arcs, this will reveal which entities were in each individual article.
+            </p>
+            <p><span class="explainLable">Terms:</span> Terms is also a sub-function of Entities. This toggles the display of 'KEY TERMS'. These are important words that appeared in sentences with the named entities, show with a bar chart to visualize their frequency in the text. Hovering on the chart or the rectangle nodes next to the entities will reveal the links binding term to entity.
+            </p>
+            <p><span class="explainLable">Search:</span> Enter a single term into this field and it will highlight anywhere it appears on the visualization (entity arc, or word box). The search is case sensitive and does not accept punctuation.
+            </p>
+        <div class="footerline"></div>
+    </section>
+{% endblock %}
 
 
 

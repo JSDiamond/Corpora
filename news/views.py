@@ -62,25 +62,14 @@ def gather(request):
         
         if form.is_valid(): # All validation rules pass
             headliner = form.cleaned_data['headline']
-            slug = slugify(headliner)
-            existing_storygroup = StoryGroup.objects.filter(slugline=slug)
-            if not existing_storygroup.count():
-                new_storygroup = StoryGroup.objects.create(date=datetime.datetime.now(), slugline=slug)
-            else:
-                None
-                #throw a specific error
-                #form = GatherForm() # An unbound form
-                #return render_to_response('news/gather.html', {'form': form}, context_instance=RequestContext(request))
-            article_url_1 = form.cleaned_data['article_url_1']
-            article_url_2 = form.cleaned_data['article_url_2']
-            article_url_3 = form.cleaned_data['article_url_3']
-            article_url_4 = form.cleaned_data['article_url_4']
-            article_url_5 = form.cleaned_data['article_url_5']
-            article_url_6 = form.cleaned_data['article_url_6']
+                        
+            #print form
             
+            #article_url_1 = form.cleaned_data['article_url_1']
+                        
             #Call the GET_FROMFORM() function and send the new url back to the page
-            
-            return HttpResponseRedirect( '/gathering/', {'form': form} ) # Redirect after POST
+
+            return HttpResponse(json.dumps("backatchya"), mimetype="application/json")
     else:
         form = GatherForm() # An unbound form
     return render_to_response('news/gather.html', {'form': form}, context_instance=RequestContext(request))

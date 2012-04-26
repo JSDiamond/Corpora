@@ -18,7 +18,7 @@ class GatherForm(forms.Form):
         slugified = slugify(headline)
         try:
             existing = StoryGroup.objects.get(slugline=slugified)
-            raise forms.ValidationError("This headline is already in the database. Please enter a unique headline")
+            raise forms.ValidationError("This headline is already in the database. Please enter a unique headline.")
         except StoryGroup.DoesNotExist:
             pass
     

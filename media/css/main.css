@@ -82,11 +82,12 @@
 
 body {
     font-family: Oswald, Helvetica, 'sans serif';
-    background: rgb(250,240,242) url(/media/images/pape_light.gif) repeat 0 0;
+    background: #242222 url(/media/images/88_wgray.gif) repeat 0 0;
     min-width: 900px;   
 }
 #content {
-    padding: 26px;
+    padding: 46px 26px 46px;
+    background: rgb(250,240,242) url(/media/images/pape_light.gif) repeat 0 0;
 }
 a {
     text-decoration: none;
@@ -96,15 +97,17 @@ a {
 a:hover {
     color: #666;
 }
-a.publinks {
+.publinks {
     color: #444;
     font-family: Oswald;
     font-weight: 200;
     text-transform: uppercase;
 }
+/*
 a.publinks:hover {
     color: #dd5555;
 }
+*/
 h3 {clear: both;}
 h3 a {
     color: #222;
@@ -143,12 +146,111 @@ ul h3.latest_headlines {
     border: 1px #e4e4e4 solid;
     overflow: hidden;
     background-color: #fff;
-    display: inline-table;
+    /* display: inline-table; */
 }
-
+#mainContainer{
+    padding: 10px 120px;
+}
 #splashimage {
     position: absolute;
 }
+
+/*////////////////////////////////////////////////////////////////// Footer */
+/*
+GREEN: #364B45
+BLUE: #293C44
+RED: #443E2F
+YELLOW: #524E2E
+*/
+
+#footer {
+    /* background: #242222 url(/media/images/88_wgray.gif) repeat 0 0; */
+    padding: 44px;
+    color: #bbb;
+    font-family: Miso;
+    font-weight: 200;
+    font-size: 15px;
+}
+#footer a {
+    color: #90705f;
+    font-weight: 200;
+}
+#footer a:hover {
+    color: #555;
+}
+#footer section {
+    margin-bottom: 18px;
+}
+#footer p {
+    line-height: 19px;
+    padding-bottom: 12px;
+    clear: both;
+}
+#explainToolsSection {
+    padding: 6px 154px;
+}
+.footTitle {
+    font-weight: 200;
+    font-size: 22px;
+    color: #B9B89E; /* #443E2F */
+    padding-bottom: 2px;
+    margin-bottom: -8px;
+    font-family: Miso;
+    letter-spacing: 1px;
+}
+.footerline {
+    clear: both;
+    margin: 10px 0px;
+    height: 1px;
+    background-color: #6A6666;
+    border-bottom: #202020 solid 1px;
+}
+.explainLable {
+    font-weight: 200;
+    font-size: 13px;
+    /* color: #293C44; */
+    color: #999;
+    background-color: #1D1D1D;
+    padding: 4px 4px 2px;
+    font-family: Titillium;
+}
+
+
+#legendSection {
+    padding: 6px 154px;
+}
+#legendSection ul {
+    list-style: none;
+    clear: none;
+}
+#legendSection ul li {
+    float: left;
+    margin-right: 16px;
+}
+.keyholder {
+    clear: both;
+    padding-top: 2px;
+    padding-bottom: 24px;
+}
+.keyLable {
+    font-weight: 300;
+    font-size: 14px;
+    color: #BBB;
+    padding: 4px 4px 2px;
+    margin-right: 10px;
+    float: left;
+    font-family: Titillium;
+}
+#legendSection ul .legendBlock {
+    width: 14px;
+    height: 14px;
+    display: inline-table;
+    margin-left: 4px;
+    background-color: #FFF;
+}
+
+
+
 
 /*////////////////////////////////////////////////////////////////// STORY PAGE */
 #toolbar {
@@ -160,15 +262,14 @@ ul h3.latest_headlines {
     margin-bottom: 20px;
     height: 24px;
     padding: 16px 0px 16px 68px;
-    background: #242222 url(/media/images/88_wgray.gif) repeat 0 0; /*  */
+    background: #242222 url(/media/images/88_wgray.gif) repeat 0 0;
 }
 #toolbacker {
     position: relative;
     width: 100%;
-    margin-bottom: 20px;
-    height: 55px;
+    height: 36px;
     /* padding: 16px; */
-    background-color: none;    
+    background: rgb(250,240,242) url(/media/images/pape_light.gif) repeat 0 0;   
 }
 /*
 #toolbar {
@@ -215,6 +316,8 @@ ul h3.latest_headlines {
 }
 
 
+
+/*////////////////////////////////////////////////////////////////// STORY PAGE */
 #story_headline {
     padding-bottom: 4px; 
     margin-bottom: 20px;
@@ -406,7 +509,8 @@ form input[type="text"] {
     font-weight: 300;
     font-family: 'Titillium';
 }
-form input[type="submit"] {
+/* form input[type="submit"]  */
+#submitForm {
     margin-top: 16px;
     margin-left: 250px;
     background-color: #333;

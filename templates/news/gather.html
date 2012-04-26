@@ -4,14 +4,6 @@
 
 <script type="text/javascript">
 
-    /*
-form = $('#gatherPage form');
-    form_data = form.serialize();
-    $.ajax(
-        POST,
-        data = form_data,
-    )
-*/
     //MAKE A REAL AJAX POST CALL THAT SENDS THE SERIALIZED FORM DATA AND GETS THE NEW URL IN RETURN
     //MAKE A WAITING SCREEN AS PLACEHOLDER UNTIL THE NEW URL IS RECIEVED
     
@@ -28,23 +20,21 @@ form = $('#gatherPage form');
         
         {%comment%}{{ current_path }}{% endcomment%}
         
-        <form action="/gather/" method="post">
-            {% csrf_token %}
+        <form id="gatherForm" action="/gather/" method="post">
+            <span id="csrf">{% csrf_token %}</span>
+                        
             
-            
-            
-            
-                {% if form.headline.errors %} <span class="form_error">{{ form.headline.errors }}</span> {% endif %}
-                <p style="border-bottom: 1px solid #333; padding-bottom: 14px; margin-bottom: 16px"><label for="id_headline" >Headline:</label>
-                    <input 
-                        id="id_headline" 
-                        class="form_headline" 
-                        type="text" 
-                        name="headline" 
-                        value="{% if form.headline.value %} {{ form.headline.value }} {% else %} {{""}} {% endif %}" maxlength="100" 
-                        style="font-family: Oswald; font-weight: 400;" />
-                    <span>*(required)</span>
-                </p>
+            {% if form.headline.errors %} <span class="form_error">{{ form.headline.errors }}</span> {% endif %}
+            <p style="border-bottom: 1px solid #333; padding-bottom: 14px; margin-bottom: 16px"><label for="id_headline" >Headline:</label>
+                <input 
+                    id="id_headline" 
+                    class="form_headline" 
+                    type="text" 
+                    name="headline" 
+                    value="{% if form.headline.value %} {{ form.headline.value }} {% else %} {{""}} {% endif %}" maxlength="100" 
+                    style="font-family: Oswald; font-weight: 400;" />
+                <span>*(required)</span>
+            </p>
             
             {%comment%}
             {% for field in form %}
@@ -135,17 +125,55 @@ form = $('#gatherPage form');
             
             
             
-            <input type="submit" value="Submit" />
+            <input type="button" value="Submit" id="submitForm" />
         </form>
     </div>
     <script type="text/javascript">
         $(document).ready(function(){ 
+        
+            var token = "";
+            
             $('input[type="text"]').each(function(){
                     val = $(this).attr('value');
-                    val = jQuery.trim( val );
-                    $(this).attr('value', val);
+                    chars = val.match(/[a-zA-Z]/);
+                    if(chars){ $(this).attr('value', val); }
+                    else{ $(this).attr('value', ''); }
             });
-            $('input[type="text"]').click(function(){
+            
+            $('input').each(function(){
+                    if($(this).attr('name') == 'csrfmiddlewaretoken'){
+                        token = $(this).attr('value');
+                    }
+            });
+           
+            
+            $('#submitForm').click(function(){
+                event.preventDefault();             
+                form = $('#gatherForm');
+                form_data = form.serialize();
+                makeAjaxPOST(form_data);
+            });    
+            
+            
+            var makeAjaxPOST = function(post_data){
+                $.post('', post_data, 
+                    function(data) {
+                      console.log(data);
+                    }
+                );
+            }
+
+
+/*
+            $.ajax(
+                POST,
+                data = post_data,
+            )
+*/
+
+            
+            /*
+$('input[type="text"]').click(function(){
                 //if( $(this).attr('value') == "xmpty"){
                     //$(this).css({'color': '#666'});
                     val = $(this).attr('value');
@@ -153,6 +181,7 @@ form = $('#gatherPage form');
                     $(this).attr('value', val);
                 //}
             });
+*/
         });
     </script>
 {% endblock %}

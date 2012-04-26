@@ -484,6 +484,9 @@ var compareCorpora = function(article_data, column){
         }
     });
     
+    
+    
+    ///////////////////////////////////////////////////////////////////Build data structures for term links
     article_data["Imporatnt_Named"].forEach(function(d, idx) {
         
         var word = CleanNJoinText(d[0]);
@@ -521,10 +524,14 @@ var compareCorpora = function(article_data, column){
     });
 }
  
-var nodes = {}, pathlink, force, arclocs = [{}], prevRadius = 0;
-    
+ 
+ 
+ 
+ 
+//////////////////////////////////////////////////////////////////////////////////////////////FUNCTION: build data structures & svg for nodes
+var nodes = {}, pathlink, force, arclocs = [{}], prevRadius = 0;   
 var buildImportantNetwork = function(linkz) {
-    console.log(allImportant);
+
     //$('#netowrkSVG').stop().animate({ 'height': levelHeight}, 400, 'easeOutQuart', function() { });
     // Compute the distinct nodes from the links.
     linkz.forEach(function(link, i) {
@@ -760,6 +767,8 @@ levelsSVG.append("line")
 }
 
 
+
+
 //////////////////////////////////////////////////////////////////////////////////////////////FUNCTION: Put ink on paper
 var artcolor = d3.interpolate('#596128', '#612848' );
 var publishers = [], bottoms = [], bottoms_sort = [], artid, lowest;
@@ -887,6 +896,7 @@ $('.wordrect').bind('mousedown', function() {
 
 
 
+
 //////////////////////////////////////////////////////////////////////////////////////////////FUNCTION: make individual reading windows for text
 var textflow = function(){};
 var wordspan_length = 3, readingObj = "null", objectX = 0, objectY = 0, prevObjX = 0, prevObjY = 0, 
@@ -898,6 +908,7 @@ var makeWordBox = function(obj){
     mainOff = $('#mainArtSVG').offset();
     mainOff_top = mainOff.top;
     parent = obj.parentNode;
+
    if(objectY != prevObjY || parent.id != prevparent.id){ //if no longer on the same line or the same article, remove window
         $('.readWindow').remove();
         readingObj = "null";
@@ -907,7 +918,7 @@ var makeWordBox = function(obj){
         prevparent = parent;
         prevObjX = objectX;
         prevObjY = objectY;
-
+        
         var articleid = prevparentFlow = obj.parentNode.id.substr(11);//get parent element id & substr to just the end number
         var transx = artfileLocs[articleid].x;//get parent element translate.x
         var transy = artfileLocs[articleid].y;//get parent element translate.y
@@ -942,14 +953,15 @@ var makeWordBox = function(obj){
             thisword = thisword.join("");
             $('.sentlist').append("<li id='"+idArray[i]+"_"+thisword+"' class='innerText'>"+d+"</li>");
         });
-        $('#removeme'+thisId).css({ "top": (mainOff_top-(-objectY+68))+"px", "left": (transx-(-38))+"px", "text-align":"left", "width": (wordmap.w-(-20))+"px", "max-height": "20px" });
+
+        $('#removeme'+thisId).css({ "top": (mainOff_top-(-objectY+74))+"px", "left": (transx-(-12))+"px", "text-align":"left", "width": (wordmap.w-(-20))+"px", "max-height": "20px" });
+        
         $('#innerText'+thisId).css({ "top": "0px", "left": woffset+"px" });
-        //sentwidth = $('.innerText').forEach(function(d,i){d.});
+
         $('.innerText').each(function(index) {
              sw = $(this).outerWidth();
              textsvg_width += sw;
         });
-        //sentenceArray.forEach(function(d,i){ if(d=="."||d=="!"||d=="?" ){ textsvg_width+=30;} });
          
         //actual length of the line of wordrects
         totalLinewidth = (allWordObjs[allWordObjs.length-1].x.baseVal.value) + (allWordObjs[allWordObjs.length-1].width.baseVal.value);

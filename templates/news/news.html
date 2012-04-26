@@ -4,11 +4,10 @@
 
 {% block content %}
 
-
+<div id="mainContainer">
 {% if latest_news %}
     {% with latest_news.0 as article %}
         <h1 style="font-weight: 100; font-size: 36px;"> 
-            <span style="font-weight: 600; font-size: 38px;">InArticle : </span>
             <span style="font-weight: 400; font-size: 38px;">NewsFeed : </span> 
             <span style="font-weight: 200; font-size: 38px;">{{ article.1.1.date }}</span> 
         </h1>
@@ -23,12 +22,12 @@
         {% endwith %}
         <ul>
             {% for article in story %}
-                <li class="latest_items"><a href="{{ article.url }}" class="publinks">{{ article.publisher|safe }}</a></li>
+                <li class="latest_items"><p class="publinks">{{ article.publisher|safe }}</p></li>
             {% endfor %}
         </ul>
     </div>
     {% endfor %}
-    
+</div>
     
 {% else %}
     <p>No articles available.</p>

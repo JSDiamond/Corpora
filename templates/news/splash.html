@@ -1,10 +1,13 @@
-{% extends "base.html" %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link href="/media/css/main.css" rel="stylesheet" type="text/css" media="screen"/>
+    <script type="text/javascript" src="/media/js/jquery.js"></script>
+    <script type="text/javascript" src="/media/js/jqeasing_v1.3.js"></script>
+    <title>i n A r t i c l e</title>
+</head>
 
-{% block title %}
-        {{inArticle}}  
-{% endblock %}
-
-{% block content %}
+<body style = "background: rgb(250,240,242) url(/media/images/pape_light.gif) repeat 0 0; padding-top: 32px;">
     <a id="splashimage" href="http://www.inarticle.org/news">
         	<img src="/media/images/splash_900.jpg" alt="inArticle" width="900" height="698"/>
     </a>
@@ -23,8 +26,6 @@
             });
         });
     </script>
-    
-{% endblock %}
 
-
-
+</body>
+</html>

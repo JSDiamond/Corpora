@@ -6,18 +6,32 @@
     <script type="text/javascript" src="/media/js/jqeasing_v1.3.js"></script>
     <script type="text/javascript" src="/media/js/d3.v2.js"></script>
     <script type="text/javascript" src="/media/js/main.js"></script>
-    <title>{% block title %}n e w s : c o r p o r a{% endblock %}</title>
+    <title>{% block title %}i n A r t i c l e{% endblock %}</title>
 </head>
 
 <body>
-{% block header %}
-{% endblock %}
-    <div id="content">
-        {% block content %}
-            <p>s m a r t i c l e s</p>
-        {% endblock %}
-    </div>
+    {% block header %}
+    {% endblock %}
     
+    
+        <div id="toolbacker"></div>
+        <div id="toolbar">
+            <div id="whitelogo"><img src="/media/images/inartlogo_light.png" alt="fix" title="pleased to meet you" width="97" height="24" style="opacity: 0.6;"/></div>
+            {% block toolbar %}
+            
+            {% endblock %}
+        </div>
+    
+        <div id="content">
+            {% block content %}
+            {% endblock %}
+        </div>
+        
+    <div id="footer">  
+    {% block footer %}
+        
+    {% endblock %}
+    </div>
 
 </body>
 </html>
