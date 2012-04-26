@@ -1,10 +1,10 @@
-$(document).ready(function(){ 
+$(document).ready(function(){
+/*     $('#SVGcontainer').html('<p style="text-align: center; padding-bottom: 30px; background: #eee url(/media/images/loading.gif) no-repeat center 2px;" id="loading"></p>'); */
+    
     var current_url = window.location.toString();
     story = window.location.pathname.substr(7);    
     geturl = "http://"+window.location.host+"/getdata/"+story;
-    
-    $('#SVGcontainer').html('<p style="text-align: center; padding-bottom: 16px;" id="loading">L O A D I N G . . .</p>');
-    
+        
     $.get(geturl, function(data) {
       console.log(data);
       articleStorageArray = data;
