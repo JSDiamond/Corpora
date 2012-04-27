@@ -11,8 +11,9 @@ import json
 #from nltk.corpus import stopwords
 from nltk import FreqDist
 import datetime
+from BeautifulSoup import BeautifulSoup
 
-from Corpora.news.util import get_google, makeObjects_fromText, get_article, get_sentiment, findTriGrams, tokenize_text_and_tag_named_entities, SetWordDictionary, Find_Important_Words, scrape_pub_from_url, MarkovDictionary, MarkovGenerator, ContextFree, add_rules_from_file
+from Corpora.news.util import get_google, makeObjects_fromText, get_article, get_sentiment, get_fromForm, findTriGrams, tokenize_text_and_tag_named_entities, SetWordDictionary, Find_Important_Words, scrape_pub_from_url, MarkovDictionary, MarkovGenerator, ContextFree, add_rules_from_file
 from Corpora.news.models import Article, Publisher, StoryGroup
 from forms import GatherForm
 
@@ -61,19 +62,33 @@ def gather(request):
         form = GatherForm(request.POST) # A form bound to the POST data
         
         if form.is_valid(): # All validation rules pass
-            headliner = form.cleaned_data['headline']
-                        
-            #print form
+            gather_data = dict()
             
-            #article_url_1 = form.cleaned_data['article_url_1']
-                        
-            #Call the GET_FROMFORM() function and send the new url back to the page
-
-            return HttpResponse(json.dumps("backatchya"), mimetype="application/json")
+            for key in form.cleaned_data:
+                if form.cleaned_data[key]:
+                    gather_data[key] = form.cleaned_data[key]
+            
+#             formatted = get_fromForm(gather_data)
+#             print formatted
+#             print "time to fill"
+#             filler = makeObjects_fromText(formatted, 'FORM')
+#             print filler
+#             print form.cleaned_data['headline']
+#             slug = slugify(form.cleaned_data['headline'])
+#             print slug
+#             new_storygroup = StoryGroup.objects.filter(slugline=slug)
+#             print new_storygroup
+            
+            return HttpResponse( json.dumps({'new': str("238")}), mimetype="application/json" )
+        else:
+            form = str(GatherForm(request.POST))
+            #soup = BeautifulSoup(form)
+            return HttpResponse( json.dumps(form), mimetype="application/json" )
     else:
         form = GatherForm() # An unbound form
-    return render_to_response('news/gather.html', {'form': form}, context_instance=RequestContext(request))
+    return render_to_response( 'news/gather.html', {'form': form}, context_instance=RequestContext(request) )
     
+   
     
     
 def gathering(request, form):
@@ -81,13 +96,13 @@ def gathering(request, form):
     return render_to_response('news/gathering.html', {'form': formpass}, context_instance=RequestContext(request))
 
 
+
+
 def special(request):
     
     #SLTRIB.COM always comes up with wired chars and crap
-    
     output = get_google() #call function from util.py   
-    
-    filler = makeObjects_fromText(output)
+    filler = makeObjects_fromText(output, 'GOOGLE')
     
     return HttpResponse(filler)
 

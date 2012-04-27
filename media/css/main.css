@@ -540,7 +540,7 @@ form input[type="submit"]:hover {
     font-size: 13px;
     font-weight: 300;
     float: right;
-    padding: 4px 8px 2px;
+    padding: 0px;
     margin: 12px 0px 2px;
 }
 .label {

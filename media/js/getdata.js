@@ -568,10 +568,10 @@ var buildImportantNetwork = function(linkz) {
         radius = $('.'+term);
         //console.log(radius.length);
         
-        link.source = nodes[link.source] || (nodes[link.source] = {name: link.source, class: "slink", x: (arcoff.left-52), y: (arcoff.top-168), charge: 0, fixed: true, color: arccolor, stroke: '#fff', radius: 8}); //x: (arcoff.left-50), y: ((arcoff.top)-162)
+        link.source = nodes[link.source] || (nodes[link.source] = {name: link.source, class: "slink", x: (arcoff.left-60), y: (arcoff.top-148), charge: 0, fixed: true, color: arccolor, stroke: '#fff', radius: 8}); //x: (arcoff.left-50), y: ((arcoff.top)-162)
         //link.source = nodes[link.source] || (nodes[link.source] = {name: link.source, class: "link", x: (arclocs[i].x1-arclocs[i].x2), y: (arclocs[i].y1+arclocs[i].y2), charge: 0, fixed: true});
 
-        link.target = nodes[link.target] || (nodes[link.target] = {name: link.target, class: "tlink", x: (wordtrack[link.target]*keyspace-(-(keyleft))), y: (mainoff.top)-126, charge: -2000, color: '#777', stroke: 'none', radius: radius.length, fixed: true}); //x: (w/2), y: levelHeight/2 
+        link.target = nodes[link.target] || (nodes[link.target] = {name: link.target, class: "tlink", x: (wordtrack[link.target]*keyspace-(-(keyleft))), y: (mainoff.top)-106, charge: -2000, color: '#777', stroke: 'none', radius: radius.length, fixed: true}); //x: (w/2), y: levelHeight/2 
         
         prevRadius = radius.length;
     });
@@ -584,12 +584,12 @@ var buildImportantNetwork = function(linkz) {
                 .attr("class", "label impclass")
                 .attr("fill", "#AAA")
                 .attr("text-anchor", "center")
-                .attr("transform", function(){ return "translate(" + (-22) + "," + ((mainoff.top)-114) + ") rotate(270)" })
+                .attr("transform", function(){ return "translate(" + (-22) + "," + ((mainoff.top)-94) + ") rotate(270)" })
                 .text("KEY TERMS");
         levelsSVG.append("rect")
                 .attr("x", -17)
                 .attr("class", "impclass")
-                .attr("y", (mainoff.top)-178)
+                .attr("y", (mainoff.top)-158)
                 .attr("width", levelsWidth-42)
                 .attr("height", 98)
                 .style("stroke", "#AAA")

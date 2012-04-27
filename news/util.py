@@ -86,41 +86,33 @@ def get_google():
 
 
 
-#form function formating the headline and links to be passed into makeObjects_fromText()
-# def get_fromForm():
-#     groupedData = list()
-#     masterLinks = list()  
-#     
-#     for idx, itm in enumerate(items):
-#         paird = list();
-#         masterlink = #the first link from the form
-#         masterLinks.append(masterlink[0])
-#         urlSrch = #the link
-#         for link in urlSrch:
-#             netloca = urlparse(link)
-#             if "hostednews/ap/"in link:
-#                 pubName = "associatedpress"
-#             elif "hostednews/afp/"in link:
-#                 pubName = "afp"
-#             else:
-#                 if "www" in netloca.netloc:
-#                     pubName = netloca.netloc[4:]
-#                 else:
-#                     pubName = netloca.netloc
-#             paird.append((pubName, link))
-#         trimTitle = str(titles[idx])
-#         trimTitle = trimTitle[7:-8]
-#         #get rid of Publisher name after the dash
-#         cutPub = re.findall(r"\s-\s+.{3}", trimTitle)
-#         if len(cutPub) > 0:
-#             cropmark = trimTitle.find(cutPub[len(cutPub)-1]);
-#             trimTitle = trimTitle[:cropmark]
-#         groupedData.append((trimTitle, paird))
-#         
-#         
-#     formData = {"Masters": masterLinks, "Stories": groupedData}        
-#     #JSON_output = json.dumps( GScrapeData )#this does not work for parsing in Views 
-#     return formData
+###form function formating the headline and links to be passed into makeObjects_fromText()
+def get_fromForm(data):
+    groupedData = list()
+    masterLinks = list()
+    paird = list()
+    
+    masterLinks.append(data['article_url_1'])
+    headline = data['headline']
+    del data['headline']
+    
+    for idx, key in enumerate(data):
+        netloca = urlparse(data[key])
+        if "hostednews/ap/"in data[key]:
+            pubName = "associatedpress"
+        elif "hostednews/afp/"in data[key]:
+            pubName = "afp"
+        else:
+            if "www" in netloca.netloc:
+                pubName = netloca.netloc[4:]
+            else:
+                pubName = netloca.netloc
+        paird.append((pubName, data[key]))
+    groupedData.append((headline, paird))
+
+
+    formData = {"Masters": masterLinks, "Stories": groupedData}  
+    return formData
 ############################################################################################
 
 
@@ -137,6 +129,11 @@ def get_article(link):
     except: 
         rawtext = "Content Unavailable"
     try: 
+        results["title"]
+        title = results["title"].encode('ascii', 'ignore')
+    except: 
+        title = "Title Unavailable"
+    try: 
         media = results["media"]
         for item in media:
             if item['primary'] == "true" and item['type'] == "image":                
@@ -144,13 +141,14 @@ def get_article(link):
         print image
     except: 
         image = "None"
-    return { 'rawtext': rawtext, 'image': image }
+    return { 'rawtext': rawtext, 'image': image, 'title': title }
 ############################################################################################
 
 
 
-def makeObjects_fromText(givenObject):
-
+def makeObjects_fromText(givenObject, input_source):
+    print "makeObjects_fromText makeObjects_fromText makeObjects_fromText makeObjects_fromText"
+    print givenObject
     #///////////////////////GLOBAL VARS FOR ANALYSIS///////////////////
     #//////////////////////////////////////////////////////////////////
     dict_to_json = {}
@@ -168,6 +166,7 @@ def makeObjects_fromText(givenObject):
 
     
     for idx, story in enumerate(givenObject["Stories"]):
+        print story
         filler.append(idx)
         try:
             ###################check the db for the masterlink associated with the main article 
@@ -178,10 +177,11 @@ def makeObjects_fromText(givenObject):
                 slug = slugify(story[0])
                 existing_storygroup = StoryGroup.objects.filter(slugline=slug)
                 if not existing_storygroup.count():
-                    new_storygroup = StoryGroup.objects.create(date=datetime.datetime.now(), slugline=slug)
+                    new_storygroup = StoryGroup.objects.create(date=datetime.datetime.now(), slugline=slug, entities=input_source)
                 else:
                     continue
                 for link in story[1]:
+                    print link
                     if link in uniqueURLS:
                         None
                     else:
@@ -201,6 +201,9 @@ def makeObjects_fromText(givenObject):
                         diffobj = get_article(link[1])
                         rawtext = diffobj['rawtext']
                         imagelink = diffobj['image']
+                        diffTitle = diffobj['title']
+                        print diffTitle
+                        ##author & date also available
                         ####################################### Tokenize
                         TrueTextWords = nltk.word_tokenize(rawtext)
                         #whitespace = nltk.WhitespaceTokenizer()
@@ -244,7 +247,7 @@ def makeObjects_fromText(givenObject):
                         dict_to_json['Quotes'] = quoteSrch
                         #dict_to_json['Raw_Text'] = rawtext
                         JSON_output = json.dumps( dict_to_json )
-                        new_article = Article.objects.create(headline=story[0], url=link[1], date=datetime.datetime.now(), group=new_storygroup, raw_text=rawtext, image_link=imagelink, analyzed_text=JSON_output, master=masterBool, publisher=pubObj)
+                        new_article = Article.objects.create(headline=story[0], url=link[1], date=datetime.datetime.now(), group=new_storygroup, raw_text=rawtext, image_link=diffTitle, analyzed_text=JSON_output, master=masterBool, publisher=pubObj)
         except Article.DoesNotExist:
             filler.append(" Database error ")
     return filler

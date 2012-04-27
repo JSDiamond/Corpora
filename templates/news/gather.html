@@ -21,10 +21,12 @@
         {%comment%}{{ current_path }}{% endcomment%}
         
         <form id="gatherForm" action="/gather/" method="post">
+            
+            <div id="collapseForm">
             <span id="csrf">{% csrf_token %}</span>
                         
             
-            {% if form.headline.errors %} <span class="form_error">{{ form.headline.errors }}</span> {% endif %}
+            <span class="form_error X_Headline">{{ form.headline.errors }}</span>
             <p style="border-bottom: 1px solid #333; padding-bottom: 14px; margin-bottom: 16px"><label for="id_headline" >Headline:</label>
                 <input 
                     id="id_headline" 
@@ -54,8 +56,8 @@
             {% endfor %}
             {% endcomment%}
             
-                {% if form.article_url_1.errors %} <span class="form_error">{{ form.article_url_1.errors }}</span> {% endif %}
-            <p><label for="id_article_url_1">Article Link 2:</label>
+                <span class="form_error X_Articleurl1">{{ form.article_url_1.errors }}</span>
+            <p><label for="id_article_url_1">Article Link 1:</label>
                 <input 
                     id="id_article_url_1" 
                     class="article_url {% if form.article_url_1.errors %} {% else %} focused {% endif %}" 
@@ -67,7 +69,7 @@
             </p>
             
             
-                {% if form.article_url_2.errors %} <span class="form_error">{{ form.article_url_2.errors }}</span> {% endif %}
+                <span class="form_error X_Articleurl2">{{ form.article_url_2.errors }}</span>
             <p><label for="id_article_url_2">Article Link 2:</label>
                 <input 
                     id="id_article_url_2" 
@@ -79,7 +81,7 @@
                 <span>*(required)</span>
             </p>
             
-                {% if form.article_url_3.errors %} <span class="form_error">{{ form.article_url_3.errors }}</span> {% endif %}
+                <span class="form_error X_Articleurl3">{{ form.article_url_3.errors }}</span>
             <p><label for="id_article_url_3">Article Link 3:</label>
                 <input 
                     id="id_article_url_3" 
@@ -90,7 +92,7 @@
                     maxlength="255" />
             </p>
                 
-                {% if form.article_url_4.errors %} <span class="form_error">{{ form.article_url_4.errors }}</span> {% endif %}
+                <span class="form_error X_Articleurl4">{{ form.article_url_4.errors }}</span>
             <p><label for="id_article_url_4">Article Link 4:</label>
                 <input 
                     id="id_article_url_4" 
@@ -101,7 +103,7 @@
                     maxlength="255" />
             </p>
             
-                {% if form.article_url_5.errors %} <span class="form_error">{{ form.article_url_5.errors }}</span> {% endif %}
+                <span class="form_error X_Articleurl5">{{ form.article_url_5.errors }}</span>
             <p><label for="id_article_url_5">Article Link 5:</label>
                 <input 
                     id="id_article_url_5" 
@@ -112,7 +114,7 @@
                     maxlength="255" />
             </p>
                 
-                {% if form.article_url_6.errors %} <span class="form_error">{{ form.article_url_6.errors }}</span> {% endif %}
+                <span class="form_error X_Articleurl6">{{ form.article_url_6.errors }}</span>
             <p><label for="id_article_url_6">Article Link 6:</label>
                 <input 
                     id="id_article_url_6" 
@@ -122,16 +124,21 @@
                     value="{% if form.article_url_6.value %}{{ form.article_url_6.value }} {% else %} {{""}} {% endif %}" 
                     maxlength="255" />
             </p>
-            
-            
-            
+                        
             <input type="button" value="Submit" id="submitForm" />
+            </div>
+            
         </form>
     </div>
     <script type="text/javascript">
         $(document).ready(function(){ 
         
             var token = "";
+            var resizeContent = function(){
+                gP = $('#gatherPage').outerHeight()
+                $('#content').css({'height': gP});
+            }
+            resizeContent();
             
             $('input[type="text"]').each(function(){
                     val = $(this).attr('value');
@@ -158,7 +165,31 @@
             var makeAjaxPOST = function(post_data){
                 $.post('', post_data, 
                     function(data) {
-                      console.log(data);
+                    
+                      if(typeof(data) == "string"){
+                        $('#content').append('<table style="display: none;" id="errorTable"></table>');
+                        $('#errorTable').html(data);
+                        $('.form_error').html('');
+                        $('.form_error').css({'padding': '0px'});
+                        
+                        $.each($('#errorTable tr'), function(idx, row) {
+                            label = $(row).has('li').find('label').html();
+                            error = $(row).has('li').find('li').html();
+                            if(label){
+                                label = label.replace(/[: ]/g, "");
+                                $('.X_'+label).html(error);
+                                $('.X_'+label).css({'padding': '4px 8px 2px'});
+                                resizeContent();
+                            }
+                        });
+                                                
+                      } else {
+                        //Redirect to new url
+                        console.log(data);
+                        $('#collapseForm').hide();
+                        $('#gatherForm').css({'width': '572px'});
+                        $('#gatherForm').html('<p style="text-align: center; padding-bottom: 30px; margin-bottom: 12px; background: #eee url(/media/images/loading.gif) no-repeat center 2px;" id="loading"></p> <p style="text-align: center; padding-bottom: 20px; margin-bottom: 20px;" >This will take a moment, please wait to be redirected.</p>');
+                      }
                     }
                 );
             }
