@@ -68,18 +68,18 @@ def gather(request):
                 if form.cleaned_data[key]:
                     gather_data[key] = form.cleaned_data[key]
             
-#             formatted = get_fromForm(gather_data)
-#             print formatted
-#             print "time to fill"
-#             filler = makeObjects_fromText(formatted, 'FORM')
-#             print filler
-#             print form.cleaned_data['headline']
-#             slug = slugify(form.cleaned_data['headline'])
-#             print slug
-#             new_storygroup = StoryGroup.objects.filter(slugline=slug)
-#             print new_storygroup
+            formatted = get_fromForm(gather_data)
+            print formatted
+            print "time to fill"
+            filler = makeObjects_fromText(formatted, 'FORM')
+            print filler
+            print form.cleaned_data['headline']
+            slug = slugify(form.cleaned_data['headline'])
+            print slug
+            new_storygroup = StoryGroup.objects.filter(slugline=slug)
+            print new_storygroup
             
-            return HttpResponse( json.dumps({'new': str("238")}), mimetype="application/json" )
+            return HttpResponse( json.dumps({'new': str(new_storygroup)}), mimetype="application/json" )
         else:
             form = str(GatherForm(request.POST))
             #soup = BeautifulSoup(form)

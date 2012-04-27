@@ -50,7 +50,6 @@ $('#searchbutton').bind( 'click',  function () {
     
     $('.legendBlock').each(function(){
             color = $(this).attr('color');
-            console.log(color);
             $(this).css({'background-color': color});
     });
     

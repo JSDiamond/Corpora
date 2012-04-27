@@ -1,16 +1,16 @@
 $(document).ready(function(){
 /*     $('#SVGcontainer').html('<p style="text-align: center; padding-bottom: 30px; background: #eee url(/media/images/loading.gif) no-repeat center 2px;" id="loading"></p>'); */
-    
+    $(window).scrollTop(0);
     var current_url = window.location.toString();
     story = window.location.pathname.substr(7);    
     geturl = "http://"+window.location.host+"/getdata/"+story;
+    getTitle = "http://"+window.location.host+"/getTitle/"+story;
         
     $.get(geturl, function(data) {
       console.log(data);
       articleStorageArray = data;
       setTimeout(startEverything, 100, articleStorageArray);
     });
-    
     
    /*
  $('#lengthbutton').click(function(){
@@ -20,13 +20,17 @@ $(document).ready(function(){
 
     $('#sentimentbutton').click(function(){
         if(!sentimentshowing){
-            $('.uc').css({ 'border-bottom': '1px #333 solid'})
-            $('.uc').stop().animate({ 'height': wordmap.w*0.8 }, 400, 'easeOutQuart', function() { });
-            $('#bottompad').stop().animate({ 'margin-top': (wordmap.w*0.94)+'px' }, 550, 'easeOutQuart', function() { });
+            $('.uc').each(function(i){
+                $(this).css({ 'border-bottom': '1px #333 solid'})
+                $(this).stop().animate({ 'height': (wordmap.w*0.65)+40+bumps[i] }, 400, 'easeOutQuart', function() { });
+            });
+            $('#bottompad').stop().animate({ 'margin-top': (wordmap.w+30)+'px' }, 380, 'easeOutQuart', function() { });
             sentimentshowing =! sentimentshowing;
         } else if (sentimentshowing) {
-            $('.uc').stop().animate({ 'height': 0 }, 400, 'easeOutQuart', function() { $(this).css({ 'border-bottom': 'none'}) });
-            $('#bottompad').stop().animate({ 'margin-top': (0)+'px' }, 550, 'easeOutQuart', function() { });
+            $('.uc').each(function(i){
+                $(this).stop().animate({ 'height': bumps[i] }, 400, 'easeOutQuart', function() { $(this).css({ 'border-bottom':'none'});});
+            });                
+             $('#bottompad').stop().animate({ 'margin-top': heights+60 }, 400, 'easeOutQuart', function() { }); 
             sentimentshowing =! sentimentshowing;
         }
     });
@@ -1348,17 +1352,29 @@ var moveArticles = function(change){
 
 
 //////////////////////////////////////////////////////////////////////////////////////////////FUNCTION: add elements below each article
-var sentimentBlock, underHeight;
+var sentimentBlock, underHeight, bumps = [], heights = 0;
 var buildSupplemental = function(bottoms, bottoms_sort) {    
     
     ul = $('#underlist');
     offHeight = $('#mainArtSVG').outerHeight();
+    
+    //get the specific titles for the articles
+    allTitles = [];
+    $('.specTitle').each(function(){
+        allTitles.push( $(this).html() );
+    });
+    
+    console.log(allTitles);
+    
     bottoms.forEach(function(d,i){
-        ul.append('<li class="uc underColumn'+i+'" style="position: absolute; top: '+(-offHeight+d+50)+'px; left: '+((i*wordmap.w)+(i*spacing)+42)+'px;  width: '+wordmap.w+'px;"><p class="supp">Sentiment</p></li>');
+        ul.append('<li class="uc underColumn'+i+'" style="position: absolute; top: '+(-offHeight+d+50)+'px; left: '+((i*wordmap.w)+(i*spacing)+42)+'px;  width: '+wordmap.w+'px;"><p class="thisTitle">'+allTitles[i]+'</p><div id="sentDIV'+i+'" class="sentimental" style="overflow: hidden;"><p class="supp">Sentiment</p></div></li>');
+        
+        
+        
         if(d == bottoms_sort[0]){ $('.underColumn'+i).addClass('longestColumn') }
         //console.log(dataArray[i].Sentiment[0].neg);
         data = [dataArray[i].Sentiment[0].pos, dataArray[i].Sentiment[0].neg]
-        sentimentBlock = d3.select('.underColumn'+i).append("svg:svg") //SVG that holds all individual charts
+        sentimentBlock = d3.select('#sentDIV'+i).append("svg:svg") //SVG that holds all individual charts
                             .data([data])
                             .attr("id", "sentimentBlock"+i)
                             .attr("id", "sentBlock")
@@ -1374,8 +1390,18 @@ var buildSupplemental = function(bottoms, bottoms_sort) {
         underHeight = $('.underColumn0').height();
         $('.uc').height(0);
     });
+    
+    
+    $('.uc').each(function(i){
+            bumps.push($(this).find('.thisTitle').outerHeight());
+            $(this).css({'height': String(bumps[i])+'px'});
+    });
+    
+    $(window).scrollTop(0);
+    
     var heights = $('.longestColumn').outerHeight()
     $('#bottompad').css({ 'margin-top': heights+20+'px' });
+    
     
     //||||||||||||||||||||||||||||||||||||||||||||||Article Maps: lable 
     pub_to_bottom = bottoms_sort[0]+50;

@@ -61,17 +61,9 @@
             <p>Sorry, no articles available.</p>
         {% endif %}
         
-        {% comment %}    
-        <div id="important" style="margin: 20px;">
-            <ul></ul>
-        </div>
-        <div id="quotes" style="margin: 20px;">
-            <ul></ul>
-        </div>
-        <div id="trigrams" style="margin: 20px;">
-            <ul></ul>
-        </div>
-        {% endcomment %} 
+        {% for art in all_articles %}
+            <p style="display: none" class="specTitle">LINK: <a href="{{art.url}}" target="_blank">{{art.image_link}}</a></p>        
+        {% endfor %}
         
 {% endblock %}
 

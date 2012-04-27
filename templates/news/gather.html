@@ -2,12 +2,6 @@
 
 {% block title %}{{ "g a t h e r " }}{% endblock %}
 
-<script type="text/javascript">
-
-    //MAKE A REAL AJAX POST CALL THAT SENDS THE SERIALIZED FORM DATA AND GETS THE NEW URL IN RETURN
-    //MAKE A WAITING SCREEN AS PLACEHOLDER UNTIL THE NEW URL IS RECIEVED
-    
-</script>
 
 {% block content %}
     <div id="gatherPage">
@@ -160,59 +154,59 @@
                 form_data = form.serialize();
                 makeAjaxPOST(form_data);
             });    
-            
-            
-            var makeAjaxPOST = function(post_data){
-                $.post('', post_data, 
-                    function(data) {
+
+        
+        var makeAjaxPOST = function(post_data){    
+            $.ajax({
+                    type: "POST",
+                    url: "",
+                    data: post_data,
+                    beforeSend:
+                        function(){
+                            $('#collapseForm').hide();
+                            $('#gatherForm').css({'width': '572px'});
+                            $('#gatherForm').append('<div id="waiting"><p style="text-align: center; padding-bottom: 30px; margin-bottom: 12px; background: #eee url(/media/images/loading.gif) no-repeat center 2px;" id="loading"></p> <p style="text-align: center; padding-bottom: 20px; margin-bottom: 20px;" >This will take a moment, please wait to be redirected.</p></div>');                        
+                        },
                     
-                      if(typeof(data) == "string"){
-                        $('#content').append('<table style="display: none;" id="errorTable"></table>');
-                        $('#errorTable').html(data);
-                        $('.form_error').html('');
-                        $('.form_error').css({'padding': '0px'});
-                        
-                        $.each($('#errorTable tr'), function(idx, row) {
-                            label = $(row).has('li').find('label').html();
-                            error = $(row).has('li').find('li').html();
-                            if(label){
-                                label = label.replace(/[: ]/g, "");
-                                $('.X_'+label).html(error);
-                                $('.X_'+label).css({'padding': '4px 8px 2px'});
-                                resizeContent();
+                    success: 
+                        function(data) {
+                            if(typeof(data) == "string"){
+                                $('#waiting').remove();
+                                console.log(data);
+                                $('#collapseForm').show();
+                                $('#content').append('<table style="display: none;" id="errorTable"></table>');
+                                $('#errorTable').html(data);
+                                $('.form_error').html('');
+                                $('.form_error').css({'padding': '0px'});
+                                
+                                $.each($('#errorTable tr'), function(idx, row) {
+                                    label = $(row).has('li').find('label').html();
+                                    error = $(row).has('li').find('li').html();
+                                    if(label){
+                                        label = label.replace(/[: ]/g, "");
+                                        $('.X_'+label).html(error);
+                                        $('.X_'+label).css({'padding': '4px 8px 2px'});
+                                        resizeContent();
+                                    }
+                                });
+                                                        
+                              } else {
+                                //Redirect to new url
+                                console.log(data.new);
+                                var loc = window.location.host;
+                                groupNum = data.new.substr(14);
+                                groupNum = groupNum.substring(0, groupNum.length - 2)
+                                //$(this).find('a').attr('href', 'http://'+loc+'/story/'+groupNum);
+                                window.location.href = 'http://'+loc+'/story/'+groupNum;
+                              }
+
+                        },
+                        error: 
+                            function(result) {
                             }
-                        });
-                                                
-                      } else {
-                        //Redirect to new url
-                        console.log(data);
-                        $('#collapseForm').hide();
-                        $('#gatherForm').css({'width': '572px'});
-                        $('#gatherForm').html('<p style="text-align: center; padding-bottom: 30px; margin-bottom: 12px; background: #eee url(/media/images/loading.gif) no-repeat center 2px;" id="loading"></p> <p style="text-align: center; padding-bottom: 20px; margin-bottom: 20px;" >This will take a moment, please wait to be redirected.</p>');
-                      }
-                    }
-                );
+                });
             }
 
-
-/*
-            $.ajax(
-                POST,
-                data = post_data,
-            )
-*/
-
-            
-            /*
-$('input[type="text"]').click(function(){
-                //if( $(this).attr('value') == "xmpty"){
-                    //$(this).css({'color': '#666'});
-                    val = $(this).attr('value');
-                    val = jQuery.trim( val );
-                    $(this).attr('value', val);
-                //}
-            });
-*/
         });
     </script>
 {% endblock %}
