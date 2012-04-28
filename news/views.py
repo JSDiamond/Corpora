@@ -24,14 +24,17 @@ def splash(request):
     
 
 
-def liststories(request):
+def liststories(request, page):
     grouped_news = list()
     latest_news = list()
-    latest_storygroups = StoryGroup.objects.all().order_by('-date')[:10]
+    page = int(page)
+    start = page*10
+    end = (page+2)*10
+    latest_storygroups = StoryGroup.objects.all().order_by('-date')[start:end]
     for idx, story in enumerate(latest_storygroups):
         grouped_news.append(Article.objects.filter(group = story)[:6])
         latest_news.append(grouped_news)
-    #latest_news = Article.objects.all().order_by('-date')[:20]
+
     return render_to_response('news/news.html', {'latest_news': latest_news})
 
 

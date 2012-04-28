@@ -140,6 +140,7 @@ ul h3.latest_headlines {
     background-color: none;
     position: relative;
 }
+
 .story_preview {
     padding: 20px 20px;
     margin: 10px 0px;
@@ -148,6 +149,43 @@ ul h3.latest_headlines {
     background-color: #fff;
     /* display: inline-table; */
 }
+
+#navSection {
+    position: relative;
+    width: 518px;
+    left: 50%;
+    margin-left: -259px;
+}
+.navholder li {
+    float: left;
+    margin-right: 12px;
+}
+.navholder {
+    clear: both;
+    padding-left: 10px;
+    padding-right: 4px;
+    padding-top: 2px;
+    padding-bottom: 28px;
+}
+#navSection ul .navLable {
+    font-family: Miso;
+    letter-spacing: 1px;
+    float: left;
+    font-size: 18px;
+    margin-top: 4px;
+}
+#navSection ul li.newsTab a {
+    display: inline-table;
+    padding: 8px 12px 5px;
+    color: #222;
+    font-weight: 600;
+    background: #9b9999 url(/media/images/wgray_50.gif) repeat 0 0;
+}
+#navSection ul li.newsTab a:hover {
+    opacity: 0.8;
+    color: #eee;
+}
+
 #mainContainer{
     padding: 10px 120px;
 }
@@ -314,7 +352,16 @@ YELLOW: #524E2E
     letter-spacing: 1px;
     margin-top: 4px;
 }
-
+#toolbar .rightnav {
+    float: right;
+    margin-right: 138px;
+    border-left: #E0DDDD solid 1px;  
+}
+#toolbar #feedbutton {
+    margin-right: 0px;
+    border-left: #E0DDDD solid 1px;  
+    border-right: none; 
+}
 
 
 /*////////////////////////////////////////////////////////////////// STORY PAGE */

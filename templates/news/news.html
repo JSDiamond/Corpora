@@ -36,4 +36,56 @@
 {% endblock %}
 
 
+{% block footer %}
+    <section id="navSection">
+        <!-- <div class="footTitle">LEGEND:</div> -->
+        <div class="footerline"></div>
+            <div class="navholder">
+                <ul>
+                    <!-- <li class="navLable">PAGE:</li> -->
+                    <li class="newsTab"><a href="" class="prevpage"><</a></li>
+                    {% for i in 01234567891|make_list %}
+                        <li class="newsTab"><a href="" class="pathNumber">{{ i }}</a></li>
+                    {% endfor %}
+                    <li class="newsTab"><a href=""class="nextpage">></a></li>
+                </ul>
+            </div>
+        <div class="footerline"></div>
+    </section>
+    
+    <script type="text/javascript">
+        $(document).ready(function(){
+        
+            var loc = window.location.host;
+            var path = window.location.pathname;
+            path = path.substr(6);
+            path = path.substring(0, path.length - 1)
+            console.log('loc = '+ loc);
+            console.log('path = '+ path); 
+            
+            $('.pathNumber').each(function(i){
+                    $(this).addClass(String(i));
+                    $(this).html(i);
+                    $(this).attr('href', 'http://'+loc+'/news/'+i);
+            });
+            
+            thispage = parseInt(path);
+            console.log('thispage = '+thispage);
+            $('.'+thispage).css({'opacity': '0.3'});
+            
+            if(path>0){
+                $('.prevpage').attr('href', 'http://'+loc+'/news/'+(parseInt(path)-1));
+            } else {
+                $('.prevpage').css({'opacity': '0.1'});
+            }
+            
+            if(path<8){
+                $('.nextpage').attr('href', 'http://'+loc+'/news/'+(parseInt(path)+1));
+            } else {
+                $('.nextpage').css({'opacity': '0.1'});
+            }   
+        });
+    </script>
+    
+{% endblock %}
 
