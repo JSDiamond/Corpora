@@ -30,12 +30,14 @@ def liststories(request, page):
     page = int(page)
     start = page*10
     end = (page+2)*10
+    total = len(StoryGroup.objects.all().order_by('-date'))
+    total = total/10
     latest_storygroups = StoryGroup.objects.all().order_by('-date')[start:end]
     for idx, story in enumerate(latest_storygroups):
         grouped_news.append(Article.objects.filter(group = story)[:6])
         latest_news.append(grouped_news)
 
-    return render_to_response('news/news.html', {'latest_news': latest_news})
+    return render_to_response('news/news.html', {'latest_news': latest_news, 'total':total})
 
 
 
