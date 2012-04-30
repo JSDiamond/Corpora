@@ -28,7 +28,7 @@ $(document).ready(function(){
             sentimentshowing =! sentimentshowing;
         } else if (sentimentshowing) {
             $('.uc').each(function(i){
-                $(this).stop().animate({ 'height': bumps[i]+2 }, 400, 'easeOutQuart', function() { $(this).css({ 'border-bottom':'none'});});
+                $(this).stop().animate({ 'height': bumps[i]+12 }, 400, 'easeOutQuart', function() { $(this).css({ 'border-bottom':'none'});});
             });                
              $('#bottompad').stop().animate({ 'margin-top': heights+60 }, 400, 'easeOutQuart', function() { }); 
             sentimentshowing =! sentimentshowing;
@@ -1397,7 +1397,7 @@ var buildSupplemental = function(bottoms, bottoms_sort) {
     
     $('.uc').each(function(i){
             bumps.push($(this).find('.thisTitle').outerHeight());
-            $(this).css({'height': String(bumps[i]+2)+'px'});
+            $(this).css({'height': String(bumps[i]+12)+'px'});
     });
     
     $(window).scrollTop(0);
