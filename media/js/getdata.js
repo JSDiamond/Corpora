@@ -24,7 +24,7 @@ $(document).ready(function(){
                 $(this).css({ 'border-bottom': '1px #333 solid'})
                 $(this).stop().animate({ 'height': (wordmap.w*0.65)+40+bumps[i] }, 400, 'easeOutQuart', function() { });
             });
-            $('#bottompad').stop().animate({ 'margin-top': (wordmap.w+30)+'px' }, 380, 'easeOutQuart', function() { });
+            $('#bottompad').stop().animate({ 'margin-top': (wordmap.w+50)+'px' }, 380, 'easeOutQuart', function() { });
             sentimentshowing =! sentimentshowing;
         } else if (sentimentshowing) {
             $('.uc').each(function(i){
@@ -955,6 +955,8 @@ var makeWordBox = function(obj){
         sentenceArray.forEach(function(d,i){
             thisword = d.split(" ");
             thisword = thisword.join("");
+            thisword = CleanNJoinText(thisword);
+            console.log(thisword);
             $('.sentlist').append("<li id='"+idArray[i]+"_"+thisword+"' class='innerText'>"+d+"</li>");
         });
 
@@ -997,7 +999,8 @@ var moveTextflow = function(obj){
             thisword = thisword.split(" ");
             thisword = thisword.join("");
             objectX = obj.x.baseVal.value;
-            $("#"+obj.id+"_"+thisword).css({"color": "#000"});
+            cleanID = CleanNJoinText(thisword);
+            $("#"+obj.id+"_"+cleanID).css({"color": "#000"});
             var lineX = function(oX) { return textflow(oX); };
             var woffset = -(lineX(objectX));
             if(prevword=="."|| prevword=="!" || prevword=="?" ){ woffset+=50;}//check previous word and add space if new sentence

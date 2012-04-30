@@ -60,8 +60,6 @@
             var path = window.location.pathname;
             path = path.substr(6);
             path = path.substring(0, path.length - 1)
-            console.log('loc = '+ loc);
-            console.log('path = '+ path); 
             
             $('.pathNumber').each(function(i){
                     $(this).addClass(String(i));
@@ -69,9 +67,14 @@
                     $(this).attr('href', 'http://'+loc+'/news/'+i);
             });
             
-            thispage = parseInt(path);
+            var thispage = parseInt(path);
             console.log('thispage = '+thispage);
-            $('.'+thispage).css({'opacity': '0.3'});
+            if(thispage){
+                $('.'+thispage).css({'opacity': '0.3'});
+            } else {
+                $('.0').css({'opacity': '0.3'});
+            }
+            
             
             if(path>0){
                 $('.prevpage').attr('href', 'http://'+loc+'/news/'+(parseInt(path)-1));
