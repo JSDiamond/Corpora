@@ -138,7 +138,6 @@ def get_article(link):
         for item in media:
             if item['primary'] == "true" and item['type'] == "image":                
                 image = item['link']
-        print image
     except: 
         image = "None"
     return { 'rawtext': rawtext, 'image': image, 'title': title }
@@ -585,14 +584,12 @@ class ContextFree(object):
     word = ""
     wordcollection = list()
     choices = list()
-    #print " "
-    #print " "
-    #print "The previous word was = \""+prev+"\". The next word should be p.o.s "+start
+
     
     if pos == "IS":
         word = "is"
     elif pos == "CC":
-        word = random.choice(['and', 'but', 'although', 'though', 'and'])
+        word = random.choice(['and', 'but', 'although', 'though', 'and', 'however', 'maybe'])
     else:
         try:
             for tup in self.ART_DICT[prev]:
@@ -653,21 +650,28 @@ def headling(storyTextList):
     storylines = list()
     ARTDICT = {}
     link = ""
-    lineSetting = 5
+    lineSetting = 10
     materials = list()
     MarkDiction = MarkovDictionary(n=1, max=1)
 
     for text in storyTextList:
-        print "WWWWWWWWWWWWWE!!!!!!!!!!!!!!!!" 
         raw_text += text
         allText += text
-        print "WEEEEEEEEEEEEE!!!!!!!!!!!!!!!!"    
     allText = re.sub(r"[!\"?()\[\]\\\/:;]", "", str(allText))  
+#     allText = re.sub(r"\b[Mm]e\b", "", str(allText)) 
+#     allText = re.sub(r"\b[Tt]hem\b", "", str(allText))
+#     allText = re.sub(r"\bI\b", "", str(allText)) 
+#     allText = re.sub(r"\b[Uu]\bs", "", str(allText))
+#     allText = re.sub(r"\b[Bb]een\b", "", str(allText))
+#     allText = re.sub(r"\b[Hh]im\b", "", str(allText))
+#     allText = re.sub(r"\b[Hh]er\b", "", str(allText))
+#     allText = re.sub(r"\b[Aa]n\b", "a", str(allText))
+#     allText = re.sub(r"\b[Yy]ou\b", "", str(allText))
     allText = nltk.sent_tokenize(str(allText))
     ARTDICT = MarkDiction.feed(allText)
             
     cfree = ContextFree()
-    add_rules_from_file(cfree, open("news/grammar.txt"))
+    add_rules_from_file(cfree, open("news/poetics/grammar.txt"))
     
      ####### Make title #######
     title = cfree.get_expansion('Title', ARTDICT, '')
@@ -675,7 +679,7 @@ def headling(storyTextList):
     title[2] = str(title[2][0].upper()) + str(title[2][1:])
     title = ' '.join(title)
     
-    for idx in range(lineSetting*3):                
+    for idx in range(lineSetting):                
         
         #beginning = MarkGen.generate( "NN" )
         #lastword = beginning.split(" ")
@@ -691,16 +695,18 @@ def headling(storyTextList):
             sentence = sentence.lower()
             up = str(sentence[0].upper())
             sentence = up + str(sentence[1:])
-        #if r"[Tt]hey" in sentence:
-        sentence = re.sub(r"\b[Ww]as", "were", str(sentence))
-        #sentence = re.sub(r"\b[Hh]as", "have", str(sentence))
+        if "they" in sentence or "They" in sentence:
+            sentence = re.sub(r"\b[Ww]as", "were", str(sentence))
+            sentence = re.sub(r"\b[Hh]as", "have", str(sentence))
+            sentence = re.sub(r"\b[Ii]s", "are", str(sentence))
         up = str(sentence[0].upper())
         sentence = up + str(sentence[1:]) + "."
         storylines.append(sentence)
-        if idx % lineSetting == lineSetting-1:
-            storylines.append("-----")
-    #storylines[-1] = str(storylines[-1][:-1])+", "+random.choice(aesop_ends)
-    #storylines.append(random.choice(aesop_morals))
+    expansion = cfree.get_expansion( 'END', ARTDICT, '')
+    sentence =  ' '.join(expansion)
+    up = str(sentence[0].upper())
+    sentence = up + str(sentence[1:]) + "."
+    storylines.append(sentence)
 
     return { 'poem': storylines, 'raw_text': storylines[-1], 'lastword': title }
 

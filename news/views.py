@@ -210,12 +210,10 @@ def headline(request):
                     gather_data[key] = form.cleaned_data[key]
                         
             for key in gather_data:
-                print gather_data[key]
                 thisStory = Article.objects.filter(headline=gather_data[key])[0]
                 stories.append(thisStory.raw_text)
                 
             poemobject = headling(stories)
-            print poemobject
             
             return HttpResponse( json.dumps(poemobject), mimetype="application/json" )
         else:

@@ -666,4 +666,8 @@ form input[type="text"].form_headlinez {
     font-size: 26px;
     font-family: Oswald;
 }
-
+.poemWords {
+    font-size: 28px;
+    font-weight: 200;
+    text-align: left;
+}

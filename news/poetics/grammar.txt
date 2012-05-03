@@ -21,15 +21,17 @@
 ####ProEntities
 0 -> Pers Vintr Comma Pers Vintr Comma Pers Vintr  
 1 -> JJ NNS Md Vb Prepo N
-2 -> Org Vintr Det N Comma Vbg Det Adj NNS
+2 -> Org Vintr Det N Comma Vbg Prepo Det Adj NNS
 3 -> Pers Vtrans JJ N Comma CC N Vintr Adj NNS
-4 -> CC Det N Prepo Det Adj N Is Rb Adj Prepo NNS
-5 -> JJ NNS Md Vb Prepo Det N 
+4 -> Det N Prepo Det Adj N Is Rb Adj Prepo NNS
+5 -> Loc Md Vb Prepo Det N 
 6 -> Pers Vintr Det N Comma Vbg To Adj NNS
 7 -> N Is Det JJ N CC Pers Vintr Adj NNS
 8 -> CC Det Org Prepo Det Adj N Is Rb Adj Prepo Vbg
 9 -> Pers Vintr Comma Pers Vintr Comma Pers Vintr
 END -> CC Comma Wp Md Vb Loc
+
+#5 -> JJ NNS Md Vb Prepo Det N 
 
 ####ProNouns
 #0 -> Wp Vtrans Det N  

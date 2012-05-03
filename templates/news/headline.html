@@ -5,8 +5,8 @@
 
 {% block content %}
     <div id="headlinePage">
-        <h1 style="font-weight: 400; font-size: 42px; margin-bottom: 0px;"> 
-            Headlinez:  
+        <h1 style="font-weight: 400; font-size: 42px; margin-bottom: 0px; text-align: left;"> 
+            Heading the Line
         </h1>
         <!--
 <h3 style="font-weight: 100;"> 
@@ -16,7 +16,7 @@
         
         {%comment%}{{ current_path }}{% endcomment%}
         
-        <form id="gatherForm" action="/gather/" method="post">
+        <form id="gatherForm" action="/gather/" method="post" style="width: 900px;">
             
             <div id="collapseForm">
                 <span id="csrf">{% csrf_token %}</span>
@@ -91,7 +91,8 @@
     </div>
     <script type="text/javascript">
         $(document).ready(function(){ 
-            
+            $('#toolbar').remove();
+            $('#toolbacker').remove();
             var ASA;
             geturl = "http://"+window.location.host+"/getSlugs/";
             $.get(geturl, function(data) {
@@ -99,7 +100,7 @@
               ASA = data;
             });
             
-            var threefold = [500, 300, 100]
+            var threefold = [350, 200, 50]
             var fillValues = function() {
                 $('.form_headlinez').each(function(idx){
                     randno = Math.floor ( Math.random() * ASA.length );
@@ -115,12 +116,12 @@
             }
             
             var headSpinner = function(obj, speed){
-                if(speed < 600 ) {
+                if(speed < 500 ) {
                     randno = Math.floor ( Math.random() * ASA.length );
                     $(obj).attr('value', ASA[randno]);
-                    $(obj).animate({ 'top': '-80px' }, speed, 'swing', function() { $(obj).css({'top': '80px'}); speed = speed+40; headSpinner(obj, speed); });
+                    $(obj).animate({ 'top': '-80px' }, speed, 'swing', function() { $(obj).css({'top': '80px'}); speed = speed+28; headSpinner(obj, speed); });
                 } 
-                 else if(speed > 500) {
+                 else if(speed > 400) {
                     randno = Math.floor ( Math.random() * ASA.length );
                     $(obj).attr('value', ASA[randno]);
                     $(obj).animate({ 'top': '0px' }, 600, 'swing', function() { rolling = false; });
@@ -167,8 +168,8 @@
                     beforeSend:
                         function(){
                             $('#collapseForm').hide();
-                            $('#gatherForm').css({'width': '572px'});
-                            $('#gatherForm').append('<div id="waiting"><p style="text-align: center; padding-bottom: 30px; margin-bottom: 12px; background: #eee url(/media/images/loading.gif) no-repeat center 2px;" id="loading"></p> <p style="text-align: center; padding-bottom: 20px; margin-bottom: 20px;" >This will take a moment, please wait to be redirected.</p></div>');                        
+                            $('#gatherForm').css({'width': '900px'});
+                            $('#gatherForm').append('<div id="waiting"><p style="text-align: left; padding-bottom: 30px; margin-bottom: 12px; background: #eee url(/media/images/loading.gif) no-repeat center 2px;" id="loading"></p></div>');                        
                         },
                     
                     success: 
@@ -196,15 +197,18 @@ $.each($('#errorTable tr'), function(idx, row) {
 */
                                                         
                               } else {
-                                //Redirect to new url
+                                //Show the poem
                                 console.log(data);
-                                /*
-var loc = window.location.host;
-                                groupNum = data.new.substr(14);
-                                groupNum = groupNum.substring(0, groupNum.length - 2)
-                                //$(this).find('a').attr('href', 'http://'+loc+'/story/'+groupNum);
-                                window.location.href = 'http://'+loc+'/story/'+groupNum;
-*/
+                                $('#waiting').remove();
+                                formshowning = false;
+                                $('#headlinePage h1').html(data.lastword);
+                                $('#gatherForm').append('<div id="poemHome"></div>');
+                                $('#poemHome').append('<ul style="padding-bottom: 12px; margin-bottom: 0px;" id="poemList"></ul>');
+                                poemList = $('#poemList');
+                                $(data.poem).each(function(idx,d){
+                                    $(poemList).append('<li class="poemWords">'+d+'</li>');
+                                });
+                                resizeContent();
                               }
 
                         },
@@ -215,7 +219,20 @@ var loc = window.location.host;
             }
             
             
-            var rolling = false;
+            var resetForm = function(){
+                console.log('erase and show form');
+                $('#poemHome').remove();
+                $('.form_headlinez').each(function(idx){
+                    $(this).attr('value', '');
+                });
+                $('#collapseForm').show();
+                $('#headlinePage h1').html('Headling the Line');
+                erasing = false;
+                formshowning = true;
+                resizeContent();
+            }
+            
+            var rolling = false, erasing = false, formshowning = true;
             var loc = window.location.host;
             var gamma=0, beta=0;
             page = document.getElementById('headlinePage');
@@ -229,11 +246,15 @@ var loc = window.location.host;
                     
                     
                     if( gamma < -10.0 || gamma > 10.0 ){
-                        console.log('erase and show form');
                         page.style.webkitTransform = 'translate( '+ gamma*8 +'px, 0px )';
                     } else {
                         page.style.webkitTransform = 'none';
                     }
+                    
+                    if( gamma < -10.0 && !erasing && !formshowning || gamma > 10.0 && !erasing && !formshowning ){
+                        setTimeout(resetForm, 600);
+                        erasing = true;
+                    } 
                     if(beta < 0.7 && !rolling){
                         console.log('spin randomize headlines');
                         setTimeout(fillValues, 400, false);
