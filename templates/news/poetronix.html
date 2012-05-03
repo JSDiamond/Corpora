@@ -41,6 +41,12 @@
     
     <script type="text/javascript">
         $(document).ready(function(){ 
+            var token = "";
+            var resizeContent = function(){
+                gP = $('#gatherPage').outerHeight()
+                $('#content').css({'height': gP+70});
+            }
+            resizeContent();
         
             $('#peom_PA').click(function(){
                 groupNum = $(this).attr('group');
@@ -63,6 +69,30 @@
             });
             
             var loc = window.location.host;
+            var gamma=0, beta=0;
+            page = document.getElementById('gatherPage');
+            console.log(page);
+            function onOrientation(event) {
+                    //rotate = 'rotate(' + event.gamma + 'deg)';
+                    //scale = 'scale(' + ((event.beta/180)*2 + 1) + ')';
+                    gamma = event.gamma;
+                    beta = (event.beta/180)*2 + 1;
+                    //console.log("rotate :"+rotate+", scale :"+scale);
+                    
+                    
+                    if( gamma < -10.0 || gamma > 10.0 ){
+                        console.log('erase and show form');
+                        page.style.webkitTransform = 'translate( '+ gamma*8 +'px, 0px )';
+                    } else {
+                        page.style.webkitTransform = 'none';
+                    }
+                    if(beta < 0.7){
+                        console.log('spin randomize headlines');
+                    }
+                    
+            }
+            
+            window.addEventListener('deviceorientation', onOrientation);
             
         });
     </script>

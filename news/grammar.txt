@@ -2,6 +2,16 @@
 #S -> N VP NP 
 #S -> NP VP
 
+
+
+####Entities
+#0 -> Pers Vbg 
+#1 -> Loc Md Vb Det N
+#2 -> N Prepo Det Adj Pers Is Rb Adj
+#3 -> Org Vintr Det N Comma Vbg Adj NNS
+#4 -> CC Comma Wp Vtrans Det Org
+
+####NO Entities
 0 -> N Vbg 
 1 -> NNS Md Vb Det N
 2 -> N Prepo Det Adj N Is Rb Adj
@@ -47,6 +57,7 @@ Ex -> EX
 Ent -> ENT
 Det -> DT
 N -> NN
+Nnp -> NNP
 Is -> IS
 Prepo -> IN
 Adj -> JJ

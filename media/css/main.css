@@ -638,5 +638,32 @@ form input[type="submit"]:hover {
     margin-top: 0px;
 }
 
+#headlinePage {
+    position: absolute;
+    width: 900px;
+    left: -450px;
+    margin-left: 50%;
+}
+.inputContainer {
+    overflow: hidden;
+    height: 80px;
+    width: 900px;
+    border-bottom: 1px solid #333;
+    margin-bottom: 14px;
+    position: relative;
 
+}
+.headslot {
+    position: absolute;
+    margin-top: 20px;
+}
+form input[type="text"].form_headlinez {
+    position: relative;
+    left: 80px;
+    width: 800px;
+    padding: 8px;
+    font-weight: 600;
+    font-size: 26px;
+    font-family: Oswald;
+}
 

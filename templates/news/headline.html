@@ -1,0 +1,253 @@
+{% extends "base.html" %}
+
+{% block title %}{{ "p o e t r o n i x" }}{% endblock %}
+
+
+{% block content %}
+    <div id="headlinePage">
+        <h1 style="font-weight: 400; font-size: 42px; margin-bottom: 0px;"> 
+            Headlinez:  
+        </h1>
+        <!--
+<h3 style="font-weight: 100;"> 
+            Submit.  
+        </h3>
+-->
+        
+        {%comment%}{{ current_path }}{% endcomment%}
+        
+        <form id="gatherForm" action="/gather/" method="post">
+            
+            <div id="collapseForm">
+                <span id="csrf">{% csrf_token %}</span>
+                            
+               <label class="headslot" for="id_headline_1" >Headline:</label>
+                <div class="inputContainer">
+                    <span class="form_error X_Headline_1">{{ form.headline_1.errors }}</span>
+                    <!-- <p style="border-bottom: 1px solid #333; padding-bottom: 14px; margin-bottom: 16px"> -->
+                             <input 
+                                id="id_headline_1" 
+                                class="form_headlinez" 
+                                type="text" 
+                                name="headline_1" 
+                                value="{% if form.headline_1.value %} {{ form.headline_1.value }} {% else %} {{""}} {% endif %}" maxlength="255" />
+                   <!--  </p> -->
+                 </div>
+                
+                
+                 <label class="headslot" for="id_headline_2" >Headline:</label>
+                <div class="inputContainer">
+                    <span class="form_error X_Headline_2">{{ form.headline_1.errors }}</span>
+                    <!-- <p style="border-bottom: 1px solid #333; padding-bottom: 14px; margin-bottom: 16px"> -->
+                             <input 
+                                id="id_headline_2" 
+                                class="form_headlinez" 
+                                type="text" 
+                                name="headline_2" 
+                                value="{% if form.headline_2.value %} {{ form.headline_2.value }} {% else %} {{""}} {% endif %}" maxlength="255" />
+                   <!--  </p> -->
+                 </div>
+                
+                 <label class="headslot" for="id_headline_3" >Headline:</label>
+                <div class="inputContainer">
+                    <span class="form_error X_Headline_3">{{ form.headline_1.errors }}</span>
+                    <!-- <p style="border-bottom: 1px solid #333; padding-bottom: 14px; margin-bottom: 16px"> -->
+                             <input 
+                                id="id_headline_3" 
+                                class="form_headlinez" 
+                                type="text" 
+                                name="headline_3" 
+                                value="{% if form.headline_3.value %} {{ form.headline_3.value }} {% else %} {{""}} {% endif %}" maxlength="255" />
+                   <!--  </p> -->
+                 </div>
+                                        
+                <input type="button" value="Submit" id="submitForm" />
+            </div>
+            
+        </form>
+            
+            {% if poem %}
+            <div id="poemHome" >                
+                    <ul style="padding-bottom: 12px; margin-bottom: 0px;">
+                    
+                    {% for text in poem %}
+                        <li style="margin-bottom: 6px; font-size: 16px"> {{ text }} </li>
+                    {% endfor %}
+                    
+                    </ul>
+                    
+                    {% with all_articles.0 as article %}
+                    <div id="poetools">
+                         <div id="peom_PA" class="button" group="{{ article }}">Previous Article</div>
+                         <div id="peom_A" class="button" group="{{ article }}">Another</div>
+                         <div id="peom_NA" class="button" group="{{ article }}">Next Article</div>
+                    </div>
+                    {% endwith %}
+                    
+                    <p style="text-align: center; margin-bottom: 20px;"><a href="{{link}}" style="font-family: Titillium; font-weight: 100; font-size: 11px; color: #888;" target=_blank >source article</a></p> 
+            </div>
+            {% endif %}
+        
+    </div>
+    <script type="text/javascript">
+        $(document).ready(function(){ 
+            
+            var ASA;
+            geturl = "http://"+window.location.host+"/getSlugs/";
+            $.get(geturl, function(data) {
+              console.log(data[0]);
+              ASA = data;
+            });
+            
+            var threefold = [500, 300, 100]
+            var fillValues = function() {
+                $('.form_headlinez').each(function(idx){
+                    randno = Math.floor ( Math.random() * ASA.length );
+                    $(this).attr('value', ASA[randno]);
+                    $(this).animate({ 'top': '80px' }, 100, 'swing', function() { });
+                });
+            
+                $('.form_headlinez').each(function(idx){
+                    randno = Math.floor ( Math.random() * ASA.length );
+                    $(this).attr('value', ASA[randno]);
+                    headSpinner(this, threefold[idx]);
+                });
+            }
+            
+            var headSpinner = function(obj, speed){
+                if(speed < 600 ) {
+                    randno = Math.floor ( Math.random() * ASA.length );
+                    $(obj).attr('value', ASA[randno]);
+                    $(obj).animate({ 'top': '-80px' }, speed, 'swing', function() { $(obj).css({'top': '80px'}); speed = speed+40; headSpinner(obj, speed); });
+                } 
+                 else if(speed > 500) {
+                    randno = Math.floor ( Math.random() * ASA.length );
+                    $(obj).attr('value', ASA[randno]);
+                    $(obj).animate({ 'top': '0px' }, 600, 'swing', function() { rolling = false; });
+                } 
+
+            }
+            
+            
+            var token = "";
+            var resizeContent = function(){
+                gP = $('#headlinePage').outerHeight()
+                $('#content').css({'height': gP+40});
+            }
+            resizeContent();
+            
+            $('input[type="text"]').each(function(){
+                    val = $(this).attr('value');
+                    chars = val.match(/[a-zA-Z]/);
+                    if(chars){ $(this).attr('value', val); }
+                    else{ $(this).attr('value', ''); }
+            });
+            
+            $('input').each(function(){
+                    if($(this).attr('name') == 'csrfmiddlewaretoken'){
+                        token = $(this).attr('value');
+                    }
+            });
+           
+            
+            $('#submitForm').click(function(){
+                event.preventDefault();             
+                form = $('#gatherForm');
+                form_data = form.serialize();
+                console.log(form_data);
+                makeAjaxPOST(form_data);
+            });    
+
+        
+        var makeAjaxPOST = function(post_data){    
+            $.ajax({
+                    type: "POST",
+                    url: "",
+                    data: post_data,
+                    beforeSend:
+                        function(){
+                            $('#collapseForm').hide();
+                            $('#gatherForm').css({'width': '572px'});
+                            $('#gatherForm').append('<div id="waiting"><p style="text-align: center; padding-bottom: 30px; margin-bottom: 12px; background: #eee url(/media/images/loading.gif) no-repeat center 2px;" id="loading"></p> <p style="text-align: center; padding-bottom: 20px; margin-bottom: 20px;" >This will take a moment, please wait to be redirected.</p></div>');                        
+                        },
+                    
+                    success: 
+                        function(data) {
+                            if(typeof(data) == "string"){
+                                $('#waiting').remove();
+                                console.log(data);
+                                $('#collapseForm').show();
+                                $('#content').append('<table style="display: none;" id="errorTable"></table>');
+                                $('#errorTable').html(data);
+                                $('.form_error').html('');
+                                $('.form_error').css({'padding': '0px'});
+                                
+                                /*
+$.each($('#errorTable tr'), function(idx, row) {
+                                    label = $(row).has('li').find('label').html();
+                                    error = $(row).has('li').find('li').html();
+                                    if(label){
+                                        label = label.replace(/[: ]/g, "");
+                                        $('.X_'+label).html(error);
+                                        $('.X_'+label).css({'padding': '4px 8px 2px'});
+                                        resizeContent();
+                                    }
+                                });
+*/
+                                                        
+                              } else {
+                                //Redirect to new url
+                                console.log(data);
+                                /*
+var loc = window.location.host;
+                                groupNum = data.new.substr(14);
+                                groupNum = groupNum.substring(0, groupNum.length - 2)
+                                //$(this).find('a').attr('href', 'http://'+loc+'/story/'+groupNum);
+                                window.location.href = 'http://'+loc+'/story/'+groupNum;
+*/
+                              }
+
+                        },
+                        error: 
+                            function(result) {
+                            }
+                });
+            }
+            
+            
+            var rolling = false;
+            var loc = window.location.host;
+            var gamma=0, beta=0;
+            page = document.getElementById('headlinePage');
+            console.log(page);
+            function onOrientation(event) {
+                    //rotate = 'rotate(' + event.gamma + 'deg)';
+                    //scale = 'scale(' + ((event.beta/180)*2 + 1) + ')';
+                    gamma = event.gamma;
+                    beta = (event.beta/180)*2 + 1;
+                    //console.log("rotate :"+rotate+", scale :"+scale);
+                    
+                    
+                    if( gamma < -10.0 || gamma > 10.0 ){
+                        console.log('erase and show form');
+                        page.style.webkitTransform = 'translate( '+ gamma*8 +'px, 0px )';
+                    } else {
+                        page.style.webkitTransform = 'none';
+                    }
+                    if(beta < 0.7 && !rolling){
+                        console.log('spin randomize headlines');
+                        setTimeout(fillValues, 400, false);
+                        rolling = true;
+                    }
+                    
+            }
+            
+            window.addEventListener('deviceorientation', onOrientation);
+            
+
+        });
+    </script>
+{% endblock %}
+
+
+

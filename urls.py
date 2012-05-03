@@ -17,6 +17,8 @@ urlpatterns = patterns('',
     url(r"^story/(?P<storygroup>\d+)/$", "Corpora.news.views.collate", name="collate"),
     url(r"^getdata/(?P<storygroup>\d+)/$", "Corpora.news.views.getdata", name="getdata"),
     url(r"^poetronix/(?P<storygroup>\d+)/$", "Corpora.news.views.poetronix", name="poetronix"),
+    url(r"^headline/$", "Corpora.news.views.headline", name="headline"),
+    url(r"^getSlugs/$", "Corpora.news.views.getSlugs", name="getSlugs"),
     # Uncomment the admin/doc line below to enable admin documentation:
     # url(r'^admin/doc/', include('django.contrib.admindocs.urls')),
     url(r'^admin/', include(admin.site.urls)),

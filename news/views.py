@@ -13,9 +13,10 @@ from nltk import FreqDist
 import datetime
 from BeautifulSoup import BeautifulSoup
 
-from Corpora.news.util import get_google, makeObjects_fromText, get_article, get_sentiment, get_fromForm, findTriGrams, tokenize_text_and_tag_named_entities, SetWordDictionary, Find_Important_Words, scrape_pub_from_url, MarkovDictionary, MarkovGenerator, ContextFree, add_rules_from_file
+from Corpora.news.util import get_google, makeObjects_fromText, get_article, get_sentiment, get_fromForm, findTriGrams, tokenize_text_and_tag_named_entities, SetWordDictionary, Find_Important_Words, scrape_pub_from_url, MarkovDictionary, MarkovGenerator, ContextFree, add_rules_from_file, headling
 from Corpora.news.models import Article, Publisher, StoryGroup
 from forms import GatherForm
+from forms import HeadlineForm
 
 
 
@@ -117,10 +118,6 @@ def special(request):
 def poetronix(request, storygroup):
     import datetime
     import random
-    aesops_starters = [ 'It happened that', 'One day,', 'One hot summer\'s day,', 'At one time,', 'Long ago,' ]
-    aesop_quotes = [ 'found great difficulty in', 'on his way home', 'was so tickled at the idea of', 'and singing to his heart\'s content', 'and continued its toil', 'by an unlucky chance' ] 
-    aesop_ends = [ 'and was never seen again.', 'finally giving up the chase.', 'and shall never forget it.', 'recommending you to do the same.', 'and took this advice.' ]
-    aesop_morals = [ 'It is best to prepare for the days of necessity.', 'So, appearances are deceptive.', 'So, little friends may prove great friends.', 'Never trust the advice of a man in difficulties.', 'Beware lest you lose the substance by grasping at the shadow.', 'People often grudge others what they cannot enjoy themselves.', 'It is easy to despise what you cannot get.', 'One bad turn deserves another.', 'Self-conceit may lead to self-destruction.', 'Incentive spurs effort' ] 
     allText = ""
     poem = list()
     raw_text = ""
@@ -130,19 +127,19 @@ def poetronix(request, storygroup):
     link = ""
     lineSetting = 5
     materials = list()
-    MarkDiction = MarkovDictionary(n=1, max=7)
-    MarkGen = MarkovGenerator(n=1, max=4)
+    MarkDiction = MarkovDictionary(n=1, max=1)
+    #MarkGen = MarkovGenerator(n=1, max=4)
     try:
         story = StoryGroup.objects.get(id = storygroup)
         ranje = int(storygroup)   
              
-        for idx in range(1):
-            all_articles1 = Article.objects.filter(group = ranje)[:6] #datetime.date(2012, 04, 19)
+        for idx in range(3):
+            all_articles1 = Article.objects.filter(group = ranje)[:1] #datetime.date(2012, 04, 19)
             link = all_articles1[0].url
             print all_articles1
             print all_articles1[0]
             print all_articles1[0].url
-            ranje = ranje-1
+            ranje = ranje-random.choice([1,2,3,4,5,6,7,8,9,10])
             #{'date_time_field__range': (datetime.datetime.combine(date, datetime.time.min),datetime.datetime.combine(date, datetime.time.max))} 
             materials.append(storygroup)
             for art in all_articles1:
@@ -198,5 +195,44 @@ def poetronix(request, storygroup):
         raise Http404
     return render_to_response('news/poetronix.html', { 'all_articles': materials, 'poem': storylines, 'raw_text': storylines[-1], 'lastword': title, 'link': link })
     
+    
+
+def headline(request):
+    if request.method == 'POST': # If the form has been submitted...
+        form = HeadlineForm(request.POST) # A form bound to the POST data
+        
+        if form.is_valid(): # All validation rules pass
+            gather_data = dict()
+            stories = list()
+            
+            for key in form.cleaned_data:
+                if form.cleaned_data[key]:
+                    gather_data[key] = form.cleaned_data[key]
+                        
+            for key in gather_data:
+                print gather_data[key]
+                thisStory = Article.objects.filter(headline=gather_data[key])[0]
+                stories.append(thisStory.raw_text)
+                
+            poemobject = headling(stories)
+            print poemobject
+            
+            return HttpResponse( json.dumps(poemobject), mimetype="application/json" )
+        else:
+            form = str(HeadlineForm(request.POST))
+            return HttpResponse( json.dumps(form), mimetype="application/json" )
+    else:
+        form = HeadlineForm() # An unbound form
+    return render_to_response( 'news/headline.html', {'form': form}, context_instance=RequestContext(request) )
+
+
+def getSlugs(request):
+    slugs = list()
+    all_storygroups = StoryGroup.objects.all().order_by('-date')[:60]
+    for story in all_storygroups:
+        thisLine = Article.objects.filter(group = story.id)[0]
+        slugs.append(thisLine.headline)
+        
+    return HttpResponse(json.dumps(slugs), mimetype="application/json")
     
     

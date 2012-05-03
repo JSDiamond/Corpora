@@ -641,3 +641,66 @@ def add_rules_from_file(cfree, file_obj):
 
 
 
+
+############################################################################################
+def headling(storyTextList):
+    import datetime
+    import random
+    allText = ""
+    poem = list()
+    raw_text = ""
+    opening = ""
+    storylines = list()
+    ARTDICT = {}
+    link = ""
+    lineSetting = 5
+    materials = list()
+    MarkDiction = MarkovDictionary(n=1, max=1)
+
+    for text in storyTextList:
+        print "WWWWWWWWWWWWWE!!!!!!!!!!!!!!!!" 
+        raw_text += text
+        allText += text
+        print "WEEEEEEEEEEEEE!!!!!!!!!!!!!!!!"    
+    allText = re.sub(r"[!\"?()\[\]\\\/:;]", "", str(allText))  
+    allText = nltk.sent_tokenize(str(allText))
+    ARTDICT = MarkDiction.feed(allText)
+            
+    cfree = ContextFree()
+    add_rules_from_file(cfree, open("news/grammar.txt"))
+    
+     ####### Make title #######
+    title = cfree.get_expansion('Title', ARTDICT, '')
+    title[0] = str(title[0][0].upper()) + str(title[0][1:])
+    title[2] = str(title[2][0].upper()) + str(title[2][1:])
+    title = ' '.join(title)
+    
+    for idx in range(lineSetting*3):                
+        
+        #beginning = MarkGen.generate( "NN" )
+        #lastword = beginning.split(" ")
+        breakdown = idx % lineSetting
+        expansion = cfree.get_expansion( str(breakdown), ARTDICT, '') #'the' lastword[:-1]
+        #sentence = beginning +" "+ ' '.join(expansion)
+        sentence =  ' '.join(expansion)
+        if opening != "":
+            sentence = opening+" "+sentence+"."
+            opening = ""
+        else: 
+            sentence = re.sub(r"[!\"?()\[\]:;]", "", str(sentence))
+            sentence = sentence.lower()
+            up = str(sentence[0].upper())
+            sentence = up + str(sentence[1:])
+        #if r"[Tt]hey" in sentence:
+        sentence = re.sub(r"\b[Ww]as", "were", str(sentence))
+        #sentence = re.sub(r"\b[Hh]as", "have", str(sentence))
+        up = str(sentence[0].upper())
+        sentence = up + str(sentence[1:]) + "."
+        storylines.append(sentence)
+        if idx % lineSetting == lineSetting-1:
+            storylines.append("-----")
+    #storylines[-1] = str(storylines[-1][:-1])+", "+random.choice(aesop_ends)
+    #storylines.append(random.choice(aesop_morals))
+
+    return { 'poem': storylines, 'raw_text': storylines[-1], 'lastword': title }
+

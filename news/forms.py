@@ -23,3 +23,21 @@ class GatherForm(forms.Form):
             pass
     
         return headline
+
+
+class HeadlineForm(forms.Form):
+    headline_1 = forms.CharField(max_length=255, required=True)
+    headline_2 = forms.CharField(max_length=255, required=True)
+    headline_3 = forms.CharField(max_length=255, required=True)
+
+    
+#     def clean_headline(self):
+#         headline = self.cleaned_data['headline']
+#         slugified = slugify(headline)
+#         try:
+#             existing = StoryGroup.objects.get(slugline=slugified)
+#             raise forms.ValidationError("This headline is already in the database. Please enter a unique headline.")
+#         except StoryGroup.DoesNotExist:
+#             pass
+#     
+#         return headline
