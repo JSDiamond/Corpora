@@ -4,9 +4,9 @@
 
 
 {% block content %}
-    <div id="headlinePage">
+    <div id="headlinePage" style="margin-top: 60px;">
         <h1 style="font-weight: 400; font-size: 42px; margin-bottom: 0px; text-align: left;"> 
-            Heading the Line
+            Between the Lines: <span id="summaryTitle" style="font-weight: 200;">News Summary</span>
         </h1>
         <!--
 <h3 style="font-weight: 100;"> 
@@ -16,7 +16,7 @@
         
         {%comment%}{{ current_path }}{% endcomment%}
         
-        <form id="gatherForm" action="/gather/" method="post" style="width: 900px;">
+        <form id="gatherForm" action="/gather/" method="post" style="width: 900px; margin-top: 0px;">
             
             <div id="collapseForm">
                 <span id="csrf">{% csrf_token %}</span>
@@ -61,7 +61,7 @@
                    <!--  </p> -->
                  </div>
                                         
-                <input type="button" value="Submit" id="submitForm" />
+                <input type="button" value="summarize" id="submitForm" style="margin-left: 400px;" />
             </div>
             
         </form>
@@ -92,6 +92,7 @@
     <script type="text/javascript">
         $(document).ready(function(){ 
             $('#toolbar').remove();
+            $('body').css({'background': ' #979999 url(/media/images/wgray_50.gif) repeat 0 0'});
             $('#toolbacker').remove();
             var ASA;
             geturl = "http://"+window.location.host+"/getSlugs/";
@@ -133,7 +134,9 @@
             var token = "";
             var resizeContent = function(){
                 gP = $('#headlinePage').outerHeight()
-                $('#content').css({'height': gP+40});
+                $('#content').css({'height': gP+200});
+                //gP = $(window).height();
+                //$('#content').css({'height': gP-200});
             }
             resizeContent();
             
@@ -201,7 +204,7 @@ $.each($('#errorTable tr'), function(idx, row) {
                                 console.log(data);
                                 $('#waiting').remove();
                                 formshowning = false;
-                                $('#headlinePage h1').html(data.lastword);
+                                $('#summaryTitle').html(data.lastword);
                                 $('#gatherForm').append('<div id="poemHome"></div>');
                                 $('#poemHome').append('<ul style="padding-bottom: 12px; margin-bottom: 0px;" id="poemList"></ul>');
                                 poemList = $('#poemList');
@@ -226,7 +229,7 @@ $.each($('#errorTable tr'), function(idx, row) {
                     $(this).attr('value', '');
                 });
                 $('#collapseForm').show();
-                $('#headlinePage h1').html('Headling the Line');
+                $('#headlinePage h1').html(' Between the Lines: <span id="summaryTitle" style="font-weight: 200;">News Summary</span>');
                 erasing = false;
                 formshowning = true;
                 resizeContent();
@@ -236,7 +239,6 @@ $.each($('#errorTable tr'), function(idx, row) {
             var loc = window.location.host;
             var gamma=0, beta=0;
             page = document.getElementById('headlinePage');
-            console.log(page);
             function onOrientation(event) {
                     //rotate = 'rotate(' + event.gamma + 'deg)';
                     //scale = 'scale(' + ((event.beta/180)*2 + 1) + ')';
@@ -252,7 +254,7 @@ $.each($('#errorTable tr'), function(idx, row) {
                     }
                     
                     if( gamma < -10.0 && !erasing && !formshowning || gamma > 10.0 && !erasing && !formshowning ){
-                        setTimeout(resetForm, 600);
+                        setTimeout(resetForm, 2000);
                         erasing = true;
                     } 
                     if(beta < 0.7 && !rolling){

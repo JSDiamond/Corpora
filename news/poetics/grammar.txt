@@ -1,83 +1,6 @@
 # clauses
 #S -> N VP NP 
 #S -> NP VP
-
-
-
-####Entities
-#0 -> Pers Vbg 
-#1 -> Loc Md Vb Det N
-#2 -> N Prepo Det Adj Pers Is Rb Adj
-#3 -> Org Vintr Det N Comma Vbg Adj NNS
-#4 -> CC Comma Wp Vtrans Det Org
-
-####NO Entities
-#0 -> N Vbg 
-#1 -> NNS Md Vb Det N
-#2 -> N Prepo Det Adj N Is Rb Adj
-#3 -> Det N Vintr Det N Comma Vbg Adj NNS
-#4 -> CC Comma Wp Vtrans Det N
-
-####ProEntities
-0 -> Pers Vintr Comma Pers Vintr Comma Pers Vintr  
-1 -> JJ NNS Md Vb Prepo N
-2 -> Org Vintr Det N Comma Vbg Prepo Det Adj NNS
-3 -> Pers Vtrans JJ N Comma CC N Vintr Adj NNS
-4 -> Det N Prepo Det Adj N Is Rb Adj Prepo NNS
-5 -> Loc Md Vb Prepo Det N 
-6 -> Pers Vintr Det N Comma Vbg To Adj NNS
-7 -> N Is Det JJ N CC Pers Vintr Adj NNS
-8 -> CC Det Org Prepo Det Adj N Is Rb Adj Prepo Vbg
-9 -> Pers Vintr Comma Pers Vintr Comma Pers Vintr
-END -> CC Comma Wp Md Vb Loc
-
-#5 -> JJ NNS Md Vb Prepo Det N 
-
-####ProNouns
-#0 -> Wp Vtrans Det N  
-#1 -> JJ NNS Md Vb Prepo N
-#2 -> PRO Vintr Det N Comma Vbg Det Adj NNS
-#3 -> PRO Vtrans JJ N CC N Vintr Adj NNS
-#4 -> CC Det N Prepo Det Adj N Is Rb Adj Prepo Vbg
-#5 -> JJ NNS Md Vb Prepo Det N 
-#6 -> PRO Vintr Det N Comma Vbg Det Adj NNS
-#7 -> N Is Det JJ N CC PRO Vintr Adj NNS
-#8 -> CC Det N Prepo Det Adj N Is Rb Adj Prepo Vbg
-#9 -> JJ NNS Md Vb Prepo Det N
-#END -> CC Comma Wp Vtrans Det N
-
-
-#Vb Comma Vb Comma Vb
-#1 -> Rb Vtrans N
-
-
-####ACTION!!!!!!!!!
-#0 -> PRO Vtrans Vbg 
-#1 -> Wp JJ NNS Md Vb Vb Prepo N
-#2 -> PRO Vintr
-#3 -> PRO Vintr
-#4 -> PRO Vintr
-#5 -> CC Comma NNS Vintr Adj
-#5 -> CC Comma PRO Vtrans Det N 
-#6 -> PRO Vtrans Vbg 
-#7 -> PRO Vintr
-#8 -> PRO Vintr
-#9 -> JJ NNS Md Vb Vb Prepo Det N
-#10 -> NNS Vintr Adj
-#11 -> JJ NNS Md Vb Vb Prepo N
-#END -> CC Comma Wp Vtrans Det N
-
-
-#0 -> Adj N Md Vb Prepo Adj
-#1 -> Det N Vintr Det N CC Vintr Adj NNS
-#2 -> Rb NNS Vbd Det Adj N Prepo Det Adj N 
-#3 -> Wp Vtrans Det N Comma Vtrans Adj Prepo NNS
-#4 -> CC Comma Wp Vtrans Det N
-
-
-#S -> VP Comma Rb Md Vb Det N
-
-
 NP -> Det N 
 NP -> N Vbg NNS
 NP -> Adj N
@@ -90,6 +13,97 @@ COND -> CC
 COND -> Interj 
 Title -> Vbg Det N
 
+
+####Entities
+#0 -> Pers Vbg 
+#1 -> Loc Md Vb Det N
+#2 -> N Prepo Det Adj Pers Is Rb Adj
+#3 -> Org Vintr Det N Comma Vbg Adj NNS
+#4 -> CC Comma Wp Vtrans Det Org
+
+####NO Entities
+#0 -> N Vbg 
+1 -> NNS Md Vb Det N
+2 -> N Prepo Det Adj N Is Rb Adj
+3 -> Det N Vintr Det N Comma Vbg Adj NNS
+#4 -> CC Comma Wp Vtrans Det N
+
+####ProEntities
+#0 -> Pers Vbg Comma Pers Vbg Comma Pers Vbg  
+#1 -> Adj NNS Md Vb Prepo N
+#3 -> Org Vintr Det N Prepo Vbg NNS
+#3 -> Pers Vtrans Adj N Comma CC N Vintr Adj NNS
+#4 -> Det N Prepo Det Adj N Is Rb Adj Prepo NNS
+#5 -> Loc Md Vb Prepo Det N 
+#6 -> Pers Vintr Det N Comma Vbg To Adj NNS
+#7 -> N Is Det Adj N CC Pers Vintr Adj NNS
+#8 -> CC Det Org Prepo Det Adj N Is Rb Adj Prepo Vbg
+#9 -> Pers Vintr Comma Pers Vintr Comma Pers Vintr
+#END -> CC Comma Wp Md Vb Loc
+
+#5 -> Adj NNS Md Vb Prepo Det N 
+
+####ProNouns
+0 -> PRO Vtrans Det N  
+3 -> Adj NNS Md Vb Prepo N
+2 -> Det Adj N Is Rb Adj
+2 -> PRO Vintr Det N Comma Vbg Det Adj NNS
+1 -> PRO Vtrans Adj N CC N Vintr Adj NNS
+4 -> CC N Prepo Det Adj N Is Rb Adj Prepo Vbg
+5 -> Adj NNS Md Vb Prepo Det N 
+6 -> PRO Vintr Det N Comma Vbg Det Adj NNS
+7 -> N Is Det Adj N CC PRO Vintr Adj NNS
+
+8 -> CC Det N Prepo Det Adj N Is Rb Adj Prepo Vbg
+0 -> Adj NNS Md Vb Prepo Det N
+#END -> CC Comma Wp Vtrans Det N
+
+
+
+####ProEntities
+START -> Pers Md Vb Det N
+0 -> Wp Md Vb Vbg NNS  
+1 -> Org Is Rb Adj Vtrans Prepo N
+2 -> Vbg Det Adj Prepo NNS 
+3 -> CC N Vintr Adj NNS
+4 -> Prepo NNS In NNS
+#5 -> Vbg N Vtrans Rbr
+6 -> Vintr Adj NNS Vb
+7 -> Vintr Adj NNS Vb
+8 -> Adj Prepo Vbg
+9 -> Comma CC Pers Vtrans Vintr
+END -> CC Comma Pers Md Vb Prepo Loc
+
+
+#Vb Comma Vb Comma Vb
+#1 -> Rb Vtrans N
+
+
+####ACTION!!!!!!!!!
+#0 -> PRO Vtrans Vbg 
+#1 -> Wp Adj NNS Md Vb Vb To N
+#2 -> PRO Vintr
+#3 -> PRO Vintr
+#4 -> PRO Vintr
+#5 -> CC Comma NNS Vintr Adj
+#5 -> CC Comma PRO Vtrans Det N 
+#6 -> PRO Vtrans Vbg 
+#7 -> PRO Vintr
+#8 -> PRO Vintr
+#9 -> Adj NNS Md Vb Vb Prepo Det N
+#10 -> NNS Vintr Adj
+#11 -> Adj NNS Md Vb Vb Prepo N
+#END -> CC Comma Wp Vtrans Det N
+
+
+0 -> Det N Md Vb Vb Org To Vintr 
+1 -> Det N Vintr Det N CC Vintr Adj NNS
+2 -> NNS Rb Vbd Det Adj N Prepo Det Adj N 
+#3 -> Wp Vtrans Det N Comma Vtrans Adj Prepo NNS
+#4 -> CC Comma Wp Vtrans Det N
+
+
+#S -> VP Comma Rb Md Vb Det N
 #Rb Vbg
 
 # terminals

@@ -210,11 +210,17 @@ def headline(request):
                     gather_data[key] = form.cleaned_data[key]
                         
             for key in gather_data:
-                thisStory = Article.objects.filter(headline=gather_data[key])[0]
-                stories.append(thisStory.raw_text)
-                
-            poemobject = headling(stories)
-            
+                thisStory = Article.objects.filter(headline=gather_data[key])[1]
+                text = thisStory.raw_text
+                if text:
+                    stories.append(thisStory.raw_text)
+                else:
+                    stories.append(Null)
+            try: 
+                poemobject = headling(stories)
+            except: 
+                excuses = ["You don't wanna know.", "A little birdy told me.", "Google it."]
+                poemobject = { 'poem': [random.choice(excuses)], 'raw_text': "A little birdy told me", 'lastword': "No news is good news?" }
             return HttpResponse( json.dumps(poemobject), mimetype="application/json" )
         else:
             form = str(HeadlineForm(request.POST))
@@ -230,7 +236,6 @@ def getSlugs(request):
     for story in all_storygroups:
         thisLine = Article.objects.filter(group = story.id)[0]
         slugs.append(thisLine.headline)
-        
     return HttpResponse(json.dumps(slugs), mimetype="application/json")
     
     

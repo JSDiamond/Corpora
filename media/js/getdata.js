@@ -435,11 +435,7 @@ var initChart = function(article_data, column){
             //clearTimeout(timer2);
             //wordrectMouseTrack();
         });
-
-    }
-    
-    if(column == totalstories-1){
-        setTimeout(writeFactsToScreen, 20);
+        setTimeout(writeFactsToScreen, 40);
     }
     
 }
@@ -810,7 +806,11 @@ var writeFactsToScreen = function(){
     filesArray[0].forEach(function(d, i) {
         filetrans = mainArtSVG.select("#articlefile"+i);
         artid = mainArtSVG.select("#articlefile"+i);
-        bottom = filetrans[0][0].childNodes[filetrans[0][0].childElementCount-2].y.baseVal.value;
+        try{
+            bottom = filetrans[0][0].childNodes[filetrans[0][0].childElementCount-2].y.baseVal.value;
+        } catch(err) {
+            bottom = 20;
+        }
         bottoms.push(Math.ceil(bottom));
         bottoms_sort.push(Math.ceil(bottom));
         

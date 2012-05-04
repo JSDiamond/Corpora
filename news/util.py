@@ -123,6 +123,7 @@ def get_article(link):
     request = baseurl+link
     response = urllib.urlopen(request)
     results = json.loads( response.read() )
+    image = ""
     try: 
         results["text"]
         rawtext = results["text"].encode('ascii', 'ignore')
@@ -589,7 +590,7 @@ class ContextFree(object):
     if pos == "IS":
         word = "is"
     elif pos == "CC":
-        word = random.choice(['and', 'but', 'although', 'though', 'and', 'however', 'maybe'])
+        word = random.choice(['and', 'but', 'although', 'though', 'and', 'however', 'so'])
     else:
         try:
             for tup in self.ART_DICT[prev]:
@@ -650,23 +651,28 @@ def headling(storyTextList):
     storylines = list()
     ARTDICT = {}
     link = ""
-    lineSetting = 10
+    lineSetting = 6
     materials = list()
     MarkDiction = MarkovDictionary(n=1, max=1)
+    MarkGen = MarkovGenerator(n=1, max=5)
 
     for text in storyTextList:
         raw_text += text
+        breaks = nltk.sent_tokenize(raw_text)
+        for line in breaks:
+            MarkGen.feed(line)
         allText += text
-    allText = re.sub(r"[!\"?()\[\]\\\/:;]", "", str(allText))  
-#     allText = re.sub(r"\b[Mm]e\b", "", str(allText)) 
-#     allText = re.sub(r"\b[Tt]hem\b", "", str(allText))
-#     allText = re.sub(r"\bI\b", "", str(allText)) 
-#     allText = re.sub(r"\b[Uu]\bs", "", str(allText))
-#     allText = re.sub(r"\b[Bb]een\b", "", str(allText))
-#     allText = re.sub(r"\b[Hh]im\b", "", str(allText))
-#     allText = re.sub(r"\b[Hh]er\b", "", str(allText))
-#     allText = re.sub(r"\b[Aa]n\b", "a", str(allText))
-#     allText = re.sub(r"\b[Yy]ou\b", "", str(allText))
+    allText = re.sub(r"[!\"?()\[\]\\\/:;]", "", str(allText)) 
+    allText = re.sub(r"\b[Cc]a\b", "", str(allText)) 
+    allText = re.sub(r"\b[Mm]e\b", "", str(allText)) 
+    allText = re.sub(r"\b[Tt]hem\b", "", str(allText))
+    allText = re.sub(r"\bI\b", "", str(allText)) 
+    allText = re.sub(r"\b[Uu]\bs", "", str(allText))
+    allText = re.sub(r"\b[Bb]een\b", "", str(allText))
+    allText = re.sub(r"\b[Hh]im\b", "", str(allText))
+    allText = re.sub(r"\b[Hh]er\b", "", str(allText))
+    allText = re.sub(r"\b[Aa]n\b", "a", str(allText))
+    allText = re.sub(r"\b[Yy]ou\b", "", str(allText))
     allText = nltk.sent_tokenize(str(allText))
     ARTDICT = MarkDiction.feed(allText)
             
@@ -679,6 +685,14 @@ def headling(storyTextList):
     title[2] = str(title[2][0].upper()) + str(title[2][1:])
     title = ' '.join(title)
     
+    expansion = cfree.get_expansion( 'START', ARTDICT, '')
+    sentence =  ' '.join(expansion)
+    sentence =  sentence.lower()
+    up = str(sentence[0].upper())
+    sentence = up + str(sentence[1:]) + "."
+    storylines.append(sentence)
+
+    
     for idx in range(lineSetting):                
         
         #beginning = MarkGen.generate( "NN" )
@@ -686,15 +700,16 @@ def headling(storyTextList):
         breakdown = idx % lineSetting
         expansion = cfree.get_expansion( str(breakdown), ARTDICT, '') #'the' lastword[:-1]
         #sentence = beginning +" "+ ' '.join(expansion)
+        #sentence = re.sub(r"[!\"?()\[\]:;]", "", str(sentence))
         sentence =  ' '.join(expansion)
-        if opening != "":
-            sentence = opening+" "+sentence+"."
-            opening = ""
-        else: 
-            sentence = re.sub(r"[!\"?()\[\]:;]", "", str(sentence))
-            sentence = sentence.lower()
-            up = str(sentence[0].upper())
-            sentence = up + str(sentence[1:])
+#         if opening != "":
+#             sentence = opening+" "+sentence+"."
+#             opening = ""
+#         else: 
+#             sentence = re.sub(r"[!\"?()\[\]:;]", "", str(sentence))
+#             sentence = sentence.lower()
+#             up = str(sentence[0].upper())
+#             sentence = up + str(sentence[1:])
         if "they" in sentence or "They" in sentence:
             sentence = re.sub(r"\b[Ww]as", "were", str(sentence))
             sentence = re.sub(r"\b[Hh]as", "have", str(sentence))
