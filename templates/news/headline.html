@@ -170,6 +170,7 @@
                     data: post_data,
                     beforeSend:
                         function(){
+                            formshowning = false;
                             $('#collapseForm').hide();
                             $('#gatherForm').css({'width': '900px'});
                             $('#gatherForm').append('<div id="waiting"><p style="text-align: left; padding-bottom: 30px; margin-bottom: 12px; background: #eee url(/media/images/loading.gif) no-repeat center 2px;" id="loading"></p></div>');                        
@@ -224,6 +225,7 @@ $.each($('#errorTable tr'), function(idx, row) {
             
             var resetForm = function(){
                 console.log('erase and show form');
+                $('#waiting').remove();
                 $('#poemHome').remove();
                 $('.form_headlinez').each(function(idx){
                     $(this).attr('value', '');

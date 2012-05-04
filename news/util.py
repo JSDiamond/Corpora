@@ -591,6 +591,12 @@ class ContextFree(object):
         word = "is"
     elif pos == "CC":
         word = random.choice(['and', 'but', 'although', 'though', 'and', 'however', 'so'])
+    elif pos == "CONFUSED":
+        word = random.choice(['I think', 'chances are', 'seems like', 'henceforth', 'allegedly', 'supposedly', 'apparently', 'apparently', 'so the story goes', 'okay so'])
+    elif pos == "PROB":
+        word = random.choice(['probably', 'likely', 'mabye', 'sorta', 'kinda'])
+    elif pos == "EndCap":
+        word = random.choice(['and that is that'])
     else:
         try:
             for tup in self.ART_DICT[prev]:
@@ -654,13 +660,13 @@ def headling(storyTextList):
     lineSetting = 6
     materials = list()
     MarkDiction = MarkovDictionary(n=1, max=1)
-    MarkGen = MarkovGenerator(n=1, max=5)
+    #MarkGen = MarkovGenerator(n=1, max=5)
 
     for text in storyTextList:
         raw_text += text
-        breaks = nltk.sent_tokenize(raw_text)
-        for line in breaks:
-            MarkGen.feed(line)
+        #breaks = nltk.sent_tokenize(raw_text)
+        #for line in breaks:
+            #MarkGen.feed(line)
         allText += text
     allText = re.sub(r"[!\"?()\[\]\\\/:;]", "", str(allText)) 
     allText = re.sub(r"\b[Cc]a\b", "", str(allText)) 
@@ -691,32 +697,42 @@ def headling(storyTextList):
     up = str(sentence[0].upper())
     sentence = up + str(sentence[1:]) + "."
     storylines.append(sentence)
+    
 
     
     for idx in range(lineSetting):                
-        
-        #beginning = MarkGen.generate( "NN" )
-        #lastword = beginning.split(" ")
-        breakdown = idx % lineSetting
-        expansion = cfree.get_expansion( str(breakdown), ARTDICT, '') #'the' lastword[:-1]
-        #sentence = beginning +" "+ ' '.join(expansion)
-        #sentence = re.sub(r"[!\"?()\[\]:;]", "", str(sentence))
-        sentence =  ' '.join(expansion)
-#         if opening != "":
-#             sentence = opening+" "+sentence+"."
-#             opening = ""
-#         else: 
-#             sentence = re.sub(r"[!\"?()\[\]:;]", "", str(sentence))
-#             sentence = sentence.lower()
-#             up = str(sentence[0].upper())
-#             sentence = up + str(sentence[1:])
-        if "they" in sentence or "They" in sentence:
-            sentence = re.sub(r"\b[Ww]as", "were", str(sentence))
-            sentence = re.sub(r"\b[Hh]as", "have", str(sentence))
-            sentence = re.sub(r"\b[Ii]s", "are", str(sentence))
-        up = str(sentence[0].upper())
-        sentence = up + str(sentence[1:]) + "."
-        storylines.append(sentence)
+        try:
+            #beginning = MarkGen.generate( "NN" )
+            #lastword = beginning.split(" ")
+            breakdown = idx % lineSetting
+            expansion = cfree.get_expansion( str(breakdown), ARTDICT, '') #'the' lastword[:-1]
+            #sentence = beginning +" "+ ' '.join(expansion)
+            #sentence = re.sub(r"[!\"?()\[\]:;]", "", str(sentence))
+            sentence =  ' '.join(expansion)
+    #         if opening != "":
+    #             sentence = opening+" "+sentence+"."
+    #             opening = ""
+    #         else: 
+    #             sentence = re.sub(r"[!\"?()\[\]:;]", "", str(sentence))
+    #             sentence = sentence.lower()
+    #             up = str(sentence[0].upper())
+    #             sentence = up + str(sentence[1:])
+            if "they" in sentence or "They" in sentence:
+                sentence = re.sub(r"\b[Ww]as", "were", str(sentence))
+                sentence = re.sub(r"\b[Hh]as", "have", str(sentence))
+                sentence = re.sub(r"\b[Ii]s", "are", str(sentence))
+            up = str(sentence[0].upper())
+            sentence = up + str(sentence[1:]) + "."
+            storylines.append(sentence)
+        except:
+            sents = nltk.sent_tokenize(storyTextList[0])
+            sentence = random.choice(sents)
+            print "sentttttttt"
+        print "------------------------------- sentence -------------------------------"
+        print sentence
+        print " "
+        print " "
+        print " "
     expansion = cfree.get_expansion( 'END', ARTDICT, '')
     sentence =  ' '.join(expansion)
     up = str(sentence[0].upper())

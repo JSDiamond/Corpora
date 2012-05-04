@@ -198,29 +198,39 @@ def poetronix(request, storygroup):
     
 
 def headline(request):
+    import random
     if request.method == 'POST': # If the form has been submitted...
         form = HeadlineForm(request.POST) # A form bound to the POST data
-        
         if form.is_valid(): # All validation rules pass
             gather_data = dict()
             stories = list()
-            
-            for key in form.cleaned_data:
-                if form.cleaned_data[key]:
-                    gather_data[key] = form.cleaned_data[key]
+            poemobject = dict()
+            excuses = ["You don't wanna know.", "A little birdy told me.", "Did you Google it?"]
+            try:
+                for key in form.cleaned_data:
+                    if form.cleaned_data[key]:
+                        gather_data[key] = form.cleaned_data[key]
                         
-            for key in gather_data:
-                thisStory = Article.objects.filter(headline=gather_data[key])[1]
-                text = thisStory.raw_text
-                if text:
-                    stories.append(thisStory.raw_text)
-                else:
-                    stories.append(Null)
-            try: 
+                for key in gather_data:
+                    thisStory = Article.objects.filter(headline=gather_data[key])[1]
+                    text = thisStory.raw_text
+                    print "------------------------------- text -------------------------------"
+                    print text
+                    print " "
+                    print " "
+                    print " "
+                    if text:
+                        stories.append(thisStory.raw_text)
+                    else:
+                        stories.append(Null)
+                 
                 poemobject = headling(stories)
             except: 
-                excuses = ["You don't wanna know.", "A little birdy told me.", "Google it."]
-                poemobject = { 'poem': [random.choice(excuses)], 'raw_text': "A little birdy told me", 'lastword': "No news is good news?" }
+                print "EXCEPTION!!!!!!!!!!!!!!!!!!!"
+                poemobject['poem'] = list()
+                poemobject['poem'].append(random.choice(excuses))
+                poemobject['lastword'] = "No news is good news?"
+                
             return HttpResponse( json.dumps(poemobject), mimetype="application/json" )
         else:
             form = str(HeadlineForm(request.POST))

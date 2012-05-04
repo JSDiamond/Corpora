@@ -46,33 +46,33 @@ Title -> Vbg Det N
 ####ProNouns
 0 -> PRO Vtrans Det N  
 3 -> Adj NNS Md Vb Prepo N
-2 -> Det Adj N Is Rb Adj
-2 -> PRO Vintr Det N Comma Vbg Det Adj NNS
-1 -> PRO Vtrans Adj N CC N Vintr Adj NNS
+2 -> Det Adj N Is Probably Rb Adj
+2 -> PRO Vintr Det N Comma Vbg Adj NNS
+1 -> PRO Vtrans Adj N CC N Probably Vintr Adj NNS
 4 -> CC N Prepo Det Adj N Is Rb Adj Prepo Vbg
 5 -> Adj NNS Md Vb Prepo Det N 
 6 -> PRO Vintr Det N Comma Vbg Det Adj NNS
-7 -> N Is Det Adj N CC PRO Vintr Adj NNS
+4 -> N Is Probably Det Adj N CC PRO Vintr Adj NNS
 
-8 -> CC Det N Prepo Det Adj N Is Rb Adj Prepo Vbg
+8 -> CC Det N Prepo Det Adj N Is Probably Rb Adj Prepo Vbg
 0 -> Adj NNS Md Vb Prepo Det N
 #END -> CC Comma Wp Vtrans Det N
 
 
 
 ####ProEntities
-START -> Pers Md Vb Det N
-0 -> Wp Md Vb Vbg NNS  
-1 -> Org Is Rb Adj Vtrans Prepo N
-2 -> Vbg Det Adj Prepo NNS 
-3 -> CC N Vintr Adj NNS
-4 -> Prepo NNS In NNS
+START -> Confused Pers Md Vb Det N Rb
+0 -> CC Pers Md Vb Vbg NNS  
+1 -> Org Is Probably Rb Adj Cap
+2 -> Vbg Adj Prepo Adj Comma Confused Adj NNS 
+3 -> Confused Det N Vintr Adj NNS
+4 -> Confused Prepo NNS In NNS
 #5 -> Vbg N Vtrans Rbr
 6 -> Vintr Adj NNS Vb
 7 -> Vintr Adj NNS Vb
 8 -> Adj Prepo Vbg
 9 -> Comma CC Pers Vtrans Vintr
-END -> CC Comma Pers Md Vb Prepo Loc
+END -> Confused Comma Pers Md Vb Prepo Loc
 
 
 #Vb Comma Vb Comma Vb
@@ -96,9 +96,9 @@ END -> CC Comma Pers Md Vb Prepo Loc
 #END -> CC Comma Wp Vtrans Det N
 
 
-0 -> Det N Md Vb Vb Org To Vintr 
-1 -> Det N Vintr Det N CC Vintr Adj NNS
-2 -> NNS Rb Vbd Det Adj N Prepo Det Adj N 
+0 -> Confused Det N Md Vb Vb Org To Vintr N
+1 -> Confused Det N Vintr Det N CC Vintr Adj NNS
+2 -> Confused NNS Rb Vbd Det Adj N Prepo Det Adj N 
 #3 -> Wp Vtrans Det N Comma Vtrans Adj Prepo NNS
 #4 -> CC Comma Wp Vtrans Det N
 
@@ -109,6 +109,9 @@ END -> CC Comma Pers Md Vb Prepo Loc
 # terminals
 Aesop_End -> AESOP_END
 AESOP_Mid -> AESOP_MID
+Confused -> CONFUSED
+Probably -> PROB
+Cap -> EndCap
 Interj -> IN
 Adj -> JJ
 Rb -> RB
