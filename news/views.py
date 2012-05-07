@@ -23,7 +23,8 @@ from forms import HeadlineForm
 def splash(request):
     return render_to_response('news/splash.html', {})
     
-
+def info(request):
+    return render_to_response('news/info.html', {})
 
 def liststories(request, page):
     grouped_news = list()
@@ -125,7 +126,7 @@ def poetronix(request, storygroup):
     storylines = list()
     ARTDICT = {}
     link = ""
-    lineSetting = 5
+    lineSetting = 4
     materials = list()
     MarkDiction = MarkovDictionary(n=1, max=1)
     #MarkGen = MarkovGenerator(n=1, max=4)
@@ -205,7 +206,7 @@ def headline(request):
             gather_data = dict()
             stories = list()
             poemobject = dict()
-            excuses = ["You don't wanna know.", "A little birdy told me.", "Did you Google it?"]
+            excuses = ["You don't wanna know.", "Ignorance is bliss.", "Why don't you just Google it?", "Honestly I forgot."]
             try:
                 for key in form.cleaned_data:
                     if form.cleaned_data[key]:
@@ -214,11 +215,6 @@ def headline(request):
                 for key in gather_data:
                     thisStory = Article.objects.filter(headline=gather_data[key])[1]
                     text = thisStory.raw_text
-                    print "------------------------------- text -------------------------------"
-                    print text
-                    print " "
-                    print " "
-                    print " "
                     if text:
                         stories.append(thisStory.raw_text)
                     else:

@@ -200,6 +200,15 @@ BLUE: #293C44
 RED: #443E2F
 YELLOW: #524E2E
 */
+.aboutLink {
+    float: right;
+    padding: 5px 11px 2px;
+    background-color: #222;
+}
+.aboutLink:hover {
+    color: #fff;
+    background-color: #111;
+}
 
 #footer {
     /* background: #242222 url(/media/images/88_wgray.gif) repeat 0 0; */
@@ -354,13 +363,17 @@ YELLOW: #524E2E
 }
 #toolbar .rightnav {
     float: right;
-    margin-right: 138px;
     border-left: #E0DDDD solid 1px;  
 }
 #toolbar #feedbutton {
     margin-right: 0px;
     border-left: #E0DDDD solid 1px;  
     border-right: none; 
+}
+#toolbar #infobutton {
+    margin-right: 138px;
+    border-left: none;  
+    border-right: #E0DDDD solid 1px 
 }
 
 
@@ -518,6 +531,43 @@ text.shadow {
 .underlist{
     overflow: visible;
 }
+#infoPage {
+    position: absolute;
+    width: 700px;
+    left: -350px;
+    margin-left: 50%;
+}
+#infoPage a {
+    color: #90705f;
+    font-weight: 200;
+}
+#infoPage a:hover {
+    color: #555;
+}
+.lineColumn {
+    margin-top: 14px;
+    padding: 24px 0px 20px;
+    border-top: 3px solid #333;
+    border-bottom: 3px solid #333;
+    display: inline-table;
+    width: 700px;
+}
+.lineColumn p {
+    padding-bottom: 12px;
+    padding-top: 12px;
+    font-size: 21px;
+    font-weight: 200;
+    border-top: #ddd solid 2px;
+    border-bottom: #fff solid 2px;
+}
+.ptagger {
+    font-weight: 200;
+    margin-right: 10px;
+    letter-spacing: 1px;
+    padding: 2px 8px 1px;
+    background-color: #fff;
+}
+
 
 
 /*////////////////////////////////////////////////////////////////// FORM PAGE */

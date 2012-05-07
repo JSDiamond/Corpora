@@ -40,13 +40,21 @@ $(document).ready(function(){
             $(this).css({ 'opacity': '1'});
     });
     
+    var loc = window.location.host;
     $('#gatherbutton').click(function(){
-        loc = window.location.host;
         window.location.href = 'http://'+loc+'/gather/';
     });
     $('#feedbutton').click(function(){
-        loc = window.location.host;
         window.location.href = 'http://'+loc+'/news/0';
+    });
+    $('#infobutton').click(function(){
+        window.location.href = 'http://'+loc+'/info';
     });
     
 });
+
+
+
+
+
+

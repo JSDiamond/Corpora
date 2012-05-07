@@ -529,7 +529,7 @@ var compareCorpora = function(article_data, column){
  
  
 //////////////////////////////////////////////////////////////////////////////////////////////FUNCTION: build data structures & svg for nodes
-var nodes = {}, pathlink, force, arclocs = [{}], prevRadius = 0;   
+var nodes = {}, pathlink, force, arclocs = [{}], prevRadius = 0, mainoff = 0;   
 var buildImportantNetwork = function(linkz) {
 
     //$('#netowrkSVG').stop().animate({ 'height': levelHeight}, 400, 'easeOutQuart', function() { });

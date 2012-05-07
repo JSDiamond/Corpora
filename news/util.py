@@ -592,11 +592,11 @@ class ContextFree(object):
     elif pos == "CC":
         word = random.choice(['and', 'but', 'although', 'though', 'and', 'however', 'so'])
     elif pos == "CONFUSED":
-        word = random.choice(['I think', 'chances are', 'seems like', 'henceforth', 'allegedly', 'supposedly', 'apparently', 'apparently', 'so the story goes', 'okay so'])
+        word = random.choice(['I think', 'chances are', 'seems like', 'henceforth', 'allegedly', 'supposedly', 'apparently', 'apparently', 'so the story goes', 'okay so', 'my guess is'])
     elif pos == "PROB":
-        word = random.choice(['probably', 'likely', 'mabye', 'sorta', 'kinda'])
+        word = random.choice(['probably', 'likely', 'mabye', 'sorta', 'kinda', 'no doubt', 'most likely', 'totally', 'might'])
     elif pos == "EndCap":
-        word = random.choice(['and that is that'])
+        word = random.choice(['and thats that', 'but thats the way it goes', 'am i right?', 'so dont worry', 'and thats cool', 'and dont forget it', 'you know what i mean', 'and the rest isnt important', 'so bring an umbrella'])
     else:
         try:
             for tup in self.ART_DICT[prev]:
@@ -673,7 +673,7 @@ def headling(storyTextList):
     allText = re.sub(r"\b[Mm]e\b", "", str(allText)) 
     allText = re.sub(r"\b[Tt]hem\b", "", str(allText))
     allText = re.sub(r"\bI\b", "", str(allText)) 
-    allText = re.sub(r"\b[Uu]\bs", "", str(allText))
+    allText = re.sub(r"\b[Uu]s\b", "", str(allText))
     allText = re.sub(r"\b[Bb]een\b", "", str(allText))
     allText = re.sub(r"\b[Hh]im\b", "", str(allText))
     allText = re.sub(r"\b[Hh]er\b", "", str(allText))
@@ -727,6 +727,9 @@ def headling(storyTextList):
         except:
             sents = nltk.sent_tokenize(storyTextList[0])
             sentence = random.choice(sents)
+            sentence = re.sub(r"\b[Cc]a\b", "can", str(sentence))
+            sentence = re.sub(r"\b[Ww]o\b", "", sentence)
+            sentence = re.sub(r"\b[\\]\b", "", sentence)
             print "sentttttttt"
         print "------------------------------- sentence -------------------------------"
         print sentence

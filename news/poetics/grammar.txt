@@ -24,8 +24,8 @@ Title -> Vbg Det N
 ####NO Entities
 #0 -> N Vbg 
 1 -> NNS Md Vb Det N
-2 -> N Prepo Det Adj N Is Rb Adj
-3 -> Det N Vintr Det N Comma Vbg Adj NNS
+2 -> Confused N Prepo Det Adj N Is Rb Adj
+3 -> Det N Vintr Det N Comma Probably Vbg Adj NNS
 #4 -> CC Comma Wp Vtrans Det N
 
 ####ProEntities
@@ -44,14 +44,14 @@ Title -> Vbg Det N
 #5 -> Adj NNS Md Vb Prepo Det N 
 
 ####ProNouns
-0 -> PRO Vtrans Det N  
+0 -> PRO Probably Vbg Det Adj NNS  
 3 -> Adj NNS Md Vb Prepo N
 2 -> Det Adj N Is Probably Rb Adj
-2 -> PRO Vintr Det N Comma Vbg Adj NNS
+2 -> Org Vintr Det N Comma probably Vbg Adj NNS
 1 -> PRO Vtrans Adj N CC N Probably Vintr Adj NNS
-4 -> CC N Prepo Det Adj N Is Rb Adj Prepo Vbg
-5 -> Adj NNS Md Vb Prepo Det N 
-6 -> PRO Vintr Det N Comma Vbg Det Adj NNS
+1 -> CC N Prepo Det Adj N Is Probably Rb Adj Prepo Vbg
+#5 -> Adj NNS Md Probably Vb Prepo Det N
+5 -> Pers Vintr Det N Comma Probably Vbg Det Adj NNS
 4 -> N Is Probably Det Adj N CC PRO Vintr Adj NNS
 
 8 -> CC Det N Prepo Det Adj N Is Probably Rb Adj Prepo Vbg
@@ -61,18 +61,18 @@ Title -> Vbg Det N
 
 
 ####ProEntities
-START -> Confused Pers Md Vb Det N Rb
-0 -> CC Pers Md Vb Vbg NNS  
-1 -> Org Is Probably Rb Adj Cap
+START -> Confused Pers Md Vb Det Adj N  
+0 -> CC Pers Md Probably Vb Vbg NNS  
+1 -> Org Is Probably Rb Adj Comma Cap
 2 -> Vbg Adj Prepo Adj Comma Confused Adj NNS 
-3 -> Confused Det N Vintr Adj NNS
-4 -> Confused Prepo NNS In NNS
+3 -> Confused Comma Det N Vintr Adj NNS
+4 -> CC Confused Prepo NNS In NNS
 #5 -> Vbg N Vtrans Rbr
 6 -> Vintr Adj NNS Vb
 7 -> Vintr Adj NNS Vb
 8 -> Adj Prepo Vbg
-9 -> Comma CC Pers Vtrans Vintr
-END -> Confused Comma Pers Md Vb Prepo Loc
+4 -> CC Confused Comma Pers Vtrans Vintr
+END -> Confused Comma Pers Md Vb Prepo Loc Comma Cap
 
 
 #Vb Comma Vb Comma Vb
@@ -96,11 +96,11 @@ END -> Confused Comma Pers Md Vb Prepo Loc
 #END -> CC Comma Wp Vtrans Det N
 
 
-0 -> Confused Det N Md Vb Vb Org To Vintr N
-1 -> Confused Det N Vintr Det N CC Vintr Adj NNS
-2 -> Confused NNS Rb Vbd Det Adj N Prepo Det Adj N 
+0 -> Confused Comma Det N Md Vb Vb Org To Vintr N
+1 -> Confused Comma Det N Vintr Det N CC Vintr Adj NNS
+2 -> Confused Comma NNS Rb Vbd Det Adj N Prepo Det Adj N 
 #3 -> Wp Vtrans Det N Comma Vtrans Adj Prepo NNS
-#4 -> CC Comma Wp Vtrans Det N
+#4 -> Confused Comma Wp Vtrans Det N To 
 
 
 #S -> VP Comma Rb Md Vb Det N

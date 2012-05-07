@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+
+{% block title %}{{ "i n f o" }}{% endblock %}
+
+
+{% block content %}
+    <div id="infoPage">
+        <h1 style="font-weight: 400; font-size: 42px; margin-bottom: 0px;"> 
+            Project Info:  
+        </h1>  
+        <div class="lineColumn">
+            <p style="border-top: none;"><span class="ptagger" style="color: #B97D5F;">WHO:</span>InArticle was lovingly developed by <a href="http://www.jeremyscottdiamond.com" target="_blank">Jeremy Scott Diamond</a> as his thesis project for the Interactive Telecommunications Program at Tisch, NYU, 2012.</p>
+            <p><span class="ptagger"style="color: #516482;">WHAT:</span>Using a collection of tools, APIs, and custom programing, InArticle can take the text from almost any webpage and parse the content for key items such as named entities (people, places, organizations), n-grams (common phrases), quotations, and sentiment. This data is then used to build a series of visualizations for easily digesting and comparing these elements.  <br/>Content can be provided by you, via the Gather Page, or automatically through the NewsFeed. The latter is a scrape of the GoogleNews RSS feed, taking the banner headlines and the top 3 - 6 related links to construct a stream of current event story analysis.</p> 
+            <p><span class="ptagger" style="color: #516482;">WHY:</span>The concept is derived from Stanford professor <a href="http://litlab.stanford.edu/" target="_blank">Franco Moretti's</a> method of 'distant reading'. He describes this kind of information extraction as <span style="font-style: none; color: #666;">"understanding literature not by studying particular texts, but by aggregating and analyzing massive amounts of data. By doing this, you are able to focus on units that are much smaller or much larger than the text itself, such as devices, themes, tropes—or genres and systems"</span>. I developed InArticle as a way to bring this focus to the vast amounts of information that we may come across on the web. News articles are the default usage, but this can be applied to blog posts, craigslist ads, or any other public page.</p>
+            <p style="border-bottom: none;"><span class="ptagger" style="color: #6CB2A8;">HOW:</span>Special thanks to: <a href="http://www.larimerbernheim.com/" target="_blank">Peter Bernheim</a>, <a href="http://blog.blprnt.com/" target="_blank">Jer Thorp</a>, <a href="http://www.decontextualize.com/" target="_blank">Adam Parrish</a>, <a href="http://www.stat.ucla.edu/~cocteau/" target="_blank">Mark Hanson</a>, <a href="http://www.5050ltd.com/who_we_are.php" target="_blank">Despina Papadopoulos</a>, <a href="http://www.dankantor.com/" target="_blank">Dan Kantor</a>, <a href="http://cwandt.com/" target="_blank">Che-Wei Wang</a>, as well as <a href="http://itp.nyu.edu/shows/thesis2012/" target="_blank">all of my fellow students</a>, the amazing teachers, and the dedicated faculty at <a href="http://itp.nyu.edu/itp/" target="_blank">ITP</a>.
+                <br/> Tech Specs: <a href="http://www.diffbot.com/" target="_blank">Diffbot</a>, <a href="http://www.python.org/" target="_blank">Python</a>, <a href="https://www.djangoproject.com/" target="_blank">Django</a>, <a href="http://www.nltk.org/" target="_blank">NLTK</a>, <a href="http://d3js.org/" target="_blank">D3.js</a>, <a href="http://jquery.com/" target="_blank">JQuery</a>, <a href="https://github.com/JSDiamond" target="_blank">GitHub</a>, <a href="https://news.google.com/" target="_blank">GoogleNews</a>.</p>
+        </div> 
+        
+    </div>
+    <script type="text/javascript">
+        $(document).ready(function(){ 
+        
+            var token = "";
+            var resizeContent = function(){
+                gP = $('#infoPage').outerHeight()
+                $('#content').css({'height': gP+80});
+            }
+            resizeContent();
+            
+        });
+    </script>
+{% endblock %}
+
+
+
