@@ -14,6 +14,7 @@
 {% block toolbar %}
         <div id="sentimentbutton" class="button">Sentiment</div>
         <div id="heatbutton" class="button">Frequency</div>
+        <div id="quotebutton" class="button">Quotes</div>
         <div id="namedbutton" class="button">Entities</div>
         <div id="familybutton" class="button">Grouping</div>
         <div id="importantnet" class="button">Terms</div>
@@ -30,7 +31,9 @@
     
 {% block content %}
         
-        <div id="SVGoverlay"></div>
+        <div id="SVGoverlay">
+            <div id="quoteSpace"><div id="quotePad"><p id="quoteTag"></p></div></div>
+        </div>
         
         {% if all_articles %}
         
@@ -40,6 +43,7 @@
                     {{ article.headline|safe }}
                     <span style="float: right; margin-top: 26px; font-size: 11px">{{ article.date }}</span>
                 </h1>
+                
                 </div>
             {% endwith %}
             

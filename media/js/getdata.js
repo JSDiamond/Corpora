@@ -24,7 +24,7 @@ $(document).ready(function(){
                 $(this).css({ 'border-bottom': '1px #333 solid'})
                 $(this).stop().animate({ 'height': (wordmap.w*0.65)+40+bumps[i] }, 400, 'easeOutQuart', function() { });
             });
-            $('#bottompad').stop().animate({ 'margin-top': (wordmap.w+80)+'px' }, 380, 'easeOutQuart', function() { });
+            $('#bottompad').stop().animate({ 'margin-top': (wordmap.w+80)+'px' }, 400, 'easeOutQuart', function() { });
             sentimentshowing =! sentimentshowing;
         } else if (sentimentshowing) {
             $('.uc').each(function(i){
@@ -57,6 +57,32 @@ $(document).ready(function(){
     
     $('#heatbutton').click(function(){
         changeWordRects(counter, "heat");           
+    }); 
+    
+    $('#quotebutton').click(function(){
+        if(!quoteshowing){
+            $('#quotesSVG').show();
+            $('#headpad').append("<h2 id='quotes' style='font-weight: 200; position: relative; top: 24px; color: #666666;'>QUOTES</h2>");
+            //$('#headpad').css({"margin-bottom": "-40px"});
+            $('#headpad').stop().animate({ "margin-bottom": "-40px" }, 100, 'easeOutQuart', function() { });
+            $('#quotesSVG').stop().animate({ 'height': 360}, 600, 'easeOutCubic', function() { 
+                if(!bankDone){
+                    bankQuotes();
+                    bankDone = true;
+                }
+                $('#quotesSVG').stop().animate({ 'padding': '26px' }, 200, 'swing', function() {}); 
+                quoteshowing = true;
+            }); 
+        } else if(quoteshowing){
+            $('#quotes').remove();
+            $('#headpad').stop().animate({ "margin-bottom": "40px" }, 500, 'linear', function() { }); 
+            $('#quotesSVG').stop().animate({ 'height': 0}, 600, 'swing', function() {
+                    $('#quotesSVG').stop().animate({ 'padding': '0px' }, 300, 'swing', function() {}); 
+                    $('#quotesSVG').hide(); 
+            });
+            quoteshowing = false;
+        }  
+               
     });  
     
     $('#namedbutton').click(function(){
@@ -79,7 +105,7 @@ $(document).ready(function(){
     });
     
 });
-var sentimentshowing = false, importantshowing = false, buildone = false, namedOnScreen = false, lH = 0;
+var sentimentshowing = false, importantshowing = false, buildone = false, namedOnScreen = false, lH = 0, quoteshowing = false, bankDone = false;
 
 var showButtons = function(){
         $('#familybutton').show();
@@ -98,7 +124,7 @@ var sortfunc = function(a,b) { return b - a; }
 var filesArray; //use this to store the svg objects for each article (set by selectAll class)
 var articlePubs = [], dataArray = []; //use this to store the data objects for each article
 var w = window.innerWidth-120, h = window.innerHeight-0, w2 = w*0.5, h2 = h*0.5;
-var articleStorageArray, totalstories, mainArtSVG, levelsSVG, netowrkSVG, langmap, articlefile, simInfo;
+var articleStorageArray, totalstories, mainArtSVG, levelsSVG, quotesSVG, langmap, articlefile, simInfo;
 var wordmap = { w: 0, h: 0, boxH: 6},  spacing  = 34, wordCount = 0;
 var dat = [1];
 var entitiesString = ['PERSON', 'ORGANIZATION', 'LOCATION', 'DATE', 'TIME', 'MONEY', 'PERCENT', 'FACILITY', 'GSP'];
@@ -114,6 +140,7 @@ var startEverything = function(data){
         //console.log(d);
         parseArticleData(d, initChart, i);
     });
+    makeStops();
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////FUNCTION: create main SVG
@@ -122,7 +149,7 @@ var setupSVG = function(){
     totalstories = level = articleStorageArray.length;
     wordmap.w = ~~(w / totalstories) - spacing; 
     
-    levelsSVG = d3.select("#SVGcontainer").append("svg:svg") //SVG that holds all individual charts
+    levelsSVG = d3.select("#SVGcontainer").append("svg:svg") //SVG that holds all named entities
         .attr("id", "levelsSVG")
         .attr("width", w+40)
         .attr("height", 0)
@@ -130,8 +157,8 @@ var setupSVG = function(){
       .append("g")
         .attr("transform", "translate(40,2)");
     
-    netowrkSVG = d3.select("#SVGcontainer").append("svg:svg") //SVG that holds all individual charts
-        .attr("id", "netowrkSVG")
+    quotesSVG = d3.select("#SVGcontainer").append("svg:svg") //SVG that holds quotes graph
+        .attr("id", "quotesSVG")
         .attr("width", w+40)
         .attr("height", 0)
         .attr("viewBox","0 0 0 0")
@@ -532,7 +559,6 @@ var compareCorpora = function(article_data, column){
 var nodes = {}, pathlink, force, arclocs = [{}], prevRadius = 0, mainoff = 0;   
 var buildImportantNetwork = function(linkz) {
 
-    //$('#netowrkSVG').stop().animate({ 'height': levelHeight}, 400, 'easeOutQuart', function() { });
     // Compute the distinct nodes from the links.
     linkz.forEach(function(link, i) {
         source = CleanNJoinText(link.source);
@@ -770,7 +796,9 @@ levelsSVG.append("line")
 
 
 //////////////////////////////////////////////////////////////////////////////////////////////FUNCTION: Put ink on paper
-var artcolor = d3.interpolate('#596128', '#612848' );
+//var artcolor = d3.interpolate('#FF0000', '#666655'); //#596128', '#612848'
+var artcolor = d3.scale.category10("#A36C90", "#A36C90", "#A36C90", "#A36C90", "#A36C90", "#A36C90", "#A36C90", "#A36C90", "#A36C90", "#A36C90");
+//#81457F #A170AE #704C97 #603893
 var publishers = [], bottoms = [], bottoms_sort = [], artid, lowest;
 var writeFactsToScreen = function(){
     ///////////////////////////////////////MAKE A GRADIENT///////////
@@ -1366,7 +1394,7 @@ var buildSupplemental = function(bottoms, bottoms_sort) {
         allTitles.push( $(this).html() );
     });
     
-    console.log(allTitles);
+    //console.log(allTitles);
     
     bottoms.forEach(function(d,i){
         ul.append('<li class="uc underColumn'+i+'" style="position: absolute; top: '+(-offHeight+d+50)+'px; left: '+((i*wordmap.w)+(i*spacing)+42)+'px;  width: '+wordmap.w+'px;"><p class="thisTitle">'+allTitles[i]+'</p><div id="sentDIV'+i+'" class="sentimental" style="overflow: hidden;"><p class="supp">Sentiment</p></div></li>');
@@ -1574,3 +1602,216 @@ var changeWordRects = function(count, conditional){
             counter = 0;
         }
 }
+
+
+
+
+
+
+//////////////////////////////////////////////////////////////////////////////////////////////FUNCTION: transition for all wordrects
+var quoteBank = [], quotesOBJ = {};
+var qX, qY;
+
+var bankQuotes =  function(){        
+    for(var i=0; i<totalstories; i++){
+        dataArray[i]["Quotes"].forEach(function(d, j) { 
+            words = d.split(" ");
+            words.forEach(function(dd, jj) { 
+                if(stopsObj[dd]){
+                } else {
+                    quoteBank.push(dd);
+                }
+            });
+        });
+    }
+    $('.pub_highlight').show();
+    $('.pub_highlight').css({'opacity': '0.6'});
+        
+    //BOTTOM LABLE
+    quotesSVG.append("text")
+            .attr("x", 0)
+            .attr("y", 0)
+            .attr("class", "label")
+            .attr("fill", "#AAA")
+            .attr("letter-spacing", "1px")
+            .attr("text-anchor", "center")
+            .attr("transform", function(){ return "translate(" + (w2-50) + "," + (336) + ")" })
+            .text("OVERALL FREQUENCY");
+    quotesSVG.append("line")
+            .attr("x1", 0)
+            .attr("y1", 320)
+            .attr("x2", w-38)
+            .attr("y2", 320)
+            .style("stroke", "#AAA")
+            .style("stroke-width", "1px");
+    //RIGHT LABLE
+    quotesSVG.append("line")
+            .attr("x1", w-38)
+            .attr("y1", 0)
+            .attr("x2", w-38)
+            .attr("y2", 320)
+            .style("stroke", "#AAA")
+            .style("stroke-width", "1px");
+    quotesSVG.append("text")
+            .attr("x", 0)
+            .attr("y", 0)
+            .attr("class", "label")
+            .attr("fill", "#AAA")
+            .attr("letter-spacing", "1px")
+            .attr("text-anchor", "center")
+            .attr("transform", function(){ return "translate(" + (w-28) + "," + (130) + ") rotate(90)" })
+            .text("QUOTE FREQUENCY");
+    
+    quoteMetrics();
+            
+/*
+    quotesSVG.append("line")
+            .attr("x1", 0)
+            .attr("y1", 26)
+            .attr("x2", )
+            .attr("y2", 26)
+            .style("stroke", "#AAA")
+            .style("stroke-width", "1px");
+    quotesSVG.append("text")
+            .attr("x", 0)
+            .attr("y", 20)
+            .attr("class", "label")
+            .attr("fill", "#AAA")
+            .style("font-size", "28px")
+            .style("font-weight", "200")
+            .attr("text-anchor", "center")
+            .text("QUOTES");
+*/
+}
+
+var makeStops = function(){
+    stops.forEach(function(d, i) {
+        stopsObj[d]="stopword"
+    });
+}
+var overallFREQ = [], quoteFREQ = [], oSort = [], qSort = [], allCircs = [];
+var quoteMetrics =  function(quoteCount){
+    for(var i=0; i<totalstories; i++){
+         dataArray[i]["Quotes"].forEach(function(d, j) {  
+            var quoteOverallTotal = 0;
+            var quoteQuoteTotal = 0;
+            var wordcount = 0;    
+            words = d.split(" ");
+            wordcount = words.length;
+            words.forEach(function(dd, jj) {
+                var freqOverall = 0;
+                var freqQuotes = 0;
+                
+                cleanword = CleanNJoinText(dd);
+                if(stopsObj[dd]){
+                    freqOverall = 0;
+                } else {
+                    cleanword = cleanword.replace(/[\]\[]/g, "");
+                    cleanword = cleanword.replace(/[.]/g, "");
+                    cleanword = cleanword.replace(/[?$!@:;]/g, "");
+                    cleanword = cleanword.replace(/[()]/g, "");
+                    if(cleanword.split("").length < 2){} else {
+                        freqOverall = $('.'+cleanword).length;
+                    }
+                }
+                
+                quoteBank.forEach(function(ddd, jjj) {
+                    if (ddd == dd) { 
+                        freqQuotes++;
+                    }
+                });
+                freqWORD = j;
+                quoteOverallTotal += freqOverall;
+                quoteQuoteTotal += freqQuotes;
+            });
+            overallCut = quoteOverallTotal / (wordcount*0.00001);
+            quoteCut = quoteQuoteTotal / (wordcount*0.00001);
+            //overallCut = quoteOverallTotal;
+            //quoteCut = quoteQuoteTotal;
+            if(overallCut<0){ overallCut = 0; }
+            if(quoteCut<0){ quoteCut = 0; }
+            overallFREQ.push(overallCut);
+            quoteFREQ.push(quoteCut);
+            oSort.push(overallCut);
+            qSort.push(quoteCut);
+            //console.log("quoteOverallTotal = "+quoteOverallTotal+" ——— "+"quoteQuoteTotal = "+quoteQuoteTotal);  
+            var circ = quotesSVG.append("circle")
+                .style("fill", "steelblue")
+                .attr("r", 8)
+                .attr("class", "quoteCirc")
+                .attr("quote", d)
+                .attr("article", i)
+                .style("opacity", "0.5")
+                .style("fill", function(){return artcolor(i)})
+                .style("cursor", "pointer")
+                .attr("transform", "translate("+(artfileLocs[i].x)+","+(320)+")")
+                .on("mouseout",function(){
+    				d3.select(this).transition()
+    					//.style("opacity", "0.5")
+    					.duration(100)
+    					.attr("r", 8)
+    					.ease("linear",1,1)
+    					.call(function(){ hideQuote(this); })
+				})
+                .on("mouseover",function(){
+					d3.select(this).transition()
+    					//.style("opacity", "1")
+    					.duration(100)
+    					.attr("r", 16)
+    					.ease("linear",1,1)
+    					.call(function(){ showQuote(this); })
+				});
+            allCircs.push(circ)
+        });
+    
+    }
+    oSort = oSort.sort(sortfunc);
+    qSort = qSort.sort(sortfunc);
+    console.log(oSort);
+    console.log(qSort);
+    qX = d3.scale.linear()
+        .domain([0, oSort[0]])
+        .range([0, (w-50)]);
+    qY = d3.scale.linear()
+        .domain([0, qSort[0]])
+        .range([0, 280]);
+    setTimeout(moveQuoteCircs, 340);
+}
+
+
+var moveQuoteCircs = function(){
+    allCircs.forEach(function(dc, ic) {
+        dc.transition()
+            .ease("cubic-out")
+            .duration(2000)
+            .attr("transform", "translate(" + (qX(overallFREQ[ic])) + "," + (300-(qY(quoteFREQ[ic]))) + ")");
+    });
+    console.log(overallFREQ);
+    console.log(quoteFREQ);
+}
+
+
+var showQuote = function(obj) {
+    quote = obj[0][0]['node']['attributes'][3].nodeValue;
+    quotetop = ($('#quotesSVG').offset().top)-100;
+    article = obj[0][0]['node']['attributes'][4].nodeValue;
+    console.log('article : '+article)
+    $('#quoteSpace').css({'top': quotetop+'px'});
+    $('#quoteSpace').css({'width': (w-200)+'px'});
+    $('#quoteSpace').show();
+    $('#article'+article+'_publight').css({ 'opacity': '1' });
+    console.log( $('#article'+article+'_publight'));
+    $('#quoteSpace').stop().animate({ 'opacity': '1' }, 220, 'easeOutQuart', function() { });
+    $('#quoteTag').html('"'+quote+'"');   
+}
+var hideQuote = function(obj) {
+    article = obj[0][0]['node']['attributes'][4].nodeValue;
+    $('#article'+article+'_publight').css({ 'opacity': '0.6' });
+    $('#quoteSpace').stop().animate({ 'opacity': '0' }, 220, 'easeOutQuart', function() { $('#quoteSpace').hide() });
+    $('#quoteTag').html('');   
+}
+
+
+var stops = ['Why', 'all', 'Who', 'just', 'being', 'over', 'both', 'Had', 'What', 'Same', 'Yours', 'Does', 'through', 'yourselves', 'Has', 'its', 'before', 'Be', 'We', 'His', 'with', 'had', ',', 'Here', 'should', 'Dont', 'to', 'only', 'under', 'Not', 'ours', 'has', 'By', 'Nor', 'do', 'them', 'his', 'They', 'very', 'Of', 'While', 'She', 'they', 'not', 'during', 'now', 'Where', 'him', 'nor', 'Once', 'Because', 'like', 'Just', 'Their', 'did', 'Over', 'Yourself', 'these', 'Both', 't', 'each', 'Further', 'He', 'where', 'Ourselves', 'Before', 'Again', 'because', 'says', 'For', 'doing', 'theirs', 'some', 'About', 'Been', 'Should', 'Whom', 'Only', 'are', 'Which', 'Between', 'our', 'ourselves', 'Were', 'out', 'Down', 'what', 'said', 'for', 'That', 'Very', 'below', 'Until', 'does', 'On', 'above', 'between', 'During', 'Than', '?', 'she', 'Me', 'be', 'we', 'after', 'And', 'This', 'Its', 'Up', 'here', 'S', 'Himself', 'Against', 'Each', 'hers', 'My', 'by', 'on', 'about', 'Ours', 'Being', 'of', 'against', 'Any', 'Doing', 's', 'Itself', 'Through', 'or', 'Then', 'own', 'Her', 'No', 'into', 'There', 'When', 'yourself', 'down', 'Few', 'Too', 'From', 'Was', 'your', '"', 'from', 'her', 'whom', 'Did', 'there', 'Says', 'been', '.', 'few', 'too', 'Such', 'themselves', ':', 'was', 'until', 'Those', 'more', 'himself', 'that', 'These', 'Having', 'but', 'Most', 'Hers', 'So', 'Off', 'off', 'herself', 'than', 'those', 'he', 'me', 'myself', 'Now', 'To', 'this', 'Herself', 'Into', 'up', 'Him', 'will', 'while', 'Other', 'can', 'were', 'Our', 'my', 'Your', 'Out', 'and', 'Above', 'then', 'Some', 'is', 'in', 'am', 'it', 'an', 'How', 'as', 'itself', 'Below', 'at', 'have', 'further', 'Under', 'Themselves', 'An', 'their', 'Or', 'if', 'again', 'Them', 'no', 'Said', 'After', 'when', 'same', 'any', 'how', 'other', 'which', 'Theirs', 'Yourselves', 'you', 'More', 'With', 'Are', 'A', 'Myself', "'t", "'s", 'Like', 'Do', 'I', 'who', 'Can', 'Will', 'most', 'such', 'The', 'But', 'why', 'a', 'All', 'Own', 'don', "'", 'i', 'Is', 'Am', 'It', 'T', 'having', 'As', 'so', 'At', 'Have', 'In', 'the', 'If', 'yours', 'You', 'once', 'also', 'Also'];
+var stopsObj = {};
+

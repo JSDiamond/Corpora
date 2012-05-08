@@ -262,6 +262,9 @@ YELLOW: #524E2E
     font-family: Titillium;
 }
 
+#quotesSVG {
+    margin-bottom: 26px;
+}
 
 #legendSection {
     padding: 6px 154px;
@@ -433,8 +436,8 @@ div.clicked {
     display: none;
 }
 #SVGoverlay {
-    position: relative;
-    
+    position: absolute;
+    padding: 120px;
 }
 .wordrect {
     cursor: pointer;
@@ -661,6 +664,28 @@ form input[type="submit"]:hover {
 .uc a:hover {
     color: #333;
 }
+
+#quoteSpace {
+    position: absolute;
+    background-color: rgba(255,255,255,0.5);
+    padding: 10px 16px 16px;
+    display: none;
+}
+#quoteTag {
+    font-family: 'Oswald';
+    color: #333;
+    font-size: 22px;
+    font-weight: 200;
+    margin: 12px 0px 2px;
+}
+/*
+#quotePad {
+    padding: 20px;
+}
+*/
+
+
+
 
 
 
