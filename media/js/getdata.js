@@ -60,6 +60,9 @@ $(document).ready(function(){
     }); 
     
     $('#quotebutton').click(function(){
+        if(namedOnScreen){
+            closeNamed();
+        }
         if(!quoteshowing){
             $('#quotesSVG').show();
             $('#headpad').append("<h2 id='quotes' style='font-weight: 200; position: relative; top: 24px; color: #666666;'>QUOTES</h2>");
@@ -74,18 +77,25 @@ $(document).ready(function(){
                 quoteshowing = true;
             }); 
         } else if(quoteshowing){
-            $('#quotes').remove();
-            $('#headpad').stop().animate({ "margin-bottom": "40px" }, 600, 'linear', function() { }); 
-            $('#quotesSVG').stop().animate({ 'height': 0}, 600, 'swing', function() {
-                    $('#quotesSVG').stop().animate({ 'padding': '0px' }, 300, 'swing', function() {}); 
-                    $('#quotesSVG').hide(); 
-            });
-            quoteshowing = false;
+            closeQuotes();
         }  
                
     });  
     
+    var closeQuotes = function(){
+        $('#quotes').remove();
+        $('#headpad').stop().animate({ "margin-bottom": "40px" }, 600, 'linear', function() { }); 
+        $('#quotesSVG').stop().animate({ 'height': 0}, 600, 'swing', function() {
+                $('#quotesSVG').stop().animate({ 'padding': '0px' }, 300, 'swing', function() {}); 
+                $('#quotesSVG').hide(); 
+        });
+        quoteshowing = false;
+    }
+    
     $('#namedbutton').click(function(){
+        if(quoteshowing){
+            closeQuotes();
+        } 
         if(!namedOnScreen){
             $('#levelsSVG').stop().animate({ 'height': lH}, 800, 'easeOutCubic', function() { 
                 setTimeout( showButtons, 200);
@@ -94,15 +104,20 @@ $(document).ready(function(){
                 namedLevels(level,(r/5)+(30-totalstories*2.4));  //70+(40-totalstories*6)-(totalstories)
                 level--;
             }
-            namedOnScreen =! namedOnScreen;
+            namedOnScreen = true;
+            setTimeout( showButtons, 400);
         } else if(namedOnScreen){
+            closeNamed();
+        }
+    });
+    
+    var closeNamed = function(){
             lH = $('#levelsSVG').height();
             $('#levelsSVG').stop().animate({ 'height': 0}, 800, 'easeOutCubic', function() { });
             $('#familybutton').hide();
             $('#importantnet').hide();
-            namedOnScreen =! namedOnScreen;
-        }
-    });
+            namedOnScreen = false;
+    }
     
 });
 var sentimentshowing = false, importantshowing = false, buildone = false, namedOnScreen = false, lH = 0, quoteshowing = false, bankDone = false;
@@ -1775,7 +1790,7 @@ var quoteMetrics =  function(quoteCount){
     qY = d3.scale.linear()
         .domain([0, qSort[0]])
         .range([0, 280]);
-    setTimeout(moveQuoteCircs, 340);
+    setTimeout(moveQuoteCircs, 800);
 }
 
 
@@ -1783,11 +1798,9 @@ var moveQuoteCircs = function(){
     allCircs.forEach(function(dc, ic) {
         dc.transition()
             .ease("cubic-out")
-            .duration(2000)
+            .duration(1800)
             .attr("transform", "translate(" + (qX(overallFREQ[ic])) + "," + (300-(qY(quoteFREQ[ic]))) + ")");
     });
-    console.log(overallFREQ);
-    console.log(quoteFREQ);
 }
 
 
