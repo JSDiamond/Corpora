@@ -75,7 +75,7 @@ $(document).ready(function(){
             }); 
         } else if(quoteshowing){
             $('#quotes').remove();
-            $('#headpad').stop().animate({ "margin-bottom": "40px" }, 500, 'linear', function() { }); 
+            $('#headpad').stop().animate({ "margin-bottom": "40px" }, 600, 'linear', function() { }); 
             $('#quotesSVG').stop().animate({ 'height': 0}, 600, 'swing', function() {
                     $('#quotesSVG').stop().animate({ 'padding': '0px' }, 300, 'swing', function() {}); 
                     $('#quotesSVG').hide(); 
