@@ -26,6 +26,8 @@ $(document).ready(function(){
             });
             $('#bottompad').stop().animate({ 'margin-top': (wordmap.w+80)+'px' }, 400, 'easeOutQuart', function() { });
             sentimentshowing =! sentimentshowing;
+             //$(window).scrollTop($('#underlist').offset().top);
+             $('html,body').stop().animate({scrollTop: ($('#underlist').offset().top-100)}, 1000, 'easeOutQuart', function() { });
         } else if (sentimentshowing) {
             $('.uc').each(function(i){
                 $(this).stop().animate({ 'height': bumps[i]+2 }, 400, 'easeOutQuart', function() { $(this).css({ 'border-bottom':'none'});});
@@ -48,6 +50,7 @@ $(document).ready(function(){
             }
             $('#levelsSVG').stop().animate({ 'height': levelHeight+70}, 440, 'easeOutQuart', function() { $('.impclass').show(); });
             importantshowing =! importantshowing;
+            $('html,body').stop().animate({scrollTop: ($('.impclass').offset().top-400)}, 1000, 'easeOutQuart', function() { });
         } else if(importantshowing) {
             $('.impclass').hide();
             $('#levelsSVG').stop().animate({ 'height': levelHeight-70}, 440, 'easeOutQuart', function() { });
@@ -56,7 +59,8 @@ $(document).ready(function(){
     });
     
     $('#heatbutton').click(function(){
-        changeWordRects(counter, "heat");           
+        changeWordRects(counter, "heat");   
+        $('html,body').stop().animate({scrollTop: ($('#mainArtSVG').offset().top-200)}, 1000, 'easeOutQuart', function() { });        
     }); 
     
     $('#quotebutton').click(function(){
@@ -65,7 +69,7 @@ $(document).ready(function(){
         }
         if(!quoteshowing){
             $('#quotesSVG').show();
-            $('#headpad').append("<h2 id='quotes' style='font-weight: 200; position: relative; top: 24px; color: #666666;'>QUOTES</h2>");
+            $('#headpad').append("<h2 id='quotes' style='font-weight: 200; position: relative; top: 24px; color: #888;'>QUOTES</h2>");
             //$('#headpad').css({"margin-bottom": "-40px"});
             $('#headpad').stop().animate({ "margin-bottom": "-40px" }, 100, 'easeOutQuart', function() { });
             $('#quotesSVG').stop().animate({ 'height': 360}, 600, 'easeOutCubic', function() { 
@@ -73,13 +77,15 @@ $(document).ready(function(){
                     bankQuotes();
                     bankDone = true;
                 }
-                $('#quotesSVG').stop().animate({ 'padding': '26px' }, 200, 'swing', function() {}); 
+                //$('#quotesSVG').stop().animate({ 'padding': '26px' }, 200, 'swing', function() {}); 
                 quoteshowing = true;
             }); 
+            $('.pub_highlight').show();
+            $('.pub_highlight').css({'opacity': '0.6'});
         } else if(quoteshowing){
             closeQuotes();
         }  
-               
+        $('html,body').stop().animate({scrollTop: 0}, 1000, 'easeOutQuart', function() { });     
     });  
     
     var closeQuotes = function(){
@@ -89,6 +95,7 @@ $(document).ready(function(){
                 $('#quotesSVG').stop().animate({ 'padding': '0px' }, 300, 'swing', function() {}); 
                 $('#quotesSVG').hide(); 
         });
+        $('.pub_highlight').css({'opacity': '0.0'});
         quoteshowing = false;
     }
     
@@ -109,6 +116,7 @@ $(document).ready(function(){
         } else if(namedOnScreen){
             closeNamed();
         }
+        $('html,body').stop().animate({scrollTop: 0}, 1000, 'easeOutQuart', function() { });
     });
     
     var closeNamed = function(){
@@ -1442,7 +1450,7 @@ var buildSupplemental = function(bottoms, bottoms_sort) {
             $(this).css({'height': String(bumps[i]+2)+'px'});
     });
     
-    $(window).scrollTop(0);
+    $('html,body').stop().animate({scrollTop: 0}, 1000, 'easeOutQuart', function() { });
     
     var heights = $('.longestColumn').outerHeight()
     $('#bottompad').css({ 'margin-top': heights+30+'px' });
@@ -1623,7 +1631,7 @@ var changeWordRects = function(count, conditional){
 
 
 
-//////////////////////////////////////////////////////////////////////////////////////////////FUNCTION: transition for all wordrects
+//////////////////////////////////////////////////////////////////////////////////////////////FUNCTION: quote metrics and svg
 var quoteBank = [], quotesOBJ = {};
 var qX, qY;
 
@@ -1639,8 +1647,6 @@ var bankQuotes =  function(){
             });
         });
     }
-    $('.pub_highlight').show();
-    $('.pub_highlight').css({'opacity': '0.6'});
         
     //BOTTOM LABLE
     quotesSVG.append("text")
@@ -1813,7 +1819,6 @@ var showQuote = function(obj) {
     $('#quoteSpace').css({'width': (w-200)+'px'});
     $('#quoteSpace').show();
     $('#article'+article+'_publight').css({ 'opacity': '1' });
-    console.log( $('#article'+article+'_publight'));
     $('#quoteSpace').stop().animate({ 'opacity': '1' }, 220, 'easeOutQuart', function() { });
     $('#quoteTag').html('"'+quote+'"');   
 }
