@@ -76,6 +76,8 @@ def get_google():
         if len(cutPub) > 0:
             cropmark = trimTitle.find(cutPub[len(cutPub)-1]);
             trimTitle = trimTitle[:cropmark]
+        if trimTitle == "video.msnbc.msn.com":
+            continue
         groupedData.append((trimTitle, paird))
         
         

@@ -27,7 +27,7 @@ $(document).ready(function(){
             $('#bottompad').stop().animate({ 'margin-top': (wordmap.w+80)+'px' }, 400, 'easeOutQuart', function() { });
             sentimentshowing =! sentimentshowing;
              //$(window).scrollTop($('#underlist').offset().top);
-             $('html,body').stop().animate({scrollTop: ($('#underlist').offset().top-100)}, 1000, 'easeOutQuart', function() { });
+             $('html,body').stop().animate({scrollTop: ($('#underlist').offset().top-400)}, 1000, 'easeOutQuart', function() { });
         } else if (sentimentshowing) {
             $('.uc').each(function(i){
                 $(this).stop().animate({ 'height': bumps[i]+2 }, 400, 'easeOutQuart', function() { $(this).css({ 'border-bottom':'none'});});
@@ -38,8 +38,13 @@ $(document).ready(function(){
     });
 
     $('#familybutton').click(function(){
-        showFam =! showFam;
         $(this).toggleClass('clicked');
+        if(!showFam){
+            $('.ringpath').stop().animate({ opacity: 0.1}, 200, 'linear', function() { });
+        } else if(showFam){
+            $('.ringpath').stop().animate({ opacity: 0.4}, 200, 'linear', function() { });
+        }
+        showFam =! showFam;
     });
     
     $('#importantnet').click(function(){
@@ -50,7 +55,7 @@ $(document).ready(function(){
             }
             $('#levelsSVG').stop().animate({ 'height': levelHeight+70}, 440, 'easeOutQuart', function() { $('.impclass').show(); });
             importantshowing =! importantshowing;
-            $('html,body').stop().animate({scrollTop: ($('.impclass').offset().top-400)}, 1000, 'easeOutQuart', function() { });
+            $('html,body').stop().animate({scrollTop: ($('.impclass').offset().top-500)}, 1000, 'easeOutQuart', function() { });
         } else if(importantshowing) {
             $('.impclass').hide();
             $('#levelsSVG').stop().animate({ 'height': levelHeight-70}, 440, 'easeOutQuart', function() { });
@@ -68,15 +73,19 @@ $(document).ready(function(){
             closeNamed();
         }
         if(!quoteshowing){
+            overallFREQ = [], quoteFREQ = [], oSort = [], qSort = [], allCircs = [];
+            quoteBank = [], quotesOBJ = {}; 
+            qX=0, qY=0;
+            $('.quoteCirc').remove()
             $('#quotesSVG').show();
             $('#headpad').append("<h2 id='quotes' style='font-weight: 200; position: relative; top: 24px; color: #888;'>QUOTES</h2>");
             //$('#headpad').css({"margin-bottom": "-40px"});
             $('#headpad').stop().animate({ "margin-bottom": "-40px" }, 100, 'easeOutQuart', function() { });
             $('#quotesSVG').stop().animate({ 'height': 360}, 600, 'easeOutCubic', function() { 
-                if(!bankDone){
+                //if(!bankDone){
                     bankQuotes();
-                    bankDone = true;
-                }
+                    //bankDone = true;
+                //}
                 //$('#quotesSVG').stop().animate({ 'padding': '26px' }, 200, 'swing', function() {}); 
                 quoteshowing = true;
             }); 
@@ -682,7 +691,7 @@ levelsSVG.append("text")
     pathlink = levelsSVG.append("g").selectAll("path")
         .data(force.links())
       .enter().append("path")
-        .attr("class", function(d) { return "link impclass" + d.type +" link_"+d.target.name +" link_"+d.source.name; })
+        .attr("class", function(d) { return "link impclass" + d.type +" link_"+CleanNJoinText(d.target.name) +" link_"+CleanNJoinText(d.source.name); })
         .attr('opacity', 0.375)
         .style('display', 'none');
         //.attr("marker-end", function(d) { return "url(#" + d.type + ")"; });
@@ -703,13 +712,15 @@ levelsSVG.append("text")
         //.call(force.drag)
         .on('mouseover',function(){
                                     //if($(this).hasClass('slink')){
-                                        $('.link_'+this.id).show();
+                                        term = CleanNJoinText(this.id);
+                                        $('.link_'+term).show();
                                         d3.selectAll('.'+this.id).transition().style('stroke', '#222').duration(70);
                                     //}
                 				})
         .on('mouseout',function(){
                                     //if(this.class == "slink"){
-                                        $('.link_'+this.id).hide();
+                                        term = CleanNJoinText(this.id);
+                                        $('.link_'+term).hide();
                                         d3.selectAll('.'+this.id).transition().style('stroke', 'none').duration(70);
                                     //}
                 				});
@@ -1337,7 +1348,7 @@ var arcMouseOut = function(obj){
 		.attr('opacity', 0.75)
 		.duration(200)
 		.ease("linear",1,1)
-		.call(function(){ showArticleFamily(this, 0.4, 0.8, 0, 360) })
+		.call(function(){ if(showFam){showArticleFamily(this, 0.1, 0.8, 0, 360)}else{showArticleFamily(this, 0.4, 0.8, 0, 360)} })
 		//.call(function(){ d3.select(this[0][0]['node']['childNodes'][0]).transition().attr('opacity', '0.3').duration(90) })
 		.call(function(){ d3.select(this[0][0]['node']['childNodes'][1]).transition().attr('fill', '#3c3c3c').style('font-size', '9px').duration(170) })
 	d3.selectAll('.'+currentWord).transition()
@@ -1634,7 +1645,7 @@ var changeWordRects = function(count, conditional){
 //////////////////////////////////////////////////////////////////////////////////////////////FUNCTION: quote metrics and svg
 var quoteBank = [], quotesOBJ = {};
 var qX, qY;
-
+var overallFREQ = [], quoteFREQ = [], oSort = [], qSort = [], allCircs = [];
 var bankQuotes =  function(){        
     for(var i=0; i<totalstories; i++){
         dataArray[i]["Quotes"].forEach(function(d, j) { 
@@ -1652,7 +1663,7 @@ var bankQuotes =  function(){
     quotesSVG.append("text")
             .attr("x", 0)
             .attr("y", 0)
-            .attr("class", "label")
+            .attr("class", "label quoteCirc")
             .attr("fill", "#AAA")
             .attr("letter-spacing", "1px")
             .attr("text-anchor", "center")
@@ -1663,6 +1674,7 @@ var bankQuotes =  function(){
             .attr("y1", 320)
             .attr("x2", w-38)
             .attr("y2", 320)
+            .attr("class", "quoteCirc")
             .style("stroke", "#AAA")
             .style("stroke-width", "1px");
     //RIGHT LABLE
@@ -1671,12 +1683,13 @@ var bankQuotes =  function(){
             .attr("y1", 0)
             .attr("x2", w-38)
             .attr("y2", 320)
+            .attr("class", "quoteCirc")
             .style("stroke", "#AAA")
             .style("stroke-width", "1px");
     quotesSVG.append("text")
             .attr("x", 0)
             .attr("y", 0)
-            .attr("class", "label")
+            .attr("class", "label quoteCirc")
             .attr("fill", "#AAA")
             .attr("letter-spacing", "1px")
             .attr("text-anchor", "center")
@@ -1710,7 +1723,7 @@ var makeStops = function(){
         stopsObj[d]="stopword"
     });
 }
-var overallFREQ = [], quoteFREQ = [], oSort = [], qSort = [], allCircs = [];
+
 var quoteMetrics =  function(quoteCount){
     for(var i=0; i<totalstories; i++){
          dataArray[i]["Quotes"].forEach(function(d, j) {  
@@ -1729,8 +1742,9 @@ var quoteMetrics =  function(quoteCount){
                 } else {
                     cleanword = cleanword.replace(/[\]\[]/g, "");
                     cleanword = cleanword.replace(/[.]/g, "");
-                    cleanword = cleanword.replace(/[?$!@:;]/g, "");
+                    cleanword = cleanword.replace(/[?$!@:;%]/g, "");
                     cleanword = cleanword.replace(/[()]/g, "");
+                    cleanword = CleanNJoinText(cleanword);
                     if(cleanword.split("").length < 2){} else {
                         freqOverall = $('.'+cleanword).length;
                     }
@@ -1796,7 +1810,7 @@ var quoteMetrics =  function(quoteCount){
     qY = d3.scale.linear()
         .domain([0, qSort[0]])
         .range([0, 280]);
-    setTimeout(moveQuoteCircs, 800);
+    setTimeout(moveQuoteCircs, 1000);
 }
 
 
