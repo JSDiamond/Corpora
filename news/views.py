@@ -34,7 +34,8 @@ def liststories(request, page):
     end = (page+2)*10
     total = len(StoryGroup.objects.all().order_by('-date'))
     total = total/10
-    latest_storygroups = StoryGroup.objects.all().order_by('-date')[start:end]
+    #latest_storygroups = StoryGroup.objects.all().order_by('-date')[start:end]
+    latest_storygroups = StoryGroup.objects.filter(entities = "GOOGLE").order_by('-date')[start:end]
     for idx, story in enumerate(latest_storygroups):
         grouped_news.append(Article.objects.filter(group = story)[:6])
         latest_news.append(grouped_news)

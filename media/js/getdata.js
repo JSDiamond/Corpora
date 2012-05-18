@@ -65,7 +65,7 @@ $(document).ready(function(){
     
     $('#heatbutton').click(function(){
         changeWordRects(counter, "heat");   
-        $('html,body').stop().animate({scrollTop: ($('#mainArtSVG').offset().top-200)}, 1000, 'easeOutQuart', function() { });        
+        $('html,body').stop().animate({scrollTop: ($('#mainArtSVG').offset().top-200)}, 1000, 'easeOutQuart', function() { });   
     }); 
     
     $('#quotebutton').click(function(){
@@ -137,7 +137,8 @@ $(document).ready(function(){
     }
     
 });
-var sentimentshowing = false, importantshowing = false, buildone = false, namedOnScreen = false, lH = 0, quoteshowing = false, bankDone = false;
+var sentimentshowing = false, importantshowing = false, buildone = false, namedOnScreen = false, lH = 0, 
+    quoteshowing = false, bankDone = false, heatshowing = false;
 
 var showButtons = function(){
         $('#familybutton').show();
@@ -1597,6 +1598,15 @@ var changeWordRects = function(count, conditional){
         dat.forEach(function(d, i) {
             artfile = mainArtSVG.select("#articlefile"+count);
             allwords = artfile.selectAll(".wordrect");
+            if (!heatshowing){
+            allwords.transition()
+                .style("fill", function() { 
+                                        color = d3.rgb("hsl("+100+","+(100)+","+(100)+")");
+                                        return color;
+                                    })
+                        .duration(400)
+    					.ease("linear",1,1);
+                
             dataArray[count]["Important"].forEach(function(d, ii){
                 try{
                     artfile.selectAll("."+d[0]).transition()
@@ -1604,7 +1614,7 @@ var changeWordRects = function(count, conditional){
                         .style("fill", function() { 
                                         fq = d[1]
                                         //console.log(d[0]+" : "+fq);
-                                        color = d3.rgb("hsl("+0+","+(20+fq*10)+","+(90-(fq*2))+")");
+                                        color = d3.rgb("hsl("+0+","+(20+fq*10)+","+(88-(fq*2))+")");
                                         return color; 
                                     })
                         .duration(600)
@@ -1620,7 +1630,7 @@ var changeWordRects = function(count, conditional){
                          //.style("fill", "#000")
                         .style("fill", function() { 
                                         fq = $("#"+this.id).attr('freq');
-                                        color = d3.rgb("hsl("+0+","+(20+fq*10)+","+(90-(fq*2))+")");
+                                        color = d3.rgb("hsl("+0+","+(20+fq*10)+","+(88-(fq*2))+")");
                                         return color; 
                                     })
                         .duration(600)
@@ -1628,12 +1638,22 @@ var changeWordRects = function(count, conditional){
                 }
                 catch(err){}
             });
+        } else {
+            allwords.transition()
+                .style("fill", function(d, i) { 
+                                        color = d3.rgb("hsl("+180+","+10+","+(82-d*0.7)+")");
+                                        return color;
+                                    })
+                        .duration(400)
+    					.ease("linear",1,1);
+        }
         });
         if(counter < totalstories-1){
             counter++;
             setTimeout(changeWordRects, 600, counter, conditional);
         } else {
             counter = 0;
+            heatshowing =! heatshowing;
         }
 }
 
@@ -1782,7 +1802,7 @@ var quoteMetrics =  function(quoteCount){
                 .attr("transform", "translate("+(artfileLocs[i].x)+","+(320)+")")
                 .on("mouseout",function(){
     				d3.select(this).transition()
-    					//.style("opacity", "0.5")
+    					.style("opacity", "0.5")
     					.duration(100)
     					.attr("r", 8)
     					.ease("linear",1,1)
@@ -1790,7 +1810,7 @@ var quoteMetrics =  function(quoteCount){
 				})
                 .on("mouseover",function(){
 					d3.select(this).transition()
-    					//.style("opacity", "1")
+    					.style("opacity", "0.25")
     					.duration(100)
     					.attr("r", 16)
     					.ease("linear",1,1)
