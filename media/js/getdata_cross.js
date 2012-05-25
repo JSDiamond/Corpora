@@ -1,5 +1,6 @@
 $(document).ready(function(){
-/*     $('#SVGcontainer').html('<p style="text-align: center; padding-bottom: 30px; background: #eee url(/media/images/loading.gif) no-repeat center 2px;" id="loading"></p>'); */
+
+
     $(window).scrollTop(0);
     var current_url = window.location.toString();
     story = window.location.pathname.substr(7);    
@@ -7,16 +8,12 @@ $(document).ready(function(){
     getTitle = "http://"+window.location.host+"/getTitle/"+story;
         
     $.get(geturl, function(data) {
-      console.log(data);
+      //console.log(data);
       articleStorageArray = data;
       setTimeout(startEverything, 100, articleStorageArray);
     });
     
-   /*
- $('#lengthbutton').click(function(){
-        changeWordRects(counter, "length");           
-    });
-*/  
+  
 
     $('#sentimentbutton').click(function(){
         if(!sentimentshowing){
@@ -163,14 +160,13 @@ var dat = [1];
 var entitiesString = ['PERSON', 'ORGANIZATION', 'LOCATION', 'DATE', 'TIME', 'MONEY', 'PERCENT', 'FACILITY', 'GSP'];
 /* var namedColors = {'PERSON': 'AC6A51', 'ORGANIZATION': '537EA3', 'LOCATION': '569677', 'DATE': 'D5D964', 'TIME': '773D99', 'MONEY': 'C8CB6D', 'PERCENT': 'A6984B', 'FACILITY': 'BF9D54', 'GSP': 'AABA56'}; */
 /* var namedColors = {'PERSON': '987162', 'ORGANIZATION': '666884', 'LOCATION': '59826E', 'DATE': 'D5D964', 'TIME': '773D99', 'MONEY': 'B0B177', 'PERCENT': 'A6984B', 'FACILITY': 'A08A64', 'GSP': 'AABA56'}; */
-var namedColors = {'PERSON': 'B9886F', 'ORGANIZATION': 'C7D284', 'LOCATION': '86B2AC', 'DATE': 'D5D964', 'TIME': '773D99', 'MONEY': '516482', 'PERCENT': 'A6984B', 'FACILITY': '516482', 'GSP': 'AABA56'};
+var namedColors = {'PERSON': '#B9886F', 'ORGANIZATION': '#C7D284', 'LOCATION': '#86B2AC', 'DATE': '#D5D964', 'TIME': '#773D99', 'MONEY': '#516482', 'PERCENT': '#A6984B', 'FACILITY': '#516482', 'GSP': '#AABA56'};
 
 
 //////////////////////////////////////////////////////////////////////////////////////////////FUNCTION: start her engines
 var startEverything = function(data){
     setupSVG();
     data.forEach(function(d, i) {
-        //console.log(d);
         parseArticleData(d, initChart, i);
     });
     makeStops();
@@ -186,7 +182,7 @@ var setupSVG = function(){
         .attr("id", "levelsSVG")
         .attr("width", w+40)
         .attr("height", 0)
-        .attr("viewBox","0 0 0 0")
+        //.attr("viewBox","0 0 0 0")
       .append("g")
         .attr("transform", "translate(40,2)");
     
@@ -194,7 +190,7 @@ var setupSVG = function(){
         .attr("id", "quotesSVG")
         .attr("width", w+40)
         .attr("height", 0)
-        .attr("viewBox","0 0 0 0")
+        //.attr("viewBox","0 0 0 0")
       .append("g")
         .attr("transform", "translate(40,2)");
 
@@ -202,8 +198,7 @@ var setupSVG = function(){
         .attr("id", "mainArtSVG")
         .attr("width", w+40)
         .attr("height", 0) //will need to be appended based on the data
-        .attr("viewBox","0 0 0 0")
-        .style("fill", 'rgba(255,255,255,0)')
+        //.attr("viewBox","0 0 0 0")
         .style("margin-top", '-20px')
       .append("g")
         .attr("width", w)
@@ -336,7 +331,6 @@ var parseArticleData = function (articleJSON, callback, column){
         "Important": important,
         "Imporatnt_Named": imporatnt_named,
     }
-    //console.log(articleData);
     dataArray.push(articleData);
     setTimeout(callback, 1000, articleData, column);///////////CALLBACK (initChart): wait 1s for load
      
@@ -479,7 +473,7 @@ var initChart = function(article_data, column){
     if(column == totalstories-1){
         $('#loading').remove();
         //////////////////////////////////////////////BIND FUNCTIONS: readingWindow make/remove and text scrolling with timers
-        $('.wordrect').bind('mouseover', function() {
+        $('.wordrect').bind('mouseover', function(event) {
             event.stopPropagation();
             clearTimeout(timer2);
             timer1 = setTimeout(makeWordBox, 300, this);
@@ -488,7 +482,7 @@ var initChart = function(article_data, column){
             moveTextflow(this);
             //if(mousedraging){moveTextflow(this);}
         });
-        $('.wordrect').bind('mouseout', function() {
+        $('.wordrect').bind('mouseout', function(event) {
             event.stopPropagation();
             timer2 = setTimeout(killReader, 1000);
             clearTimeout(timer1);
@@ -598,34 +592,14 @@ var buildImportantNetwork = function(linkz) {
         arcoff = $('#tx_'+source).offset();//'#tx_'+source
         txt = d3.select('#tx_'+source);
         arccenter = txt[0][0].attributes[5].nodeValue.split(",");
-       // console.log(arccenter)
         arccolor = $('#rp_'+source).attr('fill');
-                
-      /*
-  arc = levelsSVG.selectAll('#'+link.source); //////////////get the translates for the arc and it's text
-        //ntext = levelsSVG.selectAll('#'+link.source);
-            //console.log(link.source);
-        trans = arc[0][0].attributes[4]['nodeValue'];
-        //ntext = arc[0][0].childNodes[1].attributes[0]['nodeValue'];
-            //console.log(ntext);
-        transVal = trans.match(/translate\(([^}]+)\)rotate/);
-        transVal = transVal[1].split(','); 
-        //ntextVal = ntext.match(/translate\(([^}]+)\) rotate/);
-            //console.log(ntextVal);
-        //ntextVal = ntextVal[1].split(','); 
-        arclocs[i] = {x1: transVal[0], y1: transVal[1], x2: arccenter[0], y2: arccenter[1]};
-            //console.log(arclocs[i]);
-        //console.log( arclocs );
-*/
         
         mainoff = $('#mainArtSVG').offset();
         keyspace = 22-targetcount/10;
         keyleft = (  (((w-30)*0.5)-((targetcount*keyspace)*0.5))-20 );
         
-        //console.log(linkz[i].target);
         term = CleanNJoinText(linkz[i].target)
         radius = $('.'+term);
-        //console.log(radius.length);
         
         link.source = nodes[link.source] || (nodes[link.source] = {name: link.source, class: "slink", x: (arcoff.left-60), y: (arcoff.top-148), charge: 0, fixed: true, color: arccolor, stroke: '#fff', radius: 8}); //x: (arcoff.left-50), y: ((arcoff.top)-162)
         //link.source = nodes[link.source] || (nodes[link.source] = {name: link.source, class: "link", x: (arclocs[i].x1-arclocs[i].x2), y: (arclocs[i].y1+arclocs[i].y2), charge: 0, fixed: true});
@@ -865,7 +839,7 @@ var writeFactsToScreen = function(){
 
     
     $('.publinks').each(function(index){ publishers.push($(this).html())});
-    //console.log(publishers);
+
     filesArray[0].forEach(function(d, i) {
         filetrans = mainArtSVG.select("#articlefile"+i);
         artid = mainArtSVG.select("#articlefile"+i);
@@ -905,6 +879,7 @@ artid.append("rect")
             .attr("opacity", 0.0)
             .style("fill", function(){return artcolor(i)});//"url(#gradient)" #B8B5FF
         artid.append("text")
+            .attr("class", "pubNames")
             .attr("x", 0)
             .attr("y", -2)
             .attr("dy", "-12px")
@@ -1009,8 +984,6 @@ var makeWordBox = function(obj){
                 .style("fill", "#0000FF")
                 .attr("opacity", 0.0)
                 .style("font-size", "12px")
-        //textsvg_width = textsvg[0][0]['clientWidth'];
-        //sentenceArray.forEach(function(d,i){ if(d=="."||d=="!"||d=="?" ){console.log(textsvg_width);textsvg_width+=12;console.log(textsvg_width)} });
         
  
         $('#SVGoverlay')
@@ -1158,47 +1131,18 @@ var namedLevels = function(level, change){
         } else { //else make a partitioned arc for each entity
                 
                 
-                arcs = nblk.selectAll("g.arc")
-                    .data(donut)
-                  .enter().append("g")
-                    .attr("parents", function(d, i) { return allEntities[nodeWords[i]][1].toString(); })
-                    .attr('id', function(d, i) { return nodeWords[i]; })
-                    .attr("class", function(d, i) { fam = allEntities[nodeWords[i]][1].toString().replace(/[,]/g, " "); return "arc "+fam+" "+nodePOS[i]; })
-                    .style("stroke", "#fff")
-                    .style('cursor', 'pointer')
-                    .style("stroke-width", "2px")
-                    .attr("transform", "translate(" + (w2-10) + "," + ((-inner*30)-((r*inner)*0.2)) + ") rotate(282)")
-                    .attr('opacity', 0.8);
-                    /*
-.on("mouseout",function(){ arcMouseOut(this);})
-                    .on("mouseover",function(){ arcMouseOver(this);})
-                    .on("click",function(){
-                            if($('.'+currentWord).css('fill') == '#338888'){ 
-                                d3.select(this).on('mouseout', function(){ arcMouseOut(this);})
-                                d3.select(this).transition()
-                					.attr('opacity', 0.75)
-                					.duration(100)
-                					.ease("linear",1,1)
-                					.call(function(){ d3.select(this[0][0]['node']['childNodes'][0]).transition().attr('opacity', '0.3').style('stroke', '#fff').duration(80) });
-            					d3.selectAll('.'+currentWord).transition()
-                				    .style('fill', function(){ return currentColor })
-                				    .style("stroke", "none")
-                					.duration(150)
-                					.ease("linear",1,1);
-                            } else {
-                                d3.select(this).on('mouseout', null);
-                                d3.select(this).transition()
-                					.attr('opacity', 1)
-                					.duration(100)
-                					.ease("linear",1,1)
-                					.call(function(){ d3.select(this[0][0]['node']['childNodes'][0]).transition().style('stroke', '#222').duration(70) });
-            					d3.selectAll('.'+currentWord).transition()
-                				    .style('fill', function(){ currentColor = $('.'+currentWord).css('fill'); return '#338888' })
-                					.duration(150)
-                					.ease("linear",1,1);
-                            }
-        				});
-*/
+            arcs = nblk.selectAll("g.arc")
+                .data(donut)
+              .enter().append("g")
+                .attr("parents", function(d, i) { return allEntities[nodeWords[i]][1].toString(); })
+                .attr('id', function(d, i) { return nodeWords[i]; })
+                .attr("class", function(d, i) { fam = allEntities[nodeWords[i]][1].toString().replace(/[,]/g, " "); return "arc "+fam+" "+nodePOS[i]; })
+                .style("stroke", "#fff")
+                .style('cursor', 'pointer')
+                .style("stroke-width", "2px")
+                .attr("transform", "translate(" + (w2-10) + "," + ((-inner*30)-((r*inner)*0.2)) + ") rotate(282)")
+                .attr('opacity', 0.8);
+
             paths = arcs.append("path")
                 .attr("id", function(d, i) { if(nodeWords[i]=="NULL") { return "NULL" }else{ return 'rp_'+CleanNJoinText($('.'+nodeWords[i]).attr('word')); } })
                 .attr('class', 'ringpath')
@@ -1437,7 +1381,6 @@ var buildSupplemental = function(bottoms, bottoms_sort) {
         
         
         if(d == bottoms_sort[0]){ $('.underColumn'+i).addClass('longestColumn') }
-        //console.log(dataArray[i].Sentiment[0].neg);
         data = [dataArray[i].Sentiment[0].pos, dataArray[i].Sentiment[0].neg]
         sentimentBlock = d3.select('#sentDIV'+i).append("svg:svg") //SVG that holds all individual charts
                             .data([data])
@@ -1445,7 +1388,6 @@ var buildSupplemental = function(bottoms, bottoms_sort) {
                             .attr("id", "sentBlock")
                             .attr("width", wordmap.w)
                             .attr("height", wordmap.w*0.7) //will need to be appended based on the data
-                            .attr("viewBox","0 0 0 0")
                             .style("margin-top", '0px')
                           .append("g")
                             .attr("width", w)
@@ -1528,7 +1470,6 @@ var buildSentiment = function(SentAnalysis){
     sent_arcs.append("text")
         .attr("transform", function(d) { 
                                         var angle = (((d.endAngle*180) / 10 * Math.PI)+270);
-                                        //console.log(angle); 
                                         if(angle<90){ angle+=180; }
                                         return "translate(" + arc.centroid(d) + ") rotate("+ 260 +")"; 
                                     })
@@ -1613,7 +1554,6 @@ var changeWordRects = function(count, conditional){
                         //.style("fill", "#000")
                         .style("fill", function() { 
                                         fq = d[1]
-                                        //console.log(d[0]+" : "+fq);
                                         color = d3.rgb("hsl("+0+","+(20+fq*10)+","+(88-(fq*2))+")");
                                         return color; 
                                     })
@@ -1625,7 +1565,6 @@ var changeWordRects = function(count, conditional){
             dataArray[count]["NamedEnts"].forEach(function(d, ii){
                 try{
                     var word = CleanNJoinText(d[1]);
-                    //console.log(word);
                     artfile.selectAll("."+word).transition()
                          //.style("fill", "#000")
                         .style("fill", function() { 
@@ -1716,26 +1655,8 @@ var bankQuotes =  function(){
             .attr("transform", function(){ return "translate(" + (w-28) + "," + (130) + ") rotate(90)" })
             .text("QUOTE FREQUENCY");
     
-    quoteMetrics();
-            
-/*
-    quotesSVG.append("line")
-            .attr("x1", 0)
-            .attr("y1", 26)
-            .attr("x2", )
-            .attr("y2", 26)
-            .style("stroke", "#AAA")
-            .style("stroke-width", "1px");
-    quotesSVG.append("text")
-            .attr("x", 0)
-            .attr("y", 20)
-            .attr("class", "label")
-            .attr("fill", "#AAA")
-            .style("font-size", "28px")
-            .style("font-weight", "200")
-            .attr("text-anchor", "center")
-            .text("QUOTES");
-*/
+    quoteMetrics();      
+
 }
 
 var makeStops = function(){
@@ -1790,7 +1711,6 @@ var quoteMetrics =  function(quoteCount){
             quoteFREQ.push(quoteCut);
             oSort.push(overallCut);
             qSort.push(quoteCut);
-            //console.log("quoteOverallTotal = "+quoteOverallTotal+" ——— "+"quoteQuoteTotal = "+quoteQuoteTotal);  
             var circ = quotesSVG.append("circle")
                 .style("fill", "steelblue")
                 .attr("r", 8)
@@ -1823,8 +1743,7 @@ var quoteMetrics =  function(quoteCount){
     }
     oSort = oSort.sort(sortfunc);
     qSort = qSort.sort(sortfunc);
-    console.log(oSort);
-    console.log(qSort);
+
     qX = d3.scale.linear()
         .domain([0, oSort[0]])
         .range([0, (w-50)]);
@@ -1849,7 +1768,7 @@ var showQuote = function(obj) {
     quote = obj[0][0]['node']['attributes'][3].nodeValue;
     quotetop = ($('#quotesSVG').offset().top)-100;
     article = obj[0][0]['node']['attributes'][4].nodeValue;
-    console.log('article : '+article)
+    //console.log('article : '+article)
     $('#quoteSpace').css({'top': quotetop+'px'});
     $('#quoteSpace').css({'width': (w-200)+'px'});
     $('#quoteSpace').show();

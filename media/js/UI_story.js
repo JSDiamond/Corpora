@@ -1,10 +1,10 @@
 $(document).ready(function(){ 
     
-    $('#searchtxt').bind( 'click',  function () {
+    $('#searchtxt').bind( 'click',  function (event) {
             event.stopPropagation();
             $(this).stop().animate({ 'width': '120px' }, 260, 'swing', function() { });
     });
-    $('#searchtxt').bind( 'focus',  function () {
+    $('#searchtxt').bind( 'focus',  function (event) {
             event.stopPropagation();
             if( $('#searchtxt').attr('value') == "Search"){
                  $('#searchtxt').attr('value', '');
@@ -19,12 +19,6 @@ $(document).ready(function(){
 
     });
     
-    /*
-$('#searchbutton').bind( 'click',  function () {
-            event.stopPropagation();
-            searchFucntion();
-    });
-*/
     
     $('#searchbutton').bind( 'keypress',  function (e) {
         if ((e.keyCode || e.which) == 13) { //keycode 'Enter'

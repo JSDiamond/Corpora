@@ -47,6 +47,9 @@ $(document).ready(function(){
     $('#feedbutton').click(function(){
         window.location.href = 'http://'+loc+'/news/0';
     });
+    $('#gatherfeedbutton').click(function(){
+        window.location.href = 'http://'+loc+'/gathers/0';
+    });
     $('#infobutton').click(function(){
         window.location.href = 'http://'+loc+'/info';
     });

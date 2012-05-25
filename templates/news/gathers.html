@@ -1,0 +1,103 @@
+{% extends "base.html" %}
+
+{% block title %}{{ "g a t h e r s" }}{% endblock %}
+
+{% block content %}
+
+<div id="mainContainer">
+{% if latest_news %}
+    {% with latest_news.0 as article %}
+        <h1 style="font-weight: 100; font-size: 36px;"> 
+            <span style="font-weight: 400; font-size: 38px;">GatherFeed : </span> 
+            <span style="font-weight: 200; font-size: 38px;">{{ article.1.1.date }}</span> 
+        </h1>
+    {% endwith %}
+    
+    {% for story in latest_news.1 %}
+    <div class="story_preview" style="clear: both;">
+        {% with story.0 as article %}
+            <h3 class="latest_headlines" group="{{ article.group }}">
+                <a href="{{ article.group }}"> {{ story.1|safe }}</a>
+            </h3>
+        {% endwith %}
+        <ul>
+            {% for article in story %}
+                <li class="latest_items"><p class="publinks">{{ article.publisher|safe }}</p></li>
+            {% endfor %}
+        </ul>
+    </div>
+    {% endfor %}
+</div>
+    
+{% else %}
+    <p>No articles available.</p>
+{% endif %}
+
+{% endblock %}
+
+
+{% block footer %}
+    <section id="navSection">
+        <!-- <div class="footTitle">LEGEND:</div> -->
+        <div class="footerline"></div>
+            <div class="navholder">
+                <ul>
+                    {% comment %}
+                    <li class="newsTab"><a href="" class="prevpage"><</a></li>
+                    {% for i in 01234567891|make_list %}
+                        <li class="newsTab"><a href="" class="pathNumber">{{ i }}</a></li>
+                    {% endfor %}
+                    <li class="newsTab"><a href=""class="nextpage">></a></li>
+                    {% endcomment %}
+                </ul>
+            </div>
+        <div class="footerline"></div>
+    </section>
+    
+    <script type="text/javascript">
+        $(document).ready(function(){
+        
+            var loc = window.location.host;
+            var path = window.location.pathname;
+            var totalcount = {{ total }};
+            path = path.substr(9);
+            path = path.substring(0, path.length - 1);
+            
+            $('.navholder ul').append("<li class='newsTab'><a href='' class='prevpage'><</a></li>");
+            for(var i = 0; i < Math.ceil(totalcount/20); i++){
+                $('.navholder ul').append("<li class='newsTab'><a href='' class='pathNumber'>i</a></li>");
+            };
+            $('.navholder ul').append("<li class='newsTab'><a href='' class='nextpage'>></a></li>");
+            
+            $('.pathNumber').each(function(i){
+                    $(this).addClass(String(i));
+                    $(this).html(i);
+                    $(this).attr('href', 'http://'+loc+'/gathers/'+i);
+            });
+            
+            var thispage = parseInt(path);
+            console.log('thispage = '+thispage);
+            console.log('total = '+Math.floor(totalcount/20));
+            if(thispage){
+                $('.'+thispage).css({'opacity': '0.3'});
+            } else {
+                $('.0').css({'opacity': '0.3'});
+            }
+            
+            
+            if(path>0){
+                $('.prevpage').attr('href', 'http://'+loc+'/gathers/'+(parseInt(path)-1));
+            } else {
+                $('.prevpage').css({'opacity': '0.1'});
+            }
+            
+            if(path<=Math.floor(totalcount/20)-1){
+                $('.nextpage').attr('href', 'http://'+loc+'/gathers/'+(parseInt(path)+1));
+            } else {
+                $('.nextpage').css({'opacity': '0.1'});
+            }   
+        });
+    </script>
+    
+{% endblock %}
+
