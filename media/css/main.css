@@ -358,6 +358,9 @@ YELLOW: #524E2E
     font-weight: 100;
     font-family: "Titillium";
 }
+#toolbar #gatherbutton {
+    border-left: none;
+}
 #searchButton {
     color: #ddd;
     font-weight: 100;
