@@ -246,6 +246,9 @@ def makeObjects_fromText(givenObject, input_source):
                         dict_to_json['Imporatnt_Named'] = Imporatnt_Named
                         #dict_to_json['SentLengths'] = TTATNE["SL"]
                         #dict_to_json['Numbers'] = list(TTATNE["AN"])
+                        for q in quoteSrch:
+                            if "\n" in q:
+                                quoteSrch.remove(q)
                         dict_to_json['Quotes'] = quoteSrch
                         #dict_to_json['Raw_Text'] = rawtext
                         JSON_output = json.dumps( dict_to_json )

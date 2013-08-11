@@ -8,7 +8,6 @@ $(document).ready(function(){
     getTitle = "http://"+window.location.host+"/getTitle/"+story;
         
     $.get(geturl, function(data) {
-      //console.log(data);
       articleStorageArray = data;
       setTimeout(startEverything, 100, articleStorageArray);
     });
@@ -1323,7 +1322,6 @@ var arcMouseOver = function(obj){
 
 var showFam = false;
 var showArticleFamily = function(obj, opac1, opac2, opac3, speed) {
-    //console.log(obj[0][0]['node'].id);
     element = obj[0][0]['node'];
     parents = $('#'+element.id).attr('parents');
     parentArray = parents.split(',');
@@ -1373,7 +1371,6 @@ var buildSupplemental = function(bottoms, bottoms_sort) {
         allTitles.push( $(this).html() );
     });
     
-    //console.log(allTitles);
     
     bottoms.forEach(function(d,i){
         ul.append('<li class="uc underColumn'+i+'" style="position: absolute; top: '+(-offHeight+d+50)+'px; left: '+((i*wordmap.w)+(i*spacing)+42)+'px;  width: '+wordmap.w+'px;"><p class="thisTitle">'+allTitles[i]+'</p><div id="sentDIV'+i+'" class="sentimental" style="overflow: hidden;"><p class="supp">Sentiment</p></div></li>');
@@ -1765,10 +1762,9 @@ var moveQuoteCircs = function(){
 
 
 var showQuote = function(obj) {
-    quote = obj[0][0]['node']['attributes'][3].nodeValue;
+    quote = obj[0][0]['node']['attributes'][2].nodeValue;
     quotetop = ($('#quotesSVG').offset().top)-100;
     article = obj[0][0]['node']['attributes'][4].nodeValue;
-    //console.log('article : '+article)
     $('#quoteSpace').css({'top': quotetop+'px'});
     $('#quoteSpace').css({'width': (w-200)+'px'});
     $('#quoteSpace').show();
