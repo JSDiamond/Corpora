@@ -1762,7 +1762,8 @@ var moveQuoteCircs = function(){
 
 
 var showQuote = function(obj) {
-    quote = obj[0][0]['node']['attributes'][2].nodeValue;
+    quote = d3.select(obj[0][0]['node']).attr("quote")//$(obj[0][0])//.attr('quote')
+    //quote = obj[0][0]['node']['attributes'][2].nodeValue;
     quotetop = ($('#quotesSVG').offset().top)-100;
     article = obj[0][0]['node']['attributes'][4].nodeValue;
     $('#quoteSpace').css({'top': quotetop+'px'});
